@@ -1,5 +1,5 @@
 
-baseURL = "https://hotgames-ai.pages.dev/"
+baseURL = "https://hotgames.ai/"
 languageCode = "en-us"
 title = "HotGames.ai"
 theme = "ananke"
