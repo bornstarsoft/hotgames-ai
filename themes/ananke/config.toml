@@ -1,10 +1,12 @@
 
 baseURL = "https://hotgames.ai/"
 languageCode = "en-us"
-title = "HotGames.ai"
+title = "Hot Games – Discover Trending Games Right Now | HotGames.ai"
 theme = "ananke"
-buildFuture = true
-paginate = 10
+paginate = 12
+enableRobotsTXT = true
+buildFuture = false
 
 [params]
-  mainSections = ["posts"]
+  description = "HotGames.ai is a curated hub for hot games and trending titles across web, mobile, PC, and console. Discover what to play right now."
+  mainSections = ["posts", "games"]
