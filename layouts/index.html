@@ -1,0 +1,1744 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+
+<head>
+  {{ partial "head.html" . }}
+
+  <style>
+    :root {
+      --bg-body: #0f172a;
+      --bg-sidebar: #1e293b;
+      --bg-card: #1e293b;
+      --text-main: #f1f5f9;
+      --text-sub: #94a3b8;
+      --border-color: #334155;
+      --search-bg: #334155;
+
+      --accent: #f97316;
+      --ai-color: #8b5cf6;
+      --ai-gradient: linear-gradient(135deg, #8b5cf6 0%, #d946ef 100%);
+
+      --header-height: 70px;
+      --sidebar-width: 240px;
+    }
+
+    [data-theme="light"] {
+      --bg-body: #f3f4f6;
+      --bg-sidebar: #ffffff;
+      --bg-card: #ffffff;
+      --text-main: #1f2937;
+      --text-sub: #6b7280;
+      --border-color: #e5e7eb;
+      --search-bg: #f9fafb;
+    }
+
+    [data-theme="light"] .search-input {
+      background: rgba(139, 92, 246, 0.08);
+      border-color: rgba(139, 92, 246, 0.25);
+    }
+
+    [data-theme="light"] .search-input:focus {
+      border-color: rgba(139, 92, 246, 0.55);
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background-color: var(--bg-body);
+      color: var(--text-main);
+      transition: background-color 0.3s, color 0.3s;
+    }
+
+    .app-container {
+      display: flex;
+      min-height: 100vh;
+    }
+
+    /* Sidebar */
+    aside.sidebar {
+      width: var(--sidebar-width);
+      background-color: var(--bg-sidebar);
+      border-right: 1px solid var(--border-color);
+      position: fixed;
+      height: 100vh;
+      overflow-y: auto;
+      z-index: 50;
+      transition: transform 0.25s ease;
+    }
+
+    .logo-area {
+      height: var(--header-height);
+      display: flex;
+      align-items: center;
+      padding: 0 20px;
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    .logo-link {
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+    }
+
+    .logo-text {
+      font-size: 1.4rem;
+      font-weight: 800;
+      color: var(--text-main);
+      letter-spacing: -0.5px;
+    }
+
+    .logo-hot {
+      color: var(--accent);
+    }
+
+    .logo-ai {
+      background: var(--ai-gradient);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    nav.menu {
+      padding: 20px 15px;
+    }
+
+    .ai-pick-btn {
+      background: var(--ai-gradient);
+      color: white;
+      border: none;
+      width: 100%;
+      padding: 12px;
+      border-radius: 12px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 20px;
+      cursor: pointer;
+      box-shadow: 0 4px 15px rgba(139, 92, 246, 0.4);
+      transition: transform 0.2s;
+      text-decoration: none;
+    }
+
+    .ai-pick-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(139, 92, 246, 0.6);
+    }
+
+    .ai-pick-btn i {
+      margin-right: 8px;
+      font-size: 1.1rem;
+    }
+
+    .menu-item {
+      display: flex;
+      align-items: center;
+      padding: 12px;
+      color: var(--text-sub);
+      text-decoration: none;
+      border-radius: 8px;
+      margin-bottom: 5px;
+      font-weight: 600;
+      transition: 0.2s;
+    }
+
+    .menu-item:hover,
+    .menu-item.active {
+      background-color: var(--search-bg);
+      color: var(--text-main);
+    }
+
+    .menu-item i {
+      width: 25px;
+      margin-right: 10px;
+      color: var(--text-sub);
+    }
+
+    .menu-item:hover i {
+      color: var(--text-main);
+    }
+
+    .menu-divider {
+      height: 1px;
+      background: var(--border-color);
+      margin: 15px 0;
+    }
+
+    .main-wrapper {
+      flex-grow: 1;
+      margin-left: var(--sidebar-width);
+    }
+
+    header.top-bar {
+      height: var(--header-height);
+      background-color: var(--bg-sidebar);
+      border-bottom: 1px solid var(--border-color);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 30px;
+      position: sticky;
+      top: 0;
+      z-index: 40;
+    }
+
+    .search-container {
+      flex-grow: 1;
+      max-width: none;
+      /* 500 제한 해제 */
+      width: clamp(320px, 45vw, 740px);
+      position: relative;
+      margin-left: 20px;
+    }
+
+    .search-input {
+      width: 100%;
+      background: rgba(99, 102, 241, .06);
+      /* 아주 옅은 틴트 */
+      border: 1px solid transparent;
+      padding: 10px 20px 10px 45px;
+      border-radius: 50px;
+      color: var(--text-main);
+      outline: none;
+    }
+
+    .search-input:focus {
+      border-color: var(--ai-color);
+    }
+
+    .search-input::placeholder {
+      color: var(--text-sub);
+    }
+
+    .search-icon {
+      position: absolute;
+      left: 15px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--text-sub);
+    }
+
+    .header-actions {
+      display: flex;
+      gap: 10px;
+    }
+
+    .icon-btn {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      border: none;
+      background-color: var(--search-bg);
+      color: var(--text-main);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: transform 0.15s ease;
+    }
+
+    .icon-btn:hover {
+      background-color: var(--border-color);
+    }
+
+    main.content {
+      padding: 30px;
+    }
+
+    main.content {
+      transition: opacity .15s ease;
+    }
+
+    html.cat-loading main.content {
+      opacity: 0;
+    }
+
+    h2.section-title {
+      margin-top: 44px;
+      margin-bottom: 14px;
+      font-size: 1.4rem;
+      font-weight: 800;
+      display: flex;
+      align-items: center;
+    }
+
+    h2.section-title i {
+      margin-right: 10px;
+      color: var(--accent);
+    }
+
+    h2.section-title:first-child {
+      margin-top: 0;
+    }
+
+    /* 섹션(카테고리) 간격을 넓힘 */
+    main.content section {
+      margin-top: 80px;
+      /* 기존 34px -> 80px로 대폭 증가 */
+      margin-bottom: 20px;
+      /* 아래쪽에도 살짝 여백 */
+    }
+
+    /* 첫 번째 섹션(보통 Favorites나 Hot Games)은 위쪽 여백 제거 */
+    main.content section:first-child {
+      margin-top: 0;
+    }
+
+    .game-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+      gap: 22px;
+    }
+
+    .game-card {
+      background-color: var(--bg-card);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.28);
+      border-radius: 16px;
+      overflow: visible;
+      /* ✅ 배지 튀어나오게 */
+      z-index: 1;
+      text-decoration: none;
+      color: inherit;
+      position: relative;
+      display: flex;
+      /* ✅ 변경 */
+      flex-direction: column;
+      /* ✅ 추가 */
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+
+    .game-card:hover {
+      z-index: 5;
+      /* ✅ 호버/배지가 옆 카드 위로 */
+      transform: translateY(-6px);
+      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3);
+      border-color: rgba(255, 255, 255, 0.10);
+    }
+
+    .card-image-wrapper {
+      position: relative;
+      width: 100%;
+      padding-bottom: 56.25%;
+      background-color: #0b1223;
+      overflow: visible;
+      /* ✅ 배지 밖으로 나가도 안 잘리게 */
+      border-radius: 16px 16px 0 0;
+      /* ✅ 카드 상단 라운드 유지 */
+    }
+
+    .card-image-wrapper::after {
+      content: "";
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      height: 42%;
+      pointer-events: none;
+      background: linear-gradient(to bottom,
+          rgba(15, 23, 42, 0) 0%,
+          rgba(15, 23, 42, 0.55) 60%,
+          rgba(15, 23, 42, 0.85) 100%);
+      border-radius: 16px 16px 0 0;
+    }
+
+    /* ✅ 이미지/오버레이만 여기서 클립 */
+    .card-image-clip {
+      position: absolute;
+      inset: 0;
+      overflow: hidden;
+      border-radius: 16px 16px 0 0;
+    }
+
+    .card-image {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    /* 설명: 2줄까지만 보여주고 말줄임 */
+    .game-desc {
+      margin-top: 6px;
+      color: var(--text-sub);
+      font-size: 0.95rem;
+      line-height: 1.35;
+
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+
+    /* 메타바: 설명과 아이콘이 붙지 않게 */
+    .game-meta {
+      margin-top: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+    }
+
+    /* 플랫폼 아이콘 */
+    .platform-icons {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .p-icon {
+      border: 0;
+      background: transparent;
+      cursor: pointer;
+      padding: 0;
+    }
+
+    .p-chip {
+      width: 28px;
+      height: 28px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 8px;
+      color: var(--text-sub);
+    }
+
+
+    .p-icon:hover {
+      color: var(--text-main);
+      background: rgba(255, 255, 255, 0.06);
+    }
+
+    /* Hover Play */
+    .play-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.45);
+      backdrop-filter: blur(3px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      transition: 0.3s;
+      z-index: 10;
+    }
+
+    .game-card:hover .play-overlay {
+      opacity: 1;
+    }
+
+    .play-btn-circle {
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      background: var(--accent);
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.2rem;
+      box-shadow: 0 0 15px var(--accent);
+      transform: scale(0.85);
+      transition: 0.3s;
+    }
+
+    .game-card:hover .play-btn-circle {
+      transform: scale(1.1);
+    }
+
+    /* Badge */
+    .badge {
+      position: absolute;
+      top: -5px;
+      left: -5px;
+      z-index: 20;
+
+      padding: 8px 14px;
+      font-weight: 900;
+      font-size: 0.78rem;
+      letter-spacing: 0.6px;
+      text-transform: uppercase;
+      color: #fff;
+
+      /* ✅ 카드 라운드(16px)와 맞춤: 왼쪽은 각지고 오른쪽만 둥글게 */
+      border-radius: 6px 14px 14px 6px;
+
+      /* ✅ 기존 badge_color를 변수로 받고, 살짝 그라데이션 */
+      background: linear-gradient(135deg,
+          color-mix(in srgb, var(--badge) 85%, #ffffff 15%),
+          var(--badge));
+
+      border: 1px solid rgba(255, 255, 255, .14);
+      /* 밝은 얇은 하이라이트 */
+      box-shadow: 0 10px 18px rgba(0, 0, 0, .25);
+    }
+
+    .badge::after {
+      display: none;
+    }
+
+    .card-info {
+      padding: 14px 16px 16px;
+      background: rgba(255, 255, 255, 0.03);
+      /* 또는 rgba(0,0,0,0.18) */
+      border-top: 1px solid rgba(255, 255, 255, 0.06);
+    }
+
+    .card-bottom {
+      margin-top: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+    }
+
+    /* ✅ 플랫폼 “정보용” 칩 */
+    .platform-chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      min-height: 28px;
+    }
+
+    .platform-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 5px 10px;
+      border-radius: 999px;
+      font-size: 0.82rem;
+      color: var(--text-sub);
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      line-height: 1;
+    }
+
+    .platform-chip i {
+      font-size: 0.95em;
+      opacity: 0.95;
+    }
+
+    /* ✅ 외부 링크 힌트(↗) */
+    .outbound-icon {
+      position: absolute;
+      right: 12px;
+      bottom: 12px;
+      width: 34px;
+      height: 34px;
+      border-radius: 999px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(0, 0, 0, 0.35);
+      border: 1px solid rgba(255, 255, 255, 0.10);
+      color: rgba(255, 255, 255, 0.85);
+      opacity: 0;
+      transform: translateY(2px);
+      transition: 0.2s;
+      pointer-events: none;
+      /* ✅ 카드 클릭 방해 X */
+    }
+
+    .visit-cta {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+
+      padding: 8px 14px;
+      border-radius: 12px;
+
+      font-weight: 800;
+      color: var(--accent);
+
+      border: 1px solid rgba(249, 115, 22, 0.35);
+      background: rgba(249, 115, 22, 0.06);
+
+      user-select: none;
+      white-space: nowrap;
+    }
+
+    .game-card:hover .visit-cta {
+      background: rgba(249, 115, 22, 0.10);
+      border-color: rgba(249, 115, 22, 0.55);
+    }
+
+    .game-card:hover .outbound-icon {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* 모바일/터치에서는 hover가 약하니 항상 보이게(선택) */
+    @media (max-width: 768px) {
+      .outbound-icon {
+        opacity: 1;
+        transform: none;
+      }
+    }
+
+    .chip {
+      font-size: 12px;
+      line-height: 1;
+      padding: 6px 10px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      color: rgba(241, 245, 249, 0.65);
+      user-select: none;
+      cursor: default;
+      /* ✅ 클릭 불가 느낌 */
+    }
+
+    .play-cta {
+      font-weight: 800;
+      font-size: 12px;
+      min-height: 34px;
+      padding: 8px 14px;
+      border-radius: 10px;
+      border: 1px solid rgba(249, 115, 22, 0.35);
+      background: rgba(249, 115, 22, 0.18);
+      color: var(--accent);
+      cursor: pointer;
+      white-space: nowrap;
+    }
+
+    .play-cta:hover {
+      background: rgba(249, 115, 22, 0.28);
+    }
+
+    .play-cta:active {
+      transform: translateY(1px);
+    }
+
+    .game-name {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .ext-indicator {
+      font-size: 0.85em;
+      /* 제목보다 작게 */
+      color: var(--text-sub);
+      opacity: .7;
+      transform: translateY(-1px);
+    }
+
+    .game-card:hover .ext-indicator {
+      opacity: 1;
+      color: var(--text-main);
+    }
+
+    .game-meta {
+      margin-top: 10px;
+      /* ✅ 설명과 거리 */
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+    }
+
+    .trend-up {
+      color: #10b981;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+    }
+
+    .trend-up i {
+      margin-right: 4px;
+    }
+
+    /* Favorite (per-card) */
+    .fav-btn {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      z-index: 15;
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      background: rgba(15, 23, 42, 0.65);
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      backdrop-filter: blur(6px);
+      transition: transform 0.15s ease, background 0.2s ease;
+    }
+
+    .fav-btn:hover {
+      transform: scale(1.07);
+      background: rgba(15, 23, 42, 0.85);
+    }
+
+    .fav-btn i {
+      font-size: 1rem;
+    }
+
+    .fav-btn[data-liked="true"] i {
+      color: #ef4444;
+    }
+
+    .empty-note {
+      color: var(--text-sub);
+      font-size: 0.95rem;
+      padding: 6px 0 10px;
+    }
+
+    /* Mobile */
+    .hamburger {
+      display: none;
+      background: none;
+      border: none;
+      color: var(--text-main);
+      font-size: 1.4rem;
+      cursor: pointer;
+    }
+
+    @media (max-width: 768px) {
+      aside.sidebar {
+        transform: translateX(-100%);
+      }
+
+      aside.sidebar.open {
+        transform: translateX(0);
+      }
+
+      .main-wrapper {
+        margin-left: 0;
+      }
+
+      header.top-bar {
+        padding: 0 15px;
+      }
+
+      .search-container {
+        display: none;
+      }
+
+      .hamburger {
+        display: block;
+        margin-right: 15px;
+      }
+
+      .game-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 12px;
+      }
+
+      .card-info {
+        padding: 10px;
+      }
+    }
+
+    /* [통일된 알림창 디자인] */
+    .toast-msg {
+      position: fixed;
+      top: 20px;
+      left: 50%;
+      /* 평소에는 위로 숨겨둠 (-100px) */
+      transform: translateX(-50%) translateY(-100px);
+
+      background-color: var(--accent);
+      /* 오렌지색 */
+      color: white;
+      padding: 12px 24px;
+      border-radius: 50px;
+      /* 둥근 캡슐 모양 */
+      font-weight: 600;
+      font-size: 0.95rem;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+
+      z-index: 10000;
+      /* 맨 위에 표시 */
+      transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.3s;
+      pointer-events: none;
+      opacity: 0;
+
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    /* 자바스크립트가 .show 클래스를 붙이면 내려옴 */
+    .toast-msg.show {
+      transform: translateX(-50%) translateY(0);
+      opacity: 1;
+    }
+
+    #sidebarOverlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.55);
+      z-index: 45;
+      display: none;
+    }
+
+    #sidebarOverlay.active {
+      display: block;
+    }
+
+    .footer-area {
+      padding: 0 15px;
+      /* 좌우 여백 */
+      margin-bottom: 30px;
+      /* 아래 여백 */
+    }
+
+    .footer-link {
+      display: block;
+      margin-bottom: 12px;
+      /* 줄 간격 넓힘 */
+      color: var(--text-sub);
+      text-decoration: none;
+      font-size: 0.95rem;
+      /* 글씨 키움 (약 15px) */
+      font-weight: 500;
+      transition: 0.2s;
+    }
+
+    .footer-link:hover {
+      color: var(--text-main);
+      /* 마우스 올리면 밝게 */
+    }
+
+    .copyright {
+      margin-top: 25px;
+      font-size: 0.85rem;
+      /* 저작권 문구도 키움 */
+      color: var(--text-sub);
+      opacity: 0.5;
+    }
+
+    .brand {
+      text-decoration: none;
+      color: inherit;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .brand:visited {
+      color: inherit;
+    }
+
+    .brand-icon {
+      width: 26px;
+      height: 26px;
+      transform: translateY(1px);
+    }
+
+    .brand-text {
+      font-size: 1.4rem;
+      font-weight: 800;
+      letter-spacing: -0.5px;
+    }
+
+
+    .brand-text .dot {
+      background: var(--ai-gradient);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .logo-area a,
+    .logo-area a:link,
+    .logo-area a:visited,
+    .logo-area a:hover,
+    .logo-area a:active {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    .logo-text {
+      color: var(--text-main);
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="app-container">
+
+    <!-- Sidebar -->
+    <aside class="sidebar" id="sidebar">
+      <div class="logo-area">
+        <a class="brand" href="/">
+          <img class="brand-icon" src="/apple-touch-icon.png" alt="HotGames.ai">
+          <span class="brand-text">HotGames<span class="dot">.ai</span></span>
+        </a>
+      </div>
+
+      <nav class="menu">
+        <a href="#" class="ai-pick-btn" id="aiPickBtn">
+          <i class="fa-solid fa-wand-magic-sparkles"></i> AI Game Pick
+        </a>
+
+        <!-- MAIN (페이지 이동용) -->
+
+        {{ with .Site.Params.sidebar_menu }}
+        {{ range . }}
+        <a href="{{ .url }}" class="menu-item">
+          <i class="{{ .icon }}"></i> {{ .name }}
+        </a>
+        {{ end }}
+        {{ end }}
+
+        <div class="menu-divider"></div>
+
+        <!-- CATEGORIES (필터용) -->
+
+        {{ with .Site.Params.category_menu }}
+        {{ range . }}
+        <a href="/?cat={{ .filter | default (.name | lower) }}" class="menu-item category-btn"
+          data-filter="{{ .filter | default (.name | lower) }}">
+          <i class="{{ .icon }}"></i> {{ .name }}
+        </a>
+        {{ end }}
+        {{ end }}
+
+        <div class="menu-divider" style="margin: 30px 0;"></div>
+
+        <!-- 하단 메뉴 -->
+        <div class="footer-area">
+          {{ range .Site.Params.footer_menu }}
+          <a href="{{ .url }}" class="footer-link">
+            {{ .name }}
+          </a>
+          {{ end }}
+
+          <div class="copyright">
+            © 2025 HotGames.ai
+          </div>
+        </div>
+
+      </nav>
+
+    </aside>
+
+    <!-- Main -->
+    <div class="main-wrapper">
+
+      <header class="top-bar">
+        <div style="display:flex; align-items:center;">
+          <button class="hamburger" id="hamburgerBtn" aria-label="Open menu">
+            <i class="fa-solid fa-bars"></i>
+          </button>
+
+          <div class="search-container">
+            <i class="fa-solid fa-magnifying-glass search-icon"></i>
+            <input id="searchInput" type="text" class="search-input"
+              placeholder="Search games (e.g. Dice, Kpop, Puzzle)..." />
+          </div>
+        </div>
+
+        <div class="header-actions">
+          <!-- Share button -->
+          <button class="icon-btn" id="shareBtn" type="button" aria-label="Share HotGames.ai">
+            <i class="fa-solid fa-share-nodes"></i>
+          </button>
+
+          <!-- Optional: toast -->
+          <div id="toast" class="toast" aria-live="polite" aria-atomic="true"></div>
+          <button class="icon-btn" id="themeBtn" title="Toggle theme" aria-label="Toggle theme">
+            <i class="fa-solid fa-sun" id="theme-icon"></i>
+          </button>
+        </div>
+      </header>
+
+      <main class="content">
+
+        <!-- Favorites Section (JS가 채움) -->
+        <section id="favoritesSection" style="display:none;">
+          <h2 class="section-title"><i class="fa-solid fa-heart"></i> Favorites</h2>
+          <div class="game-grid" id="favoritesGrid"></div>
+          <div class="empty-note" id="favoritesEmpty" style="display:none;">No favorites yet. Tap the heart on a game
+            card.</div>
+        </section>
+
+        <!-- Hot Games -->
+        {{ with .Site.Params.hot_games_week }}
+        {{ $secCat := .category | default "other" | lower }}
+        <section>
+          <h2 class="section-title"><i class="fa-solid fa-fire"></i> {{ .title }}</h2>
+
+          {{ with .list }}
+          <div class="game-grid">
+            {{ range . }}
+            {{ $cat := .category | default $secCat | lower }}
+            <a href="{{ .link | default " #" }}" class="game-card smart-link" target="_blank" rel="noopener"
+              data-category="{{ .category | default " other" | lower }}"
+              data-game-id="{{ .link | default .name | urlize }}" data-game-name="{{ .name }}"
+              data-link-web="{{ .link | default " #" }}" data-link-android="{{ .android | default "" }}"
+              data-link-ios="{{ .ios | default "" }}" data-game-image="{{ .image | default "" }}"
+              data-game-badge="{{ .badge | default "" }}" data-game-badgecolor="{{ .badge_color | default " #f97316"
+              }}">
+              <div class="card-image-wrapper">
+
+                {{ if .badge }}
+                <div class="badge" style="--badge: {{ .badge_color | default " #f97316" }};">
+                  {{ .badge }}
+                </div>
+                {{ end }}
+
+                <button class="fav-btn" type="button" aria-label="Toggle favorite">
+                  <i class="fa-regular fa-heart"></i>
+                </button>
+
+                {{ $name := .name }}
+                {{ $img := .image }}
+
+                {{/* 외부 대신: SVG data-uri placeholder (네트워크 요청 0) */}}
+                {{ $w := 300 }}{{ $h := 169 }}
+                {{ $svg := printf `<svg xmlns='http://www.w3.org/2000/svg' width='%d' height='%d' viewBox='0 0 %d %d'>
+                  <rect width='100%%' height='100%%' fill='#1e293b' />
+                  <text x='50%%' y='50%%' dominant-baseline='middle' text-anchor='middle' fill='#475569'
+                    font-family='ui-sans-serif,system-ui' font-size='18'>%s</text>
+                </svg>` $w $h $w $h ($name | htmlEscape) }}
+                {{ $placeholder := printf "data:image/svg+xml;charset=utf-8,%s" ($svg | urlquery) | safeURL }}
+
+                <div class="card-image-clip">
+
+                  {{ if $img }}
+                  {{ $rel := strings.TrimPrefix "/" $img }}
+                  {{ $fsPath := printf "static/%s" $rel }}
+                  {{ if fileExists $fsPath }}
+                  <img src="/{{ $rel }}" class="card-image" alt="{{ $name }}">
+                  {{ else }}
+                  <img src="{{ $placeholder }}" class="card-image" alt="{{ $name }}">
+                  {{ end }}
+                  {{ else }}
+                  <img src="{{ $placeholder }}" class="card-image" alt="{{ $name }}">
+                  {{ end }}
+
+                </div>
+
+              </div>
+
+              <div class="card-info">
+                <h3 class="game-name">
+                  {{ .name }}
+                  <span class="ext-indicator" aria-hidden="true" title="Opens in new tab">
+                    <i class="fa-solid fa-arrow-up-right-from-square"></i>
+                  </span>
+                </h3>
+
+                {{ $short := .short | default .short_desc }}
+                {{ with $short }}
+                <div class="game-desc">{{ . }}</div>
+                {{ end }}
+
+                {{ $platforms := .platforms | default .platform }}
+                <div class="card-bottom">
+                  <div class="platform-chips" aria-label="Platforms">
+                    {{ if $platforms }}
+                    {{ range $platforms }}
+                    {{- $p := . | lower -}}
+                    {{ if eq $p "android" }}<span class="platform-chip"><i class="fa-brands fa-android"></i>
+                      Android</span>{{ end }}
+                    {{ if eq $p "ios" }}<span class="platform-chip"><i class="fa-brands fa-apple"></i> iOS</span>{{ end
+                    }}
+                    {{ if eq $p "web" }}<span class="platform-chip"><i class="fa-solid fa-globe"></i> Web</span>{{ end
+                    }}
+                    {{ if eq $p "steam" }}<span class="platform-chip"><i class="fa-brands fa-steam"></i> Steam</span>{{
+                    end }}
+
+                    {{ if eq $p "mobile" }}<span class="platform-chip"><i class="fa-solid fa-mobile-screen-button"></i>
+                      Mobile</span>{{ end }}
+                    {{ if eq $p "pc" }}<span class="platform-chip"><i class="fa-solid fa-desktop"></i> PC</span>{{ end
+                    }}
+                    {{ if eq $p "console" }}<span class="platform-chip"><i class="fa-solid fa-gamepad"></i>
+                      Console</span>{{ end }}
+                    {{ end }}
+                    {{ else }}
+                    {{/* platforms 없으면 링크 기반으로 추정 */}}
+                    {{ with .android }}<span class="platform-chip"><i class="fa-brands fa-android"></i> Android</span>{{
+                    end }}
+                    {{ with .ios }}<span class="platform-chip"><i class="fa-brands fa-apple"></i> iOS</span>{{ end }}
+                    {{ if and (not .android) (not .ios) }}<span class="platform-chip"><i class="fa-solid fa-globe"></i>
+                      Web</span>{{
+                    end }}
+                    {{ end }}
+                  </div>
+                </div>
+              </div>
+
+
+
+            </a>
+            {{ end }}
+          </div>
+          {{ else }}
+          <div class="empty-note">No hot games yet.</div>
+          {{ end }}
+        </section>
+        {{ end }}
+
+        <!-- New Games -->
+        {{ with .Site.Params.new_games }}
+        {{ $secCat := .category | default "other" | lower }}
+        <section>
+          <h2 class="section-title"><i class="fa-solid fa-bolt"></i> {{ .title }}</h2>
+
+          {{ with .list }}
+          <div class="game-grid">
+            {{ range . }}
+            {{ $cat := .category | default $secCat | lower }}
+            <a href="{{ .link | default " #" }}" class="game-card smart-link" target="_blank" rel="noopener"
+              data-category="{{ .category | default " other" | lower }}"
+              data-game-id="{{ .link | default .name | urlize }}" data-game-name="{{ .name }}"
+              data-link-web="{{ .link | default " #" }}" data-link-android="{{ .android | default "" }}"
+              data-link-ios="{{ .ios | default "" }}" data-game-image="{{ .image | default "" }}"
+              data-game-badge="{{ .badge | default "" }}" data-game-badgecolor="{{ .badge_color | default " #f97316"
+              }}">
+              <div class="card-image-wrapper">
+
+                {{ if .badge }}
+                <div class="badge" style="--badge: {{ .badge_color | default " #f97316" }};">
+                  {{ .badge }}
+                </div>
+                {{ end }}
+
+                <button class="fav-btn" type="button" aria-label="Toggle favorite">
+                  <i class="fa-regular fa-heart"></i>
+                </button>
+
+                {{ $name := .name }}
+                {{ $img := .image }}
+
+                {{/* 외부 대신: SVG data-uri placeholder (네트워크 요청 0) */}}
+                {{ $w := 300 }}{{ $h := 169 }}
+                {{ $svg := printf `<svg xmlns='http://www.w3.org/2000/svg' width='%d' height='%d' viewBox='0 0 %d %d'>
+                  <rect width='100%%' height='100%%' fill='#1e293b' />
+                  <text x='50%%' y='50%%' dominant-baseline='middle' text-anchor='middle' fill='#475569'
+                    font-family='ui-sans-serif,system-ui' font-size='18'>%s</text>
+                </svg>` $w $h $w $h ($name | htmlEscape) }}
+                {{ $placeholder := printf "data:image/svg+xml;charset=utf-8,%s" ($svg | urlquery) | safeURL }}
+
+                <div class="card-image-clip">
+
+                  {{ if $img }}
+                  {{ $rel := strings.TrimPrefix "/" $img }}
+                  {{ $fsPath := printf "static/%s" $rel }}
+                  {{ if fileExists $fsPath }}
+                  <img src="/{{ $rel }}" class="card-image" alt="{{ $name }}">
+                  {{ else }}
+                  <img src="{{ $placeholder }}" class="card-image" alt="{{ $name }}">
+                  {{ end }}
+                  {{ else }}
+                  <img src="{{ $placeholder }}" class="card-image" alt="{{ $name }}">
+                  {{ end }}
+
+                </div>
+
+              </div>
+
+              <div class="card-info">
+                <h3 class="game-name">
+                  {{ .name }}
+                  <span class="ext-indicator" aria-hidden="true" title="Opens in new tab">
+                    <i class="fa-solid fa-arrow-up-right-from-square"></i>
+                  </span>
+                </h3>
+
+                {{ $short := .short | default .short_desc }}
+                {{ with $short }}
+                <div class="game-desc">{{ . }}</div>
+                {{ end }}
+
+                {{ $platforms := .platforms | default .platform }}
+                <div class="card-bottom">
+                  <div class="platform-chips" aria-label="Platforms">
+                    {{ if $platforms }}
+                    {{ range $platforms }}
+                    {{- $p := . | lower -}}
+                    {{ if eq $p "android" }}<span class="platform-chip"><i class="fa-brands fa-android"></i>
+                      Android</span>{{ end }}
+                    {{ if eq $p "ios" }}<span class="platform-chip"><i class="fa-brands fa-apple"></i> iOS</span>{{ end
+                    }}
+                    {{ if eq $p "web" }}<span class="platform-chip"><i class="fa-solid fa-globe"></i> Web</span>{{ end
+                    }}
+                    {{ if eq $p "steam" }}<span class="platform-chip"><i class="fa-brands fa-steam"></i> Steam</span>{{
+                    end }}
+
+                    {{ if eq $p "mobile" }}<span class="platform-chip"><i class="fa-solid fa-mobile-screen-button"></i>
+                      Mobile</span>{{ end }}
+                    {{ if eq $p "pc" }}<span class="platform-chip"><i class="fa-solid fa-desktop"></i> PC</span>{{ end
+                    }}
+                    {{ if eq $p "console" }}<span class="platform-chip"><i class="fa-solid fa-gamepad"></i>
+                      Console</span>{{ end }}
+                    {{ end }}
+                    {{ else }}
+                    {{/* platforms 없으면 링크 기반으로 추정 */}}
+                    {{ with .android }}<span class="platform-chip"><i class="fa-brands fa-android"></i> Android</span>{{
+                    end }}
+                    {{ with .ios }}<span class="platform-chip"><i class="fa-brands fa-apple"></i> iOS</span>{{ end }}
+                    {{ if and (not .android) (not .ios) }}<span class="platform-chip"><i class="fa-solid fa-globe"></i>
+                      Web</span>{{
+                    end }}
+                    {{ end }}
+                  </div>
+                </div>
+              </div>
+
+
+            </a>
+            {{ end }}
+          </div>
+          {{ else }}
+          <div class="empty-note">No new games yet.</div>
+          {{ end }}
+        </section>
+        {{ end }}
+
+        <!-- Popular Games -->
+        {{ with .Site.Params.popular_games }}
+        {{ $secCat := .category | default "other" | lower }}
+        <section>
+          <h2 class="section-title"><i class="fa-solid fa-trophy"></i> {{ .title }}</h2>
+
+          {{ with .list }}
+          <div class="game-grid">
+            {{ range . }}
+            {{ $cat := .category | default $secCat | lower }}
+            <a href="{{ .link | default " #" }}" class="game-card smart-link" target="_blank" rel="noopener"
+              data-category="{{ .category | default " other" | lower }}"
+              data-game-id="{{ .link | default .name | urlize }}" data-game-name="{{ .name }}"
+              data-link-web="{{ .link | default " #" }}" data-link-android="{{ .android | default "" }}"
+              data-link-ios="{{ .ios | default "" }}" data-game-image="{{ .image | default "" }}"
+              data-game-badge="{{ .badge | default "" }}" data-game-badgecolor="{{ .badge_color | default " #f97316"
+              }}">
+              <div class="card-image-wrapper">
+
+                {{ if .badge }}
+                <div class="badge" style="--badge: {{ .badge_color | default " #f97316" }};">
+                  {{ .badge }}
+                </div>
+                {{ end }}
+
+                <button class="fav-btn" type="button" aria-label="Toggle favorite">
+                  <i class="fa-regular fa-heart"></i>
+                </button>
+
+                {{ $name := .name }}
+                {{ $img := .image }}
+
+                {{/* 외부 대신: SVG data-uri placeholder (네트워크 요청 0) */}}
+                {{ $w := 300 }}{{ $h := 169 }}
+                {{ $svg := printf `<svg xmlns='http://www.w3.org/2000/svg' width='%d' height='%d' viewBox='0 0 %d %d'>
+                  <rect width='100%%' height='100%%' fill='#1e293b' />
+                  <text x='50%%' y='50%%' dominant-baseline='middle' text-anchor='middle' fill='#475569'
+                    font-family='ui-sans-serif,system-ui' font-size='18'>%s</text>
+                </svg>` $w $h $w $h ($name | htmlEscape) }}
+                {{ $placeholder := printf "data:image/svg+xml;charset=utf-8,%s" ($svg | urlquery) | safeURL }}
+
+                <div class="card-image-clip">
+
+                  {{ if $img }}
+                  {{ $rel := strings.TrimPrefix "/" $img }}
+                  {{ $fsPath := printf "static/%s" $rel }}
+                  {{ if fileExists $fsPath }}
+                  <img src="/{{ $rel }}" class="card-image" alt="{{ $name }}">
+                  {{ else }}
+                  <img src="{{ $placeholder }}" class="card-image" alt="{{ $name }}">
+                  {{ end }}
+                  {{ else }}
+                  <img src="{{ $placeholder }}" class="card-image" alt="{{ $name }}">
+                  {{ end }}
+
+                </div>
+
+              </div>
+
+              <div class="card-info">
+                <h3 class="game-name">
+                  {{ .name }}
+                  <span class="ext-indicator" aria-hidden="true" title="Opens in new tab">
+                    <i class="fa-solid fa-arrow-up-right-from-square"></i>
+                  </span>
+                </h3>
+
+                {{ $short := .short | default .short_desc }}
+                {{ with $short }}
+                <div class="game-desc">{{ . }}</div>
+                {{ end }}
+
+                {{ $platforms := .platforms | default .platform }}
+                <div class="card-bottom">
+                  <div class="platform-chips" aria-label="Platforms">
+                    {{ if $platforms }}
+                    {{ range $platforms }}
+                    {{- $p := . | lower -}}
+                    {{ if eq $p "android" }}<span class="platform-chip"><i class="fa-brands fa-android"></i>
+                      Android</span>{{ end }}
+                    {{ if eq $p "ios" }}<span class="platform-chip"><i class="fa-brands fa-apple"></i> iOS</span>{{ end
+                    }}
+                    {{ if eq $p "web" }}<span class="platform-chip"><i class="fa-solid fa-globe"></i> Web</span>{{ end
+                    }}
+                    {{ if eq $p "steam" }}<span class="platform-chip"><i class="fa-brands fa-steam"></i> Steam</span>{{
+                    end }}
+
+                    {{ if eq $p "mobile" }}<span class="platform-chip"><i class="fa-solid fa-mobile-screen-button"></i>
+                      Mobile</span>{{ end }}
+                    {{ if eq $p "pc" }}<span class="platform-chip"><i class="fa-solid fa-desktop"></i> PC</span>{{ end
+                    }}
+                    {{ if eq $p "console" }}<span class="platform-chip"><i class="fa-solid fa-gamepad"></i>
+                      Console</span>{{ end }}
+                    {{ end }}
+                    {{ else }}
+                    {{/* platforms 없으면 링크 기반으로 추정 */}}
+                    {{ with .android }}<span class="platform-chip"><i class="fa-brands fa-android"></i> Android</span>{{
+                    end }}
+                    {{ with .ios }}<span class="platform-chip"><i class="fa-brands fa-apple"></i> iOS</span>{{ end }}
+                    {{ if and (not .android) (not .ios) }}<span class="platform-chip"><i class="fa-solid fa-globe"></i>
+                      Web</span>{{
+                    end }}
+                    {{ end }}
+                  </div>
+                </div>
+              </div>
+
+
+            </a>
+            {{ end }}
+          </div>
+          {{ else }}
+          <div class="empty-note">No popular games yet.</div>
+          {{ end }}
+        </section>
+        {{ end }}
+
+      </main>
+    </div>
+
+    <div id="sidebarOverlay"></div>
+  </div>
+
+  <!-- 링크 복사 알림창 -->
+  <div id="toast" class="toast-msg"><i class="fa-solid fa-check"></i> Link copied!</div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      console.log("HotGames Script Loaded!");
+
+      // ==========================================
+      // 1. 공통 유틸리티 (Utils)
+      // ==========================================
+      function normalize(text) {
+        return (text || "").toLowerCase().trim();
+      }
+
+      // [중요] 빈 섹션 숨기기 함수 (이게 꼭 있어야 합니다!)
+      function updateSectionVisibility() {
+        const sections = document.querySelectorAll('main.content section');
+
+        sections.forEach(section => {
+          // Favorites 섹션은 별도 관리하므로 패스
+          if (section.id === 'favoritesSection') return;
+
+          const grid = section.querySelector('.game-grid');
+          if (!grid) return;
+
+          // 현재 grid 안에서 display: none이 아닌(보이는) 카드가 하나라도 있는지 확인
+          const hasVisibleCards = Array.from(grid.children).some(card => card.style.display !== 'none');
+
+          // 보이면 섹션 전체 표시, 안 보이면 섹션 전체 숨김
+          if (hasVisibleCards) {
+            section.style.display = "";
+          } else {
+            section.style.display = "none";
+          }
+        });
+      }
+
+      // ==========================================
+      // 2. 테마 (Dark/Light)
+      // ==========================================
+      const html = document.documentElement;
+      const themeBtn = document.getElementById('themeBtn');
+      const themeIcon = document.getElementById('theme-icon');
+
+      const savedTheme = localStorage.getItem('theme') || 'dark';
+      html.setAttribute('data-theme', savedTheme);
+      updateIcon(savedTheme);
+
+      function updateIcon(theme) {
+        if (!themeIcon) return;
+        themeIcon.className = (theme === 'dark') ? 'fa-solid fa-sun' : 'fa-solid fa-moon';
+      }
+
+      if (themeBtn) {
+        themeBtn.addEventListener('click', () => {
+          const current = html.getAttribute('data-theme');
+          const next = current === 'dark' ? 'light' : 'dark';
+          html.setAttribute('data-theme', next);
+          localStorage.setItem('theme', next);
+          updateIcon(next);
+        });
+      }
+
+      // ==========================================
+      // 3. 좋아요 (Favorites) 기능 - 먼저 정의해야 함
+      // ==========================================
+      const favoritesSection = document.getElementById('favoritesSection');
+      const favoritesGrid = document.getElementById('favoritesGrid');
+      const favoritesEmpty = document.getElementById('favoritesEmpty');
+
+      function getLikedSet() {
+        try {
+          return new Set(JSON.parse(localStorage.getItem('likedGames') || '[]'));
+        } catch { return new Set(); }
+      }
+      function saveLikedSet(set) {
+        localStorage.setItem('likedGames', JSON.stringify(Array.from(set)));
+      }
+
+      // 카드 하트 아이콘 상태 업데이트
+      function updateCardHeartUI(id, isLiked) {
+        const targetCards = document.querySelectorAll(`.game-card[data-game-id="${id}"]`);
+        targetCards.forEach(card => {
+          const btn = card.querySelector('.fav-btn');
+          const icon = btn?.querySelector('i');
+          if (icon) {
+            btn.dataset.liked = isLiked ? "true" : "false";
+            icon.className = isLiked ? 'fa-solid fa-heart' : 'fa-regular fa-heart';
+            icon.style.color = isLiked ? '#ef4444' : '';
+          }
+        });
+      }
+
+      // 좋아요 토글
+      function toggleLike(id) {
+        const set = getLikedSet();
+        if (set.has(id)) set.delete(id);
+        else set.add(id);
+        saveLikedSet(set);
+
+        updateCardHeartUI(id, set.has(id));
+        renderFavorites();
+      }
+
+      // 즐겨찾기 영역 그리기
+      function renderFavorites() {
+        if (!favoritesGrid) return;
+
+        const likedSet = getLikedSet();
+        const searchInput = document.getElementById('searchInput'); // 여기서 찾기
+        const term = normalize(searchInput ? searchInput.value : "");
+
+        favoritesGrid.innerHTML = "";
+        let count = 0;
+
+        // 원본 카드들 중 유니크한 것만 수집 (데이터 소스)
+        const uniqueMap = new Map();
+        document.querySelectorAll('.game-card').forEach(c => {
+          const id = c.dataset.gameId;
+          if (id && !uniqueMap.has(id)) uniqueMap.set(id, c);
+        });
+
+        likedSet.forEach(id => {
+          const original = uniqueMap.get(id);
+          if (original) {
+            // 검색어 필터 확인
+            const name = normalize(original.dataset.gameName);
+            if (!term || name.includes(term)) {
+              const clone = original.cloneNode(true);
+              // 복제된 카드의 하트 버튼 이벤트 재연결
+              const btn = clone.querySelector('.fav-btn');
+              if (btn) {
+                btn.addEventListener('click', (e) => {
+                  e.preventDefault(); e.stopPropagation();
+                  toggleLike(id);
+                });
+              }
+              favoritesGrid.appendChild(clone);
+              count++;
+            }
+          }
+        });
+
+        // 표시 여부 결정
+        if (count > 0) {
+          favoritesSection.style.display = "block";
+          favoritesEmpty.style.display = "none";
+        } else {
+          favoritesSection.style.display = "none";
+        }
+      }
+
+      // 초기화: 모든 카드의 하트 버튼 이벤트 연결
+      const allCards = document.querySelectorAll('.game-card');
+      allCards.forEach(card => {
+        const id = card.dataset.gameId;
+        const btn = card.querySelector('.fav-btn');
+        if (id && btn) {
+          // 초기 상태 반영
+          const likedSet = getLikedSet();
+          updateCardHeartUI(id, likedSet.has(id));
+
+          // 클릭 이벤트 (중복 방지)
+          if (!btn.dataset.bound) {
+            btn.dataset.bound = "true";
+            btn.addEventListener('click', (e) => {
+              e.preventDefault(); e.stopPropagation();
+              toggleLike(id);
+            });
+          }
+        }
+      });
+
+      // 초기 렌더링
+      renderFavorites();
+
+      // ==========================================
+      // 4. 검색 및 카테고리 필터링 (완벽 수정판)
+      // ==========================================
+      const searchInput = document.getElementById('searchInput');
+      const categoryBtns = document.querySelectorAll('.category-btn');
+
+      // [핵심 함수 1] 필터 실행
+      function filterGames(category) {
+        const cat = normalize(category);
+        const allCards = document.querySelectorAll('.game-card[data-game-id][data-category]');
+
+        if (allCards.length === 0) return;
+
+        allCards.forEach(card => {
+          const cardCat = normalize(card.dataset.category);
+          const ok = (cat === 'all' || cat === '' || cardCat === cat);
+          card.style.display = ok ? "" : "none";
+        });
+
+        updateSectionVisibility();
+        if (typeof renderFavorites === 'function') renderFavorites();
+      }
+
+      // [핵심 함수 2] 메뉴 버튼 UI 업데이트
+      function updateActiveButton(targetFilter) {
+        categoryBtns.forEach(btn => {
+          btn.classList.remove('active');
+          if (normalize(btn.dataset.filter) === normalize(targetFilter)) {
+            btn.classList.add('active');
+          }
+        });
+      }
+
+      // [로직 A] 페이지 로드 시 URL 파라미터 감지 (자동 필터링)
+      // 예: hotgames.ai/?cat=puzzle 로 접속 시 실행
+      (function applyCategoryFromUrl() {
+        const params = new URLSearchParams(window.location.search);
+        const cat = params.get('cat');
+        if (!cat) {
+          document.documentElement.classList.remove('cat-loading');
+          return;
+        }
+
+        // active 표시
+        document.querySelectorAll('.category-btn').forEach(b => {
+          b.classList.toggle('active', normalize(b.dataset.filter) === normalize(cat));
+        });
+
+        // 필터 적용
+        filterGames(cat);
+
+        // ✅ 여기서 숨김 해제 (깜빡임 제거 핵심)
+        document.documentElement.classList.remove('cat-loading');
+
+        // (선택) 주소 깔끔하게 하고 싶으면:
+        // history.replaceState(null, '', window.location.pathname);
+      })();
+
+      // [로직 B] 카테고리 버튼 클릭 이벤트 (완벽 수정판)
+      categoryBtns.forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          // e.preventDefault()를 먼저 하지 않습니다. (a 태그의 기본 동작이 필요할 수도 있어서)
+          const filterValue = btn.dataset.filter || 'all';
+
+          // 1. 현재 화면에 게임 카드가 있는지 확인 (메인 페이지인지 체크)
+          const gameCardsExist = document.querySelectorAll('.game-card[data-game-id]').length > 0;
+
+          // 2. 게임 카드가 없다면? (뉴스 페이지 등) -> 기본 링크 이동 허용 (a href="/?cat=..." 로 이동됨)
+          if (!gameCardsExist) {
+            // 아무것도 안 하고 함수 종료 -> 브라우저가 알아서 href로 이동함
+            return;
+          }
+
+          // 3. 게임 카드가 있다면? (메인 페이지) -> JS로 즉시 필터링
+          e.preventDefault(); // 이제서야 이동을 막음
+
+          updateActiveButton(filterValue);
+
+          if (searchInput) searchInput.value = ""; // 검색어 초기화
+          filterGames(filterValue);
+
+          // URL 주소도 예쁘게 바꿔줌 (뒤로가기 지원)
+          const nextUrl = (filterValue === 'all') ? '/' : `/?cat=${encodeURIComponent(filterValue)}`;
+          history.pushState(null, '', nextUrl);
+
+          // 모바일이면 사이드바 닫기
+          if (window.innerWidth <= 768) closeSidebar();
+        });
+      });
+
+      window.addEventListener('popstate', () => {
+        const params = new URLSearchParams(location.search);
+        const cat = params.get('cat') || 'all';
+        updateActiveButton(cat);
+        filterGames(cat);
+      });
+
+      // [로직 C] 검색 로직
+      if (searchInput) {
+        searchInput.addEventListener('input', (e) => {
+          const term = normalize(e.target.value);
+          const allCards = document.querySelectorAll('.game-card');
+
+          // 게임 카드가 없으면 검색도 의미 없음
+          if (allCards.length === 0) return;
+
+          allCards.forEach(card => {
+            const name = normalize(card.dataset.gameName || card.querySelector('.game-name')?.textContent || '');
+            if (name.includes(term)) {
+              card.style.display = "";
+            } else {
+              card.style.display = "none";
+            }
+          });
+
+          updateSectionVisibility();
+          if (typeof renderFavorites === 'function') renderFavorites();
+        });
+      }
+
+      // ==========================================
+      // 5. 사이드바 (Mobile Sidebar)
+      // ==========================================
+      const sidebar = document.getElementById('sidebar');
+      const overlay = document.getElementById('sidebarOverlay');
+      const hamburgerBtn = document.getElementById('hamburgerBtn');
+
+      function openSidebar() {
+        sidebar.classList.add('open');
+        overlay.classList.add('active');
+      }
+      function closeSidebar() {
+        sidebar.classList.remove('open');
+        overlay.classList.remove('active');
+      }
+
+      if (hamburgerBtn) hamburgerBtn.addEventListener('click', openSidebar);
+      if (overlay) overlay.addEventListener('click', closeSidebar);
+
+      // ==========================================
+      // 6. 공유 및 AI 버튼
+      // ==========================================
+      const shareBtn = document.getElementById('shareBtn');
+      const toast = document.getElementById('toast');
+
+      if (shareBtn) {
+        shareBtn.addEventListener('click', async () => {
+          const url = window.location.href;
+          const title = document.title;
+          if (navigator.share) {
+            try { await navigator.share({ title, url }); } catch (e) { }
+          } else {
+            navigator.clipboard.writeText(url).then(() => {
+              if (toast) {
+                toast.classList.add('show');
+                setTimeout(() => toast.classList.remove('show'), 2000);
+              }
+            });
+          }
+        });
+      }
+
+      // ==========================================
+      // 7. [핵심] 스마트 링크 라우팅 함수
+      // ==========================================
+      function openSmartLink(webUrl, androidUrl, iosUrl) {
+        const userAgent = navigator.userAgent || navigator.vendor || window.opera;
+        let finalUrl = webUrl; // 기본값은 웹(공식홈)
+
+        // 1. iOS 감지
+        if (/iPad|iPhone|iPod/.test(userAgent) && !window.MSStream) {
+          // iOS 링크가 있으면 거기로, 없으면 웹으로
+          if (iosUrl && iosUrl !== "") finalUrl = iosUrl;
+        }
+        // 2. Android 감지
+        else if (/android/i.test(userAgent)) {
+          // 안드 링크가 있으면 거기로, 없으면 웹으로
+          if (androidUrl && androidUrl !== "") finalUrl = androidUrl;
+        }
+        // 3. PC는 그냥 webUrl (혹은 webUrl이 없으면 안드로이드 링크라도 보여줌)
+        else {
+          if ((!finalUrl || finalUrl === "#") && androidUrl) finalUrl = androidUrl;
+        }
+
+        if (finalUrl && finalUrl !== "#") {
+          window.open(finalUrl, '_blank');
+        } else {
+          console.log("No valid link found.");
+        }
+      }
+
+      // [이벤트 연결] 모든 게임 카드 클릭 시 가로채기
+      // (기존 필터링/하트 로직과 충돌 안 나게 주의: e.preventDefault() 필수)
+      document.addEventListener('click', function (e) {
+        const playBtn = e.target.closest('.play-cta[data-stop-card]');
+        if (!playBtn) return;
+
+        const card = playBtn.closest('.smart-link');
+        if (!card) return;
+
+        e.preventDefault();
+        e.stopPropagation();
+
+        openSmartLink(card.dataset.linkWeb, card.dataset.linkAndroid, card.dataset.linkIos);
+      });
+      const aiPickBtn = document.getElementById('aiPickBtn');
+      if (aiPickBtn) {
+        aiPickBtn.addEventListener('click', (e) => {
+          e.preventDefault();
+          const originalHtml = aiPickBtn.innerHTML;
+          aiPickBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Analyzing...';
+
+          setTimeout(() => {
+            // 현재 화면에 보이는(display!=none) 카드 중에서만 랜덤 선택
+            const visibleCards = Array.from(document.querySelectorAll('.game-card'))
+              .filter(c => c.style.display !== 'none' && !c.closest('#favoritesSection'));
+
+            if (visibleCards.length > 0) {
+              const randomCard = visibleCards[Math.floor(Math.random() * visibleCards.length)];
+
+              // 여기서 스마트 링크 함수 호출!
+              const web = randomCard.dataset.linkWeb;
+              const android = randomCard.dataset.linkAndroid;
+              const ios = randomCard.dataset.linkIos;
+              openSmartLink(web, android, ios);
+
+            } else {
+              // 게임이 없는 페이지라면 메인으로 이동 (이건 현재 창에서 이동하는 게 자연스러움)
+              window.location.href = "/";
+            }
+            aiPickBtn.innerHTML = originalHtml;
+          }, 700);
+        });
+      }
+
+    }); // DOMContentLoaded 끝
+  </script>
+
+</body>
+
+</html>

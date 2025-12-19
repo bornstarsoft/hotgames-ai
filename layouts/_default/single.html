@@ -1,0 +1,732 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+
+<head>
+  {{ partial "head.html" . }}
+
+  <style>
+    /* --- [메인/리스트와 동일한 CSS 변수] --- */
+    :root {
+      --bg-body: #0f172a;
+      --bg-sidebar: #1e293b;
+      --bg-card: #1e293b;
+      --text-main: #f1f5f9;
+      --text-sub: #94a3b8;
+      --border-color: #334155;
+      --search-bg: #334155;
+      --accent: #f97316;
+      --ai-gradient: linear-gradient(135deg, #8b5cf6 0%, #d946ef 100%);
+      --header-height: 70px;
+      --sidebar-width: 240px;
+    }
+
+    [data-theme="light"] {
+      --bg-body: #f3f4f6;
+      --bg-sidebar: #ffffff;
+      --bg-card: #ffffff;
+      --text-main: #1f2937;
+      --text-sub: #6b7280;
+      --border-color: #e5e7eb;
+      --search-bg: #f9fafb;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background-color: var(--bg-body);
+      color: var(--text-main);
+      transition: background-color 0.3s, color 0.3s;
+    }
+
+    a {
+      text-decoration: none;
+      color: inherit;
+    }
+
+    /* 레이아웃 */
+    .app-container {
+      display: flex;
+      min-height: 100vh;
+    }
+
+    aside.sidebar {
+      width: var(--sidebar-width);
+      background-color: var(--bg-sidebar);
+      border-right: 1px solid var(--border-color);
+      position: fixed;
+      height: 100vh;
+      overflow-y: auto;
+      z-index: 50;
+      transition: transform 0.25s ease;
+    }
+
+    .main-wrapper {
+      flex-grow: 1;
+      margin-left: var(--sidebar-width);
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* 로고 & 메뉴 */
+    .logo-area {
+      height: var(--header-height);
+      display: flex;
+      align-items: center;
+      padding: 0 20px;
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    .logo-text {
+      font-size: 1.4rem;
+      font-weight: 800;
+      color: var(--text-main);
+      letter-spacing: -0.5px;
+    }
+
+    .logo-hot {
+      color: var(--accent);
+    }
+
+    .logo-ai {
+      background: var(--ai-gradient);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    nav.menu {
+      padding: 20px 15px;
+    }
+
+    .menu-item {
+      display: flex;
+      align-items: center;
+      padding: 12px;
+      color: var(--text-sub);
+      border-radius: 8px;
+      margin-bottom: 5px;
+      font-weight: 600;
+      transition: 0.2s;
+    }
+
+    .menu-item:hover {
+      background-color: var(--search-bg);
+      color: var(--text-main);
+    }
+
+    .menu-item i {
+      width: 25px;
+      margin-right: 10px;
+    }
+
+    /* 상단바 */
+    header.top-bar {
+      height: var(--header-height);
+      background-color: var(--bg-sidebar);
+      border-bottom: 1px solid var(--border-color);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 30px;
+      position: sticky;
+      top: 0;
+      z-index: 40;
+    }
+
+    .icon-btn {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      border: none;
+      background-color: var(--search-bg);
+      color: var(--text-main);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .hamburger {
+      display: none;
+      background: none;
+      border: none;
+      color: var(--text-main);
+      font-size: 1.4rem;
+      cursor: pointer;
+      margin-right: 15px;
+    }
+
+    /* --- [상세 페이지 스타일] --- */
+    main.content {
+      padding: 40px;
+      max-width: 800px;
+      margin: 0 auto;
+      width: 100%;
+    }
+
+    .article-header {
+      margin-bottom: 30px;
+      border-bottom: 1px solid var(--border-color);
+      padding-bottom: 20px;
+    }
+
+    .article-meta {
+      font-size: 0.9rem;
+      color: var(--text-sub);
+      margin-bottom: 10px;
+    }
+
+    .article-title {
+      font-size: 2.2rem;
+      font-weight: 800;
+      margin-bottom: 15px;
+      line-height: 1.3;
+      color: var(--text-main);
+    }
+
+    /* 마크다운 본문 스타일링 */
+    .article-content {
+      font-size: 1.1rem;
+      color: var(--text-main);
+      line-height: 1.7;
+      /* <-- 여기에 추가! (본문은 읽기 편해야 하니까요) */
+    }
+
+    .article-content p {
+      margin-bottom: 1.5em;
+    }
+
+    .article-content h2 {
+      margin-top: 2em;
+      margin-bottom: 0.8em;
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--accent);
+    }
+
+    .article-content h3 {
+      margin-top: 1.5em;
+      margin-bottom: 0.8em;
+      font-size: 1.3rem;
+      font-weight: 700;
+    }
+
+    .article-content img {
+      max-width: 100%;
+      border-radius: 8px;
+      margin: 1em 0;
+    }
+
+    .article-content a {
+      color: var(--accent);
+      text-decoration: underline;
+    }
+
+    .article-content blockquote {
+      border-left: 4px solid var(--accent);
+      padding-left: 15px;
+      color: var(--text-sub);
+      margin: 1.5em 0;
+    }
+
+    @media (max-width: 768px) {
+      aside.sidebar {
+        transform: translateX(-100%);
+      }
+
+      aside.sidebar.open {
+        transform: translateX(0);
+      }
+
+      .main-wrapper {
+        margin-left: 0;
+      }
+
+      header.top-bar {
+        padding: 0 15px;
+      }
+
+      .hamburger {
+        display: block;
+      }
+
+      main.content {
+        padding: 20px;
+      }
+
+      .article-title {
+        font-size: 1.8rem;
+      }
+    }
+
+    #sidebarOverlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.5);
+      z-index: 45;
+      display: none;
+    }
+
+    #sidebarOverlay.active {
+      display: block;
+    }
+
+    .menu-item {
+      display: flex;
+      align-items: center;
+      padding: 12px;
+      color: var(--text-sub);
+      text-decoration: none;
+      border-radius: 8px;
+      margin-bottom: 5px;
+      font-weight: 600;
+      transition: 0.2s;
+    }
+
+    .menu-item:hover,
+    .menu-item.active {
+      background-color: var(--search-bg);
+      color: var(--text-main);
+    }
+
+    .menu-item i {
+      width: 25px;
+      margin-right: 10px;
+      color: var(--text-sub);
+    }
+
+    .menu-item:hover i {
+      color: var(--text-main);
+    }
+
+    .menu-divider {
+      height: 1px;
+      background: var(--border-color);
+      margin: 15px 0;
+    }
+
+    /* [AI Pick 버튼 스타일] */
+    .ai-pick-btn {
+      background: var(--ai-gradient);
+      color: white;
+      border: none;
+      width: 100%;
+      padding: 12px;
+      border-radius: 12px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 20px;
+      cursor: pointer;
+      box-shadow: 0 4px 15px rgba(139, 92, 246, 0.4);
+      transition: transform 0.2s;
+      text-decoration: none;
+    }
+
+    .ai-pick-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(139, 92, 246, 0.6);
+    }
+
+    .ai-pick-btn i {
+      margin-right: 8px;
+      font-size: 1.1rem;
+    }
+
+    /* [통일된 알림창 디자인] */
+    .toast-msg {
+      position: fixed;
+      top: 20px;
+      left: 50%;
+      /* 평소에는 위로 숨겨둠 (-100px) */
+      transform: translateX(-50%) translateY(-100px);
+
+      background-color: var(--accent);
+      /* 오렌지색 */
+      color: white;
+      padding: 12px 24px;
+      border-radius: 50px;
+      /* 둥근 캡슐 모양 */
+      font-weight: 600;
+      font-size: 0.95rem;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+
+      z-index: 10000;
+      /* 맨 위에 표시 */
+      transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.3s;
+      pointer-events: none;
+      opacity: 0;
+
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    /* 자바스크립트가 .show 클래스를 붙이면 내려옴 */
+    .toast-msg.show {
+      transform: translateX(-50%) translateY(0);
+      opacity: 1;
+    }
+
+    /* [태그 스타일] */
+    .tag-cloud {
+      margin: 30px 0;
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .tag-btn {
+      background: var(--bg-sidebar);
+      color: var(--text-sub);
+      padding: 6px 12px;
+      border-radius: 20px;
+      font-size: 0.85rem;
+      border: 1px solid var(--border-color);
+      transition: 0.2s;
+    }
+
+    .tag-btn:hover {
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+
+    /* [관련 기사 스타일] */
+    .related-posts {
+      margin-top: 50px;
+      border-top: 1px solid var(--border-color);
+      padding-top: 30px;
+    }
+
+    .related-title {
+      font-size: 1.3rem;
+      font-weight: 700;
+      margin-bottom: 20px;
+      color: var(--text-main);
+    }
+
+    .related-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 15px;
+    }
+
+    .related-card {
+      background: var(--bg-card);
+      padding: 15px;
+      border-radius: 10px;
+      border: 1px solid transparent;
+      transition: 0.2s;
+    }
+
+    .related-card:hover {
+      transform: translateY(-3px);
+      border-color: var(--border-color);
+    }
+
+    .related-date {
+      font-size: 0.75rem;
+      color: var(--accent);
+      font-weight: 600;
+      display: block;
+      margin-bottom: 5px;
+    }
+
+    .related-heading {
+      font-size: 0.95rem;
+      font-weight: 700;
+      margin: 0;
+      line-height: 1.4;
+      color: var(--text-main);
+    }
+
+    .footer-area {
+      padding: 0 15px;
+      /* 좌우 여백 */
+      margin-bottom: 30px;
+      /* 아래 여백 */
+    }
+
+    .footer-link {
+      display: block;
+      margin-bottom: 12px;
+      /* 줄 간격 넓힘 */
+      color: var(--text-sub);
+      text-decoration: none;
+      font-size: 0.95rem;
+      /* 글씨 키움 (약 15px) */
+      font-weight: 500;
+      transition: 0.2s;
+    }
+
+    .footer-link:hover {
+      color: var(--text-main);
+      /* 마우스 올리면 밝게 */
+    }
+
+    .copyright {
+      margin-top: 25px;
+      font-size: 0.85rem;
+      /* 저작권 문구도 키움 */
+      color: var(--text-sub);
+      opacity: 0.5;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .brand-icon {
+      width: 26px;
+      height: 26px;
+      transform: translateY(1px);
+    }
+
+    .brand-text {
+      font-size: 1.4rem;
+      font-weight: 800;
+      letter-spacing: -0.5px;
+    }
+
+
+    .brand-text .dot {
+      background: var(--ai-gradient);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="app-container">
+    <div id="sidebarOverlay" onclick="closeSidebar()"></div>
+
+    <!-- 사이드바 -->
+    <aside class="sidebar" id="sidebar">
+      <div class="logo-area">
+        <a class="brand" href="/">
+          <img class="brand-icon" src="/apple-touch-icon.png" alt="HotGames.ai">
+          <span class="brand-text">HotGames<span class="dot">.ai</span></span>
+        </a>
+      </div>
+      <nav class="menu">
+        <!-- [복구된 AI 버튼] ID 추가 필수! -->
+        <a href="#" class="ai-pick-btn" id="aiPickBtn">
+          <i class="fa-solid fa-wand-magic-sparkles"></i> AI Game Pick
+        </a>
+
+        {{ range .Site.Params.sidebar_menu }}
+        <a href="{{ .url }}" class="menu-item"><i class="{{ .icon }}"></i> {{ .name }}</a>
+        {{ end }}
+
+        <div class="menu-divider"></div>
+
+        {{ range .Site.Params.category_menu }}
+        {{ $filter := .filter | default (.name | lower) }}
+        <a href="/?cat={{ $filter | urlquery }}" class="menu-item category-btn" data-filter="{{ $filter }}">
+          <i class="{{ .icon }}"></i> {{ .name }}
+        </a>
+        {{ end }}
+
+        <div class="menu-divider" style="margin: 30px 0;"></div>
+
+        <!-- 하단 메뉴 -->
+        <div class="footer-area">
+          {{ range .Site.Params.footer_menu }}
+          <a href="{{ .url }}" class="footer-link">
+            {{ .name }}
+          </a>
+          {{ end }}
+
+          <div class="copyright">
+            © 2025 HotGames.ai
+          </div>
+        </div>
+      </nav>
+    </aside>
+
+    <!-- 메인 영역 -->
+    <div class="main-wrapper">
+      <header class="top-bar">
+        <div style="display:flex; align-items:center;">
+          <button class="hamburger" onclick="toggleSidebar()"><i class="fa-solid fa-bars"></i></button>
+          <div style="font-weight:700; font-size:1.1rem;">Game News</div>
+        </div>
+        <div style="display:flex; gap:10px;">
+          <!-- 공유 버튼 추가 -->
+          <button class="icon-btn" id="shareBtn" title="Share this page">
+            <i class="fa-solid fa-share-nodes"></i>
+          </button>
+
+          <!-- 테마 버튼 -->
+          <button class="icon-btn" onclick="toggleTheme()"><i class="fa-solid fa-sun" id="theme-icon"></i></button>
+        </div>
+      </header>
+
+      <!-- 본문 내용 (여기가 바뀜) -->
+      <main class="content">
+        <article>
+          <header class="article-header">
+            {{ if not .Date.IsZero }}
+            <div class="article-meta">
+              <i class="fa-regular fa-calendar"></i> {{ .Date.Format "January 2, 2006" }}
+            </div>
+            {{ end }}
+            <h1 class="article-title">{{ .Title }}</h1>
+          </header>
+
+          <div class="article-content">
+            {{ .Content }} <!-- 여기가 실제 글 내용 -->
+          </div>
+          <!-- [태그 버튼] -->
+          {{ if .Params.tags }}
+          <div class="tag-cloud">
+            {{ range .Params.tags }}
+            <a href="/tags/{{ . | urlize }}" class="tag-btn">#{{ . }}</a>
+            {{ end }}
+          </div>
+          {{ end }}
+
+          <!-- [관련 기사 (최신글 3개)] -->
+          <div class="related-posts">
+            <h3 class="related-title">🔥 More on HotGames</h3>
+            <div class="related-grid">
+              <!-- 현재 글 제외하고 최신글 3개 가져오기 -->
+              {{ $related := where .Site.RegularPages "Type" "posts" | first 3 }}
+              {{ range $related }}
+              <a href="{{ .RelPermalink }}" class="related-card">
+                <div class="related-info">
+                  <span class="related-date">{{ .Date.Format "Jan 2" }}</span>
+                  <h4 class="related-heading">{{ .Title }}</h4>
+                </div>
+              </a>
+              {{ end }}
+            </div>
+          </div>
+
+        </article>
+      </main>
+    </div>
+  </div>
+
+  <!-- 링크 복사 알림창 -->
+  <div id="toast" class="toast-msg"><i class="fa-solid fa-check"></i> Link copied!</div>
+
+  <script>
+    // [뉴스 페이지용] AI Pick 버튼
+    const aiPickBtn = document.getElementById('aiPickBtn');
+    if (aiPickBtn) {
+      aiPickBtn.addEventListener('click', (e) => {
+        e.preventDefault();
+        // 뉴스 페이지에서는 게임이 없으므로, 메인으로 보내버림
+        window.location.href = "/";
+      });
+    }
+
+    // 공통 스크립트
+    const html = document.documentElement;
+    const themeIcon = document.getElementById('theme-icon');
+
+    function toggleTheme() {
+      const current = html.getAttribute('data-theme');
+      const next = current === 'dark' ? 'light' : 'dark';
+      html.setAttribute('data-theme', next);
+      localStorage.setItem('theme', next);
+      updateIcon(next);
+    }
+
+    function updateIcon(theme) {
+      if (theme === 'dark') { themeIcon.className = 'fa-solid fa-sun'; }
+      else { themeIcon.className = 'fa-solid fa-moon'; }
+    }
+
+    const saved = localStorage.getItem('theme') || 'dark';
+    html.setAttribute('data-theme', saved);
+    updateIcon(saved);
+
+    function toggleSidebar() {
+      const sidebar = document.getElementById('sidebar');
+      const overlay = document.getElementById('sidebarOverlay');
+      sidebar.classList.toggle('open');
+      overlay.classList.toggle('active');
+    }
+
+    function closeSidebar() {
+      document.getElementById('sidebar').classList.remove('open');
+      document.getElementById('sidebarOverlay').classList.remove('active');
+    }
+
+    // ------------------------------
+    // Smart Share Button
+    // ------------------------------
+    (function () {
+      const shareBtn = document.getElementById('shareBtn');
+      const toast = document.getElementById('toast');
+
+      function showToast(message) {
+        if (!toast) return;
+        toast.textContent = message;
+        toast.classList.add('show');
+        clearTimeout(window.__toastTimer);
+        window.__toastTimer = setTimeout(() => toast.classList.remove('show'), 1400);
+      }
+
+      async function copyToClipboard(text) {
+        try {
+          if (navigator.clipboard && window.isSecureContext) {
+            await navigator.clipboard.writeText(text);
+            return true;
+          }
+        } catch (_) { }
+        // fallback (older browsers)
+        try {
+          const ta = document.createElement('textarea');
+          ta.value = text;
+          ta.setAttribute('readonly', '');
+          ta.style.position = 'fixed';
+          ta.style.left = '-9999px';
+          document.body.appendChild(ta);
+          ta.select();
+          document.execCommand('copy');
+          document.body.removeChild(ta);
+          return true;
+        } catch (_) {
+          return false;
+        }
+      }
+
+      if (!shareBtn) return;
+
+      shareBtn.addEventListener('click', async () => {
+        const url = window.location.href;
+        const title = document.title || "HotGames.ai";
+        const text = "Play our games. Discover what earns.";
+
+        // Web Share API (best UX on mobile)
+        if (navigator.share) {
+          try {
+            await navigator.share({ title, text, url });
+            return;
+          } catch (e) {
+            // user cancelled or failed -> fall back to copy
+          }
+        }
+
+        // Fallback: copy link
+        const ok = await copyToClipboard(url);
+        showToast(ok ? "Link copied!" : "Copy failed. Please copy the URL from the address bar.");
+      });
+    })();
+  </script>
+
+</body>
+
+</html>
