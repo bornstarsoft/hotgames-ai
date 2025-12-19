@@ -1,11 +1,465 @@
 baseURL = "https://hotgames.ai/"
 languageCode = "en-us"
 title = "Hot Games – Discover Trending Games Right Now | HotGames.ai"
-theme = "ananke"
-paginate = 12
+
 enableRobotsTXT = true
 buildFuture = false
 
+# 불필요한 페이지 생성 끄기
+disableKinds = ["taxonomy", "term", "RSS", "sitemap"]
+
+[pagination]
+pagerSize = 10
+
 [params]
   description = "HotGames.ai is a curated hub for hot games and trending titles across web, mobile, PC, and console. Discover what to play right now."
-  mainSections = ["posts", "games"]
+  google_analytics = "G-BR3YX1RN2N"
+
+# [1] 사이드바 메인 메뉴 (페이지 이동용)
+[[params.sidebar_menu]]
+  name = "Home"
+  icon = "fa-solid fa-house"
+  url = "/"
+
+[[params.sidebar_menu]]
+  name = "Game News"
+  icon = "fa-solid fa-newspaper"
+  url = "/posts/"
+
+# [2] 사이드바 카테고리 메뉴 (필터용)
+# [[params.category_menu]]
+#  name = "All"
+#  icon = "fa-solid fa-border-all"
+#  filter = "all"
+
+[[params.category_menu]]
+  name = "Puzzle"
+  icon = "fa-solid fa-puzzle-piece"
+  filter = "puzzle"
+
+[[params.category_menu]]
+  name = "Action"
+  icon = "fa-solid fa-person-running"
+  filter = "action"
+
+[[params.category_menu]]
+  name = "RPG"
+  icon = "fa-solid fa-dragon"
+  filter = "rpg"
+
+[[params.category_menu]]
+  name = "IO Games"
+  icon = "fa-solid fa-globe"
+  filter = "io"
+
+# [3] Hot Games This Week
+[params.hot_games_week]
+  title = "Hot Games This Week"
+
+  # ---- BornstarSoft (OFFICIAL) ----
+  [[params.hot_games_week.list]]
+    id = "dice-shot"
+    name = "Dice Shot"
+    category = "puzzle"
+    link = "https://play.google.com/store/apps/details?id=com.bornstarsoft.diceshot"
+    android = "https://play.google.com/store/apps/details?id=com.bornstarsoft.diceshot"
+    ios = ""
+    web = ""
+    steam = ""
+    platform = ["android"]
+    image = "/images/games/dice-shot.webp"
+    badge = "OFFICIAL"
+    badge_color = "#d946ef"
+    short_desc = "Quick dice puzzle with satisfying shots and combos."
+    source = "custom"
+
+  #[[params.hot_games_week.list]]
+  #  id = "kpop-word-search"
+  #  name = "Kpop Word Search"
+  #  category = "puzzle"
+  #  link = "https://play.google.com/store/apps/details?id=com.bornstarsoft.wordkpopsearch"
+  #  android = "https://play.google.com/store/apps/details?id=com.bornstarsoft.wordkpopsearch"
+  #  ios = ""
+  #  web = ""
+  #  steam = ""
+  #  platform = ["android"]
+  #  image = "/images/games/kpop-word-search.webp"
+  #  badge = "HOT"
+  #  badge_color = "#f97316"
+  #  short_desc = "Find K-pop words fast. Clean, relaxing, addictive."
+  #  source = "custom"
+
+  #[[params.hot_games_week.list]]
+  #  id = "color-rings-mania"
+  #  name = "Color Rings Mania"
+  #  category = "puzzle"
+  #  link = "https://play.google.com/store/apps/details?id=com.bornstarsoft.colorringspuzzlemania"
+  #  android = "https://play.google.com/store/apps/details?id=com.bornstarsoft.colorringspuzzlemania"
+  #  ios = ""
+  #  web = ""
+  #  steam = ""
+  #  platform = ["android"]
+  #  image = "/images/games/color-rings-mania.webp"
+  #  badge = "NEW"
+  #  badge_color = "#3b82f6"
+  #  short_desc = "Place rings smartly. Simple rules, deep strategy."
+  #  source = "custom"
+
+  # ---- Third-party (curated) ----
+  [[params.hot_games_week.list]]
+    id = "tetris"
+    name = "Tetris"
+    category = "puzzle"
+    link = "https://tetris.com/"
+    android = ""
+    ios = ""
+    web = ""
+    steam = ""
+    platform = ["web","mobile"]
+    image = "/images/games/tetris.webp"
+    badge = "CLASSIC"
+    badge_color = "#22c55e"
+    short_desc = "The timeless block-stacking puzzle."
+    source = "custom"
+
+  #[[params.hot_games_week.list]]
+  #  id = "sudoku"
+  #  name = "Sudoku"
+  #  category = "puzzle"
+  #  link = "#"
+  #  platform = ["web","mobile"]
+  #  image = "/images/games/sudoku.webp"
+  #  badge = "TREND"
+  #  badge_color = "#f97316"
+  #  short_desc = "Brain-friendly logic puzzle you can play daily."
+  #  source = "custom"
+
+  [[params.hot_games_week.list]]
+    id = "candy-crush"
+    name = "Candy Crush Saga"
+    category = "puzzle"
+    link = "https://www.king.com/game/candycrush/"
+    platform = ["mobile"]
+    image = "/images/games/candy-crush.webp"
+    badge = "POPULAR"
+    badge_color = "#f97316"
+    short_desc = "The most recognizable match-3 puzzle."
+    source = "custom"
+
+  [[params.hot_games_week.list]]
+    id = "monument-valley"
+    name = "Monument Valley"
+    category = "puzzle"
+    link = "https://www.monumentvalleygame.com"
+    platform = ["mobile"]
+    image = "/images/games/monument-valley.webp"
+    badge = "EDITOR"
+    badge_color = "#8b5cf6"
+    short_desc = "Beautiful optical-illusion puzzle adventure."
+    source = "custom"
+
+  [[params.hot_games_week.list]]
+    id = "survivor-io"
+    name = "Survivor.io"
+    category = "action"
+    link = "https://store.habby.com/game/3"
+    platform = ["mobile"]
+    image = "/images/games/survivor-io.webp"
+    badge = "HOT"
+    badge_color = "#f97316"
+    short_desc = "One-hand action with massive waves and upgrades."
+    source = "custom"
+
+  [[params.hot_games_week.list]]
+    id = "brawl-stars"
+    name = "Brawl Stars"
+    category = "action"
+    link = "https://supercell.com/en/games/brawlstars/"
+    platform = ["mobile"]
+    image = "/images/games/brawl-stars.webp"
+    badge = "TOP"
+    badge_color = "#d946ef"
+    short_desc = "Fast PvP action with iconic characters."
+    source = "custom"
+
+  [[params.hot_games_week.list]]
+    id = "genshin"
+    name = "Genshin Impact"
+    category = "rpg"
+    link = "https://genshin.hoyoverse.com/"
+    platform = ["mobile","pc","console"]
+    image = "/images/games/genshin-impact.webp"
+    badge = "RPG"
+    badge_color = "#3b82f6"
+    short_desc = "Open-world action RPG with huge content."
+    source = "custom"
+
+  [[params.hot_games_week.list]]
+    id = "slither-io"
+    name = "Slither.io"
+    category = "io"
+    link = "http://slither.io"
+    platform = ["web","mobile"]
+    image = "/images/games/slither-io.webp"
+    badge = "IO"
+    badge_color = "#22c55e"
+    short_desc = "Simple, addictive, instantly playable IO."
+    source = "custom"
+
+
+# [4] New Games
+[params.new_games]
+  title = "New Games"
+
+  [[params.new_games.list]]
+    id = "blockzzle"
+    name = "Blockzzle"
+    category = "puzzle"
+    link = "https://play.google.com/store/apps/details?id=com.bornstarsoft.matchcolorblocks"
+    android = "https://play.google.com/store/apps/details?id=com.bornstarsoft.matchcolorblocks"
+    ios = ""
+    web = ""
+    steam = ""
+    platform = ["android"]
+    image = "/images/games/blockzzle.webp"
+    badge = "OFFICIAL"
+    badge_color = "#d946ef"
+    short_desc = "Juicy block puzzle with clean UI and satisfying clears."
+    source = "custom"
+
+  #[[params.new_games.list]]
+  #  id = "ringzzle-quest"
+  #  name = "Ringzzle Quest"
+  #  category = "rpg"
+  #  link = "#"
+  #  platform = ["mobile"]
+  #  image = "/images/games/ringzzle-quest.webp"
+  #  badge = "COMING"
+  #  badge_color = "#3b82f6"
+  #  short_desc = "Color rings + idle RPG hybrid. Heroes vs monsters."
+  #  source = "custom"
+
+  #[[params.new_games.list]]
+  #  id = "again-heroes"
+  #  name = "Again Heroes"
+  #  category = "rpg"
+  #  link = "#"
+  #  platform = ["mobile"]
+  #  image = "/images/games/again-heroes.webp"
+  #  badge = "STORY"
+  #  badge_color = "#8b5cf6"
+  #  short_desc = "Short-form hero stories with upgrades and battles."
+  #  source = "custom"
+
+  #[[params.new_games.list]]
+  #  id = "dropdoku"
+  #  name = "Dropdoku"
+  #  category = "puzzle"
+  #  link = "#"
+  #  platform = ["mobile"]
+  #  image = "/images/games/dropdoku.webp"
+  #  badge = "NEW"
+  #  badge_color = "#3b82f6"
+  #  short_desc = "Drop blocks into place. Clear lines, feel the flow."
+  #  source = "custom"
+
+  #[[params.new_games.list]]
+  #  id = "mapdoku"
+  #  name = "Mapdoku"
+  #  category = "puzzle"
+  #  link = "#"
+  #  platform = ["mobile"]
+  #  image = "/images/games/mapdoku.webp"
+  #  badge = "UPDATE"
+  #  badge_color = "#22c55e"
+  #  short_desc = "Four-color match puzzle with clean strategy."
+  #  source = "custom"
+
+  # third-party picks (you can replace links later)
+  [[params.new_games.list]]
+    id = "vampire-survivors"
+    name = "Vampire Survivors"
+    category = "action"
+    link = "https://poncle.games/vampire-survivors"
+    platform = ["pc","mobile","console"]
+    image = "/images/games/vampire-survivors.webp"
+    badge = "TREND"
+    badge_color = "#f97316"
+    short_desc = "Auto-attack chaos with crazy builds."
+    source = "custom"
+
+  [[params.new_games.list]]
+    id = "honkai-star-rail"
+    name = "Honkai: Star Rail"
+    category = "rpg"
+    link = "https://hsr.hoyoverse.com"
+    platform = ["mobile","pc","console"]
+    image = "/images/games/honkai-star-rail.webp"
+    badge = "NEW"
+    badge_color = "#3b82f6"
+    short_desc = "Turn-based RPG with premium presentation."
+    source = "custom"
+
+  [[params.new_games.list]]
+    id = "paper-io"
+    name = "Paper.io"
+    category = "io"
+    link = "https://paper-io.com"
+    platform = ["web","mobile"]
+    image = "/images/games/paper-io.webp"
+    badge = "IO"
+    badge_color = "#22c55e"
+    short_desc = "Claim territory. Risk vs reward in seconds."
+    source = "custom"
+
+  [[params.new_games.list]]
+    id = "krunker"
+    name = "Krunker"
+    category = "io"
+    link = "https://krunker.io"
+    platform = ["web","pc"]
+    image = "/images/games/krunker.webp"
+    badge = "FPS"
+    badge_color = "#f97316"
+    short_desc = "Fast browser FPS with instant matchmaking."
+    source = "custom"
+
+  [[params.new_games.list]]
+    id = "guardian-tales"
+    name = "Guardian Tales"
+    category = "rpg"
+    link = "https://www.guardiantales.com"
+    platform = ["mobile"]
+    image = "/images/games/guardian-tales.webp"
+    badge = "PICK"
+    badge_color = "#8b5cf6"
+    short_desc = "Retro action RPG with puzzles and humor."
+    source = "custom"
+
+  [[params.new_games.list]]
+    id = "two-dots"
+    name = "Two Dots"
+    category = "puzzle"
+    link = "https://www.twodots-game.com"
+    platform = ["mobile"]
+    image = "/images/games/two-dots.webp"
+    badge = "CLEAN"
+    badge_color = "#22c55e"
+    short_desc = "Minimal, elegant puzzle levels."
+    source = "custom"
+
+
+# [5] Popular Games
+[params.popular_games]
+  title = "Popular Games"
+
+  #[[params.popular_games.list]]
+  #  id = "2048"
+  #  name = "2048"
+  #  category = "puzzle"
+  #  link = "#"
+  #  platform = ["web","mobile"]
+  #  image = "/images/games/2048.webp"
+  #  badge = "POPULAR"
+  #  badge_color = "#f97316"
+  #  short_desc = "Swipe, merge, chase higher numbers."
+  #  source = "custom"
+
+  [[params.popular_games.list]]
+    id = "wordle"
+    name = "Wordle"
+    category = "puzzle"
+    link = "https://www.nytimes.com/games/wordle/index.html"
+    platform = ["web"]
+    image = "/images/games/wordle.webp"
+    badge = "DAILY"
+    badge_color = "#22c55e"
+    short_desc = "Daily word guessing ritual."
+    source = "custom"
+
+  [[params.popular_games.list]]
+    id = "archero"
+    name = "Archero"
+    category = "action"
+    link = "https://h5-archero.habby.com"
+    platform = ["mobile"]
+    image = "/images/games/archero.webp"
+    badge = "HIT"
+    badge_color = "#f97316"
+    short_desc = "Dodge, shoot, upgrade. One-hand action."
+    source = "custom"
+
+  [[params.popular_games.list]]
+    id = "subway-surfers"
+    name = "Subway Surfers"
+    category = "action"
+    link = "https://subwaysurfers.com/"
+    platform = ["mobile"]
+    image = "/images/games/subway-surfers.webp"
+    badge = "TOP"
+    badge_color = "#d946ef"
+    short_desc = "The endless runner everyone recognizes."
+    source = "custom"
+
+  [[params.popular_games.list]]
+    id = "afk-arena"
+    name = "AFK Arena"
+    category = "rpg"
+    link = "https://afkarena.lilith.com"
+    platform = ["mobile"]
+    image = "/images/games/afk-arena.webp"
+    badge = "IDLE"
+    badge_color = "#8b5cf6"
+    short_desc = "Idle RPG with collection and progression."
+    source = "custom"
+
+  [[params.popular_games.list]]
+    id = "raid"
+    name = "Raid: Shadow Legends"
+    category = "rpg"
+    link = "https://raidshadowlegends.com/"
+    platform = ["mobile","pc"]
+    image = "/images/games/raid.webp"
+    badge = "RPG"
+    badge_color = "#3b82f6"
+    short_desc = "Collection RPG known worldwide."
+    source = "custom"
+
+  [[params.popular_games.list]]
+    id = "agar-io"
+    name = "Agar.io"
+    category = "io"
+    link = "https://agar.io"
+    platform = ["web","mobile"]
+    image = "/images/games/agar-io.webp"
+    badge = "IO"
+    badge_color = "#22c55e"
+    short_desc = "Eat, grow, survive. Classic IO loop."
+    source = "custom"
+
+  [[params.popular_games.list]]
+    id = "zombsroyale"
+    name = "ZombsRoyale.io"
+    category = "io"
+    link = "https://zombsroyale.io"
+    platform = ["web","mobile"]
+    image = "/images/games/zombsroyale.webp"
+    badge = "BATTLE"
+    badge_color = "#f97316"
+    short_desc = "Quick battle royale in the browser."
+    source = "custom"
+
+
+
+# [하단 필수 메뉴]
+[[params.footer_menu]]
+  name = "Privacy"
+  url = "/privacy/"
+
+[[params.footer_menu]]
+  name = "Terms"
+  url = "/terms/"
+
+[[params.footer_menu]]
+  name = "Contact"
+  url = "/contact/"
