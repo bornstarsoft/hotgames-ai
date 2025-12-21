@@ -6,7 +6,12 @@ enableRobotsTXT = true
 buildFuture = false
 
 # 불필요한 페이지 생성 끄기
-disableKinds = ["taxonomy", "term", "RSS", "sitemap"]
+disableKinds = ["taxonomy", "term", "RSS"]
+
+[sitemap]
+changefreq = "daily"
+filename = "sitemap.xml"
+priority = 0.5
 
 [pagination]
 pagerSize = 10
