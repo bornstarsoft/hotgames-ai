@@ -220,12 +220,12 @@ pagerSize = 10
     id = "blockzzle"
     name = "Blockzzle"
     category = "puzzle"
-    link = "https://play.google.com/store/apps/details?id=com.bornstarsoft.matchcolorblocks"
+    link = "https://blockzzle.com"
     android = "https://play.google.com/store/apps/details?id=com.bornstarsoft.matchcolorblocks"
     ios = ""
     web = ""
     steam = ""
-    platform = ["android"]
+    platform = ["web","android"]
     image = "/images/games/blockzzle.webp"
     badge = "OFFICIAL"
     badge_color = "#d946ef"
