@@ -220,16 +220,18 @@ pagerSize = 10
     id = "blockzzle"
     name = "Blockzzle"
     category = "puzzle"
-    link = "https://blockzzle.com/?utm_source=hotgames&utm_medium=home&utm_campaign=card_click&utm_content=blockzzle"
-    android = "https://play.google.com/store/apps/details?id=com.bornstarsoft.matchcolorblocks&utm_source=hotgames&utm_medium=home&utm_campaign=card_click&utm_content=blockzzle"
+    link = "https://blockzzle.com/play/"
+    android = ""
     ios = ""
-    web = ""
+    web = "https://blockzzle.com/play/"
     steam = ""
-    platform = ["web","android"]
+    leaderboard = "https://blockzzle.com/leaderboard/"
+    platform = ["web"]
     image = "/images/games/blockzzle.webp"
     badge = "OFFICIAL"
     badge_color = "#d946ef"
-    short_desc = "Juicy block puzzle with clean UI and satisfying clears."
+    short_desc = "Place block pieces, clear lines, and chase your best score in a free browser block puzzle game."
+    cta = "Play Blockzzle"
     source = "custom"
 
   [[params.new_games.list]]

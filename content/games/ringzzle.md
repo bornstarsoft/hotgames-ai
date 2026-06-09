@@ -26,4 +26,4 @@ Ringzzle supports an anonymous leaderboard, so players can compare scores withou
 
 ## More Puzzle Games
 
-You can also browse the HotGames.ai [puzzle game filter](/?cat=puzzle) for more puzzle picks, including browser-friendly and casual puzzle games.
+You can also browse the HotGames.ai [puzzle game filter](/?cat=puzzle) for more puzzle picks, including browser-friendly and casual puzzle games. For a separate block puzzle game, see [Blockzzle](/games/blockzzle/), where the focus is placing block pieces and clearing lines.

@@ -17,4 +17,4 @@ We focus on games with real momentum—new releases, trending updates, viral pop
 
 If you're looking for **hot games to play right now**, this is the best place to start.
 
-For an editorial puzzle pick that plays directly in the browser, see [Ringzzle](/games/ringzzle/), a free color rings puzzle game online.
+For editorial browser puzzle picks, see [Blockzzle](/games/blockzzle/) for block pieces and line clears, or [Ringzzle](/games/ringzzle/) for color rings and matching color lines.
