@@ -2,10 +2,20 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>{{ .Site.Title }}</title>
-{{ with .Site.Params.description }}
-<meta name="description" content="{{ . }}">
+{{ $pageTitle := .Site.Title }}
+{{ if not .IsHome }}
+{{ $pageTitle = printf "%s | HotGames.ai" .Title }}
 {{ end }}
+{{ with .Params.seoTitle }}
+{{ $pageTitle = . }}
+{{ end }}
+{{ $description := .Site.Params.description }}
+{{ with .Params.description }}
+{{ $description = . }}
+{{ end }}
+<title>{{ $pageTitle }}</title>
+<meta name="description" content="{{ $description }}">
+<link rel="canonical" href="{{ .Permalink }}">
 
 <!-- Google Analytics (GA4) -->
 {{ with .Site.Params.google_analytics }}

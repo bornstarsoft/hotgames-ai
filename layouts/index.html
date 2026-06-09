@@ -498,6 +498,7 @@
       display: flex;
       align-items: center;
       justify-content: space-between;
+      flex-wrap: wrap;
       gap: 10px;
     }
 
@@ -1071,6 +1072,9 @@
                     end }}
                     {{ end }}
                   </div>
+                  {{ with .cta }}
+                  <span class="visit-cta">{{ . }} <i class="fa-solid fa-arrow-up-right-from-square"></i></span>
+                  {{ end }}
                 </div>
               </div>
 
@@ -1189,6 +1193,9 @@
                     end }}
                     {{ end }}
                   </div>
+                  {{ with .cta }}
+                  <span class="visit-cta">{{ . }} <i class="fa-solid fa-arrow-up-right-from-square"></i></span>
+                  {{ end }}
                 </div>
               </div>
 

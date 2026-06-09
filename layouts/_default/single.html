@@ -564,7 +564,7 @@
       <header class="top-bar">
         <div style="display:flex; align-items:center;">
           <button class="hamburger" onclick="toggleSidebar()"><i class="fa-solid fa-bars"></i></button>
-          <div style="font-weight:700; font-size:1.1rem;">Game News</div>
+          <div style="font-weight:700; font-size:1.1rem;">{{ if eq .Section "games" }}Games{{ else }}Game News{{ end }}</div>
         </div>
         <div style="display:flex; gap:10px;">
           <!-- 공유 버튼 추가 -->

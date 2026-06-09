@@ -16,3 +16,5 @@ At **HotGames.ai**, we use **AI-assisted trend analysis combined with human cura
 We focus on games with real momentum—new releases, trending updates, viral popularity, and fast-growing player communities.
 
 If you're looking for **hot games to play right now**, this is the best place to start.
+
+For an editorial puzzle pick that plays directly in the browser, see [Ringzzle](/games/ringzzle/), a free color rings puzzle game online.

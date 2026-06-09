@@ -232,6 +232,24 @@ pagerSize = 10
     short_desc = "Juicy block puzzle with clean UI and satisfying clears."
     source = "custom"
 
+  [[params.new_games.list]]
+    id = "ringzzle"
+    name = "Ringzzle"
+    category = "puzzle"
+    link = "https://ringzzle.com/play/"
+    android = ""
+    ios = ""
+    web = "https://ringzzle.com/play/"
+    steam = ""
+    leaderboard = "https://ringzzle.com/leaderboard/"
+    platform = ["web"]
+    image = ""
+    badge = "BROWSER"
+    badge_color = "#22c55e"
+    short_desc = "Place colorful rings, clear matching color lines, trigger Color Burst, and chase your best score."
+    cta = "Play Ringzzle"
+    source = "custom"
+
   #[[params.new_games.list]]
   #  id = "ringzzle-quest"
   #  name = "Ringzzle Quest"
