@@ -26,4 +26,4 @@ Blockzzle supports an anonymous leaderboard, so players can compare scores witho
 
 ## More Puzzle Games
 
-Blockzzle is a block puzzle game. For a separate color rings puzzle, see [Ringzzle](/games/ringzzle/), where the focus is matching colorful rings and triggering Color Burst clears.
+Blockzzle is a block puzzle game. For separate puzzle picks, see [DaySudoku](/games/daysudoku/) for a daily Sudoku puzzle with a Key9-first flow, or [Ringzzle](/games/ringzzle/) for color rings and Color Burst clears.

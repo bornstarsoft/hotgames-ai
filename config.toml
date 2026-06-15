@@ -252,6 +252,23 @@ pagerSize = 10
     cta = "Play Ringzzle"
     source = "custom"
 
+  [[params.new_games.list]]
+    id = "daysudoku"
+    name = "DaySudoku"
+    category = "puzzle"
+    link = "https://daysudoku.com/"
+    android = ""
+    ios = ""
+    web = "https://daysudoku.com/"
+    steam = ""
+    platform = ["web"]
+    image = ""
+    badge = "DAILY"
+    badge_color = "#3b82f6"
+    short_desc = "Play one free daily Sudoku puzzle online. Find the Key9 first, then finish the full Sudoku."
+    cta = "Play DaySudoku"
+    source = "custom"
+
   #[[params.new_games.list]]
   #  id = "ringzzle-quest"
   #  name = "Ringzzle Quest"

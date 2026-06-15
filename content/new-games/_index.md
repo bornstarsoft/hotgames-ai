@@ -7,4 +7,4 @@ slug: "new-games"
 New Games highlights recently released titles that players are starting to explore.
 We track newly launched games and early trends across platforms.
 
-For browser-friendly puzzle play, try [Blockzzle](/games/blockzzle/), a free block puzzle game online, or [Ringzzle](/games/ringzzle/), a separate color rings puzzle game. Both play in the browser with no install required.
+For browser-friendly puzzle play, try [DaySudoku](/games/daysudoku/) for a daily Sudoku puzzle, [Blockzzle](/games/blockzzle/) for a block puzzle game, or [Ringzzle](/games/ringzzle/) for a separate color rings puzzle game. Each plays in the browser with no install required.
