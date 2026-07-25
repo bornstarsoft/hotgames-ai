@@ -17,6 +17,21 @@
 <meta name="description" content="{{ $description }}">
 <link rel="canonical" href="{{ .Permalink }}">
 
+{{ with .Params.gameUrl }}
+{{ $gameData := dict
+  "@context" "https://schema.org"
+  "@type" "VideoGame"
+  "name" $.Title
+  "description" $description
+  "url" $.Permalink
+  "sameAs" .
+  "gamePlatform" ($.Params.gamePlatform | default "Web Browser")
+  "genre" ($.Params.gameGenres | default (slice "Game"))
+  "isAccessibleForFree" true
+}}
+<script type="application/ld+json">{{ $gameData | jsonify | safeJS }}</script>
+{{ end }}
+
 <!-- Google Analytics (GA4) -->
 {{ with .Site.Params.google_analytics }}
 <script async src="https://www.googletagmanager.com/gtag/js?id={{ . }}"></script>

@@ -4,6 +4,9 @@ seoTitle: "DaySudoku - Free Daily Sudoku Puzzle Online"
 description: "Play DaySudoku, a free browser-based daily Sudoku game with a Key9-first flow and a full Sudoku board."
 date: 2026-06-15
 url: "/games/daysudoku/"
+gameUrl: "https://daysudoku.com/"
+gamePlatform: "Web Browser"
+gameGenres: ["Puzzle", "Sudoku", "Logic"]
 ---
 
 DaySudoku is a browser-based daily Sudoku game with a Key9 twist. You can play one free daily puzzle online with no sign-up or download required.
