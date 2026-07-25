@@ -519,7 +519,7 @@
     <aside class="sidebar" id="sidebar">
       <div class="logo-area">
         <a class="brand" href="/">
-          <img class="brand-icon" src="/apple-touch-icon.png" alt="HotGames.ai">
+          <img class="brand-icon" src="/apple-touch-icon.png" alt="" aria-hidden="true">
           <span class="brand-text">HotGames<span class="dot">.ai</span></span>
         </a>
       </div>
@@ -563,17 +563,17 @@
     <div class="main-wrapper">
       <header class="top-bar">
         <div style="display:flex; align-items:center;">
-          <button class="hamburger" onclick="toggleSidebar()"><i class="fa-solid fa-bars"></i></button>
+          <button class="hamburger" type="button" aria-label="Open menu" onclick="toggleSidebar()"><i class="fa-solid fa-bars"></i></button>
           <div style="font-weight:700; font-size:1.1rem;">{{ if eq .Section "games" }}Games{{ else }}Game News{{ end }}</div>
         </div>
         <div style="display:flex; gap:10px;">
           <!-- 공유 버튼 추가 -->
-          <button class="icon-btn" id="shareBtn" title="Share this page">
+          <button class="icon-btn" id="shareBtn" type="button" aria-label="Share this page" title="Share this page">
             <i class="fa-solid fa-share-nodes"></i>
           </button>
 
           <!-- 테마 버튼 -->
-          <button class="icon-btn" onclick="toggleTheme()"><i class="fa-solid fa-sun" id="theme-icon"></i></button>
+          <button class="icon-btn" type="button" aria-label="Toggle theme" onclick="toggleTheme()"><i class="fa-solid fa-sun" id="theme-icon"></i></button>
         </div>
       </header>
 
