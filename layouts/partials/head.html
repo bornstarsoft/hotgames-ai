@@ -18,6 +18,15 @@
 <link rel="canonical" href="{{ .Permalink }}">
 
 {{ with .Params.gameUrl }}
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="HotGames.ai">
+<meta property="og:title" content="{{ $pageTitle }}">
+<meta property="og:description" content="{{ $description }}">
+<meta property="og:url" content="{{ $.Permalink }}">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="{{ $pageTitle }}">
+<meta name="twitter:description" content="{{ $description }}">
+
 {{ $gameData := dict
   "@context" "https://schema.org"
   "@type" "VideoGame"
