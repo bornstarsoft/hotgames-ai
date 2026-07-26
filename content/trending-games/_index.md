@@ -1,8 +1,8 @@
 ---
-title: "Trending Games"
-description: "Browse trending games that are rapidly gaining popularity right now."
+title: "Featured Games"
+description: "Browse editorial game picks across browser, mobile, PC, and console."
 slug: "trending-games"
 ---
 
-Trending Games showcases titles that are rapidly rising in popularity.
-Perfect for discovering what everyone is playing right now.
+Featured Games collects editorial game picks across browser, mobile, PC, and console.
+The collection includes puzzle, action, RPG, and IO game selections.

@@ -1,6 +1,6 @@
 baseURL = "https://hotgames.ai/"
 languageCode = "en-us"
-title = "Hot Games – Discover Trending Games Right Now | HotGames.ai"
+title = "Browser Games and Curated Game Picks | HotGames.ai"
 
 enableRobotsTXT = true
 buildFuture = false
@@ -17,7 +17,7 @@ priority = 0.5
 pagerSize = 10
 
 [params]
-  description = "HotGames.ai is a curated hub for hot games and trending titles across web, mobile, PC, and console. Discover what to play right now."
+  description = "Discover free browser games and curated picks across web, mobile, PC, and console, including daily and casual puzzle games."
   google_analytics = "G-BR3YX1RN2N"
 
 # [1] 사이드바 메인 메뉴 (페이지 이동용)
@@ -59,7 +59,7 @@ pagerSize = 10
 
 # [3] Hot Games This Week
 [params.hot_games_week]
-  title = "Hot Games This Week"
+  title = "Editor's Picks"
 
   # ---- BornstarSoft (OFFICIAL) ----
   [[params.hot_games_week.list]]
@@ -146,9 +146,9 @@ pagerSize = 10
     link = "https://www.king.com/game/candycrush/"
     platform = ["mobile"]
     image = "/images/games/candy-crush.webp"
-    badge = "POPULAR"
+    badge = "MATCH 3"
     badge_color = "#f97316"
-    short_desc = "The most recognizable match-3 puzzle."
+    short_desc = "Match candies through colorful puzzle levels."
     source = "custom"
 
   [[params.hot_games_week.list]]
@@ -170,7 +170,7 @@ pagerSize = 10
     link = "https://store.habby.com/game/3"
     platform = ["mobile"]
     image = "/images/games/survivor-io.webp"
-    badge = "HOT"
+    badge = "ACTION"
     badge_color = "#f97316"
     short_desc = "One-hand action with massive waves and upgrades."
     source = "custom"
@@ -182,7 +182,7 @@ pagerSize = 10
     link = "https://supercell.com/en/games/brawlstars/"
     platform = ["mobile"]
     image = "/images/games/brawl-stars.webp"
-    badge = "TOP"
+    badge = "PVP"
     badge_color = "#d946ef"
     short_desc = "Fast PvP action with iconic characters."
     source = "custom"
@@ -214,7 +214,7 @@ pagerSize = 10
 
 # [4] New Games
 [params.new_games]
-  title = "New Games"
+  title = "More to Explore"
 
   [[params.new_games.list]]
     id = "blockzzle"
@@ -226,6 +226,7 @@ pagerSize = 10
     web = "https://blockzzle.com/play/"
     steam = ""
     leaderboard = "https://blockzzle.com/leaderboard/"
+    details = "/games/blockzzle/"
     platform = ["web"]
     image = "/images/games/blockzzle.webp"
     badge = "OFFICIAL"
@@ -244,6 +245,7 @@ pagerSize = 10
     web = "https://ringzzle.com/play/"
     steam = ""
     leaderboard = "https://ringzzle.com/leaderboard/"
+    details = "/games/ringzzle/"
     platform = ["web"]
     image = ""
     badge = "BROWSER"
@@ -262,6 +264,7 @@ pagerSize = 10
     web = "https://daysudoku.com/"
     steam = ""
     platform = ["web"]
+    details = "/games/daysudoku/"
     image = ""
     badge = "DAILY"
     badge_color = "#3b82f6"
@@ -325,7 +328,7 @@ pagerSize = 10
     link = "https://poncle.games/vampire-survivors"
     platform = ["pc","mobile","console"]
     image = "/images/games/vampire-survivors.webp"
-    badge = "TREND"
+    badge = "ACTION"
     badge_color = "#f97316"
     short_desc = "Auto-attack chaos with crazy builds."
     source = "custom"
@@ -337,7 +340,7 @@ pagerSize = 10
     link = "https://hsr.hoyoverse.com"
     platform = ["mobile","pc","console"]
     image = "/images/games/honkai-star-rail.webp"
-    badge = "NEW"
+    badge = "RPG"
     badge_color = "#3b82f6"
     short_desc = "Turn-based RPG with premium presentation."
     source = "custom"
@@ -373,7 +376,7 @@ pagerSize = 10
     link = "https://www.guardiantales.com"
     platform = ["mobile"]
     image = "/images/games/guardian-tales.webp"
-    badge = "PICK"
+    badge = "RPG"
     badge_color = "#8b5cf6"
     short_desc = "Retro action RPG with puzzles and humor."
     source = "custom"
@@ -393,7 +396,7 @@ pagerSize = 10
 
 # [5] Popular Games
 [params.popular_games]
-  title = "Popular Games"
+  title = "Familiar Game Picks"
 
   #[[params.popular_games.list]]
   #  id = "2048"
@@ -426,7 +429,7 @@ pagerSize = 10
     link = "https://h5-archero.habby.com"
     platform = ["mobile"]
     image = "/images/games/archero.webp"
-    badge = "HIT"
+    badge = "ACTION"
     badge_color = "#f97316"
     short_desc = "Dodge, shoot, upgrade. One-hand action."
     source = "custom"
@@ -438,9 +441,9 @@ pagerSize = 10
     link = "https://subwaysurfers.com/"
     platform = ["mobile"]
     image = "/images/games/subway-surfers.webp"
-    badge = "TOP"
+    badge = "RUNNER"
     badge_color = "#d946ef"
-    short_desc = "The endless runner everyone recognizes."
+    short_desc = "Fast endless-running action on mobile."
     source = "custom"
 
   [[params.popular_games.list]]
@@ -464,7 +467,7 @@ pagerSize = 10
     image = "/images/games/raid.webp"
     badge = "RPG"
     badge_color = "#3b82f6"
-    short_desc = "Collection RPG known worldwide."
+    short_desc = "Squad-based collection RPG with tactical battles."
     source = "custom"
 
   [[params.popular_games.list]]

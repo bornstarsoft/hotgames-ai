@@ -1,0 +1,102 @@
+{{- $game := .game -}}
+{{- $variant := .variant | default "catalog" -}}
+{{- $id := $game.id | default ($game.name | urlize) -}}
+{{- $name := $game.name -}}
+{{- $link := $game.link | default "#" -}}
+{{- $web := $game.web | default $link -}}
+{{- $platforms := $game.platforms | default $game.platform -}}
+{{- $short := $game.short | default $game.short_desc -}}
+{{- $image := $game.image -}}
+
+<article class="game-card game-card--{{ $variant }}"
+  data-game-id="{{ $id }}"
+  data-game-name="{{ $name }}"
+  data-category="{{ $game.category | default "other" | lower }}"
+  data-platform="{{ delimit $platforms " " | lower }}"
+  data-search="{{ printf "%s %s %s %s" $name ($game.category | default "") ($short | default "") (delimit $platforms " ") | lower }}">
+  <button class="fav-btn" type="button" aria-label="Save {{ $name }}" aria-pressed="false">
+    <i class="fa-regular fa-heart" aria-hidden="true"></i>
+  </button>
+
+  <a class="card-media game-launch"
+    href="{{ $link }}"
+    target="_blank"
+    rel="noopener"
+    data-link-web="{{ $web }}"
+    data-link-android="{{ $game.android | default "" }}"
+    data-link-ios="{{ $game.ios | default "" }}"
+    aria-label="Play {{ $name }}">
+    {{ if $image }}
+      {{- $rel := strings.TrimPrefix "/" $image -}}
+      {{- $fsPath := printf "static/%s" $rel -}}
+      {{ if fileExists $fsPath }}
+      <img src="/{{ $rel }}" class="card-image" alt="{{ $name }} game artwork"
+        width="640" height="360" {{ if ne $variant "featured" }}loading="lazy"{{ end }} decoding="async">
+      {{ else }}
+      <div class="fallback-art fallback-art--{{ $id }}" aria-hidden="true">
+        <i class="fa-solid fa-gamepad"></i>
+        <span>{{ $name }}</span>
+      </div>
+      {{ end }}
+    {{ else }}
+    <div class="fallback-art fallback-art--{{ $id }}" aria-hidden="true">
+      {{ if eq $id "ringzzle" }}
+      <i class="fa-solid fa-circle-notch"></i>
+      {{ else if eq $id "daysudoku" }}
+      <i class="fa-solid fa-table-cells-large"></i>
+      {{ else }}
+      <i class="fa-solid fa-gamepad"></i>
+      {{ end }}
+      <span>{{ $name }}</span>
+    </div>
+    {{ end }}
+
+    {{ with $game.badge }}
+    <span class="badge" style="--badge-color: {{ $game.badge_color | default "#f97316" }};">{{ . }}</span>
+    {{ end }}
+  </a>
+
+  <div class="card-info">
+    <div class="card-heading">
+      <h3>{{ $name }}</h3>
+      <i class="fa-solid fa-arrow-up-right-from-square external-mark" aria-hidden="true"></i>
+    </div>
+
+    {{ with $short }}
+    <p class="game-desc">{{ . }}</p>
+    {{ end }}
+
+    <div class="platform-chips" aria-label="{{ $name }} platforms">
+      {{ if $platforms }}
+        {{ range $platforms }}
+          {{- $platform := . | lower -}}
+          {{ if eq $platform "android" }}<span><i class="fa-brands fa-android"></i>Android</span>{{ end }}
+          {{ if eq $platform "ios" }}<span><i class="fa-brands fa-apple"></i>iOS</span>{{ end }}
+          {{ if eq $platform "web" }}<span><i class="fa-solid fa-globe"></i>Browser</span>{{ end }}
+          {{ if eq $platform "steam" }}<span><i class="fa-brands fa-steam"></i>Steam</span>{{ end }}
+          {{ if eq $platform "mobile" }}<span><i class="fa-solid fa-mobile-screen-button"></i>Mobile</span>{{ end }}
+          {{ if eq $platform "pc" }}<span><i class="fa-solid fa-desktop"></i>PC</span>{{ end }}
+          {{ if eq $platform "console" }}<span><i class="fa-solid fa-gamepad"></i>Console</span>{{ end }}
+        {{ end }}
+      {{ else }}
+      <span><i class="fa-solid fa-globe"></i>Web</span>
+      {{ end }}
+    </div>
+
+    <div class="card-actions">
+      {{ with $game.details }}
+      <a class="detail-link" href="{{ . }}">Details</a>
+      {{ end }}
+      <a class="play-link game-launch"
+        href="{{ $link }}"
+        target="_blank"
+        rel="noopener"
+        data-link-web="{{ $web }}"
+        data-link-android="{{ $game.android | default "" }}"
+        data-link-ios="{{ $game.ios | default "" }}">
+        {{ $game.cta | default "Visit game" }}
+        <i class="fa-solid fa-arrow-up-right-from-square" aria-hidden="true"></i>
+      </a>
+    </div>
+  </div>
+</article>
