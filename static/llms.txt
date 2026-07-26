@@ -1,0 +1,25 @@
+# HotGames.ai
+
+> HotGames.ai is an editorial game discovery site with browser game listings and game articles.
+
+The playable puzzle games below are separate titles. DaySudoku is a daily Sudoku game with a Key9-first flow, Blockzzle is a block puzzle game, and Ringzzle is a color rings puzzle game. HotGames.ai links to their external game sites and does not embed the games.
+
+## Start Here
+
+- [HotGames.ai homepage](https://hotgames.ai/): Browse editorial game picks and recent game articles.
+- [Browser games](https://hotgames.ai/games/): Browse playable browser and casual puzzle game listings.
+
+## Playable Browser Puzzle Games
+
+- [DaySudoku on HotGames.ai](https://hotgames.ai/games/daysudoku/): A daily Sudoku listing that explains the Key9-first flow.
+- [Play DaySudoku](https://daysudoku.com/): Play one free daily Sudoku puzzle in the browser.
+- [Blockzzle on HotGames.ai](https://hotgames.ai/games/blockzzle/): A block puzzle listing about placing pieces and clearing lines.
+- [Play Blockzzle](https://blockzzle.com/play/): Play the free block puzzle game in the browser.
+- [Ringzzle on HotGames.ai](https://hotgames.ai/games/ringzzle/): A color rings puzzle listing about matching colors and clearing lines.
+- [Play Ringzzle](https://ringzzle.com/play/): Play the free color rings puzzle game in the browser.
+
+## Optional
+
+- [Privacy](https://hotgames.ai/privacy/): HotGames.ai privacy information.
+- [Contact](https://hotgames.ai/contact/): Contact information for HotGames.ai.
+- [Sitemap](https://hotgames.ai/sitemap.xml): Index of published HotGames.ai pages.
