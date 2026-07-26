@@ -14,6 +14,7 @@ Date: 2026-07-26
 - Added internal detail links for all three first-party browser puzzle games.
 - Consolidated repeated game card markup into a shared Hugo partial.
 - Improved desktop, tablet, mobile, keyboard, reduced-motion, and theme support.
+- Added dedicated three-, two-, and one-column browser puzzle layouts for wide, medium, and narrow viewports.
 
 ## Content And SEO
 
