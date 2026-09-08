@@ -47,6 +47,10 @@
       letter-spacing: 0;
     }
 
+    [hidden] {
+      display: none !important;
+    }
+
     html {
       scroll-behavior: smooth;
       scroll-padding-top: calc(var(--topbar-height) + 24px);
@@ -259,6 +263,18 @@
       display: none;
     }
 
+    .sidebar-close {
+      display: none;
+      width: 32px;
+      height: 32px;
+    }
+
+    .nav-heading {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
     .search-box {
       position: relative;
       width: 100%;
@@ -286,6 +302,10 @@
 
     .search-input::placeholder {
       color: var(--muted);
+    }
+
+    .search-input::-webkit-search-cancel-button {
+      -webkit-appearance: none;
     }
 
     .search-input:focus {
@@ -367,6 +387,40 @@
       font-weight: 700;
     }
 
+    .library-nav {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 4px;
+      margin-bottom: 16px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .view-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      min-height: 44px;
+      padding: 10px 12px;
+      border-bottom: 2px solid transparent;
+      color: var(--muted);
+      font-size: 0.85rem;
+      font-weight: 750;
+      text-decoration: none;
+    }
+
+    .view-link[aria-current="page"] {
+      border-color: var(--accent);
+      color: var(--text);
+    }
+
+    .view-count {
+      min-width: 2ch;
+      font-variant-numeric: tabular-nums;
+      text-align: center;
+      color: var(--muted);
+      font-size: 0.75rem;
+    }
+
     .filter-bar {
       display: flex;
       align-items: center;
@@ -432,6 +486,10 @@
       margin-top: 0;
     }
 
+    .collection-section {
+      margin-top: 0;
+    }
+
     .section-head {
       display: flex;
       align-items: flex-end;
@@ -491,6 +549,8 @@
 
     .game-card {
       position: relative;
+      display: flex;
+      flex-direction: column;
       min-width: 0;
       overflow: hidden;
       border: 1px solid var(--border);
@@ -618,6 +678,7 @@
 
     .card-info {
       min-width: 0;
+      flex: 1;
       display: flex;
       flex-direction: column;
       padding: 15px;
@@ -628,6 +689,10 @@
       display: flex;
       align-items: center;
       gap: 8px;
+    }
+
+    .game-card--featured .card-heading {
+      padding-right: 35px;
     }
 
     .card-heading h3 {
@@ -724,12 +789,16 @@
     }
 
     .empty-state {
-      display: none;
       padding: 56px 20px;
       border: 1px dashed var(--border);
       border-radius: 8px;
       color: var(--muted);
       text-align: center;
+    }
+
+    .empty-state button {
+      margin-top: 16px;
+      cursor: pointer;
     }
 
     .empty-state i {
@@ -760,14 +829,22 @@
     .toast.show {
       opacity: 1;
       transform: translateY(0);
+      pointer-events: auto;
+    }
+
+    .toast button {
+      margin-left: 12px;
+      padding: 4px;
+      border: 0;
+      background: transparent;
+      color: inherit;
+      font-weight: 800;
+      text-decoration: underline;
+      cursor: pointer;
     }
 
     .sidebar-overlay {
       display: none;
-    }
-
-    html.cat-loading .content {
-      opacity: 0;
     }
 
     @media (max-width: 1360px) {
@@ -826,7 +903,8 @@
         padding: 9px 14px;
       }
 
-      .mobile-menu-btn {
+      .mobile-menu-btn,
+      .sidebar-close {
         display: inline-flex;
         align-items: center;
         justify-content: center;
@@ -901,6 +979,10 @@
         aspect-ratio: 16 / 9;
       }
 
+      .game-card--featured .card-heading {
+        padding-right: 0;
+      }
+
       .toast {
         right: 16px;
         bottom: 16px;
@@ -933,12 +1015,14 @@
       </a>
 
       <nav class="side-nav">
-        <div class="nav-label">Explore</div>
+        <div class="nav-label nav-heading">Explore
+          <button class="icon-btn sidebar-close" id="closeMenuBtn" type="button" aria-label="Close navigation" title="Close navigation"><i class="fa-solid fa-xmark" aria-hidden="true"></i></button>
+        </div>
         <a class="nav-link" href="/" aria-current="page"><i class="fa-solid fa-compass"></i>Discover</a>
         <a class="nav-link" href="/games/"><i class="fa-solid fa-gamepad"></i>Game guides</a>
         <a class="nav-link" href="/posts/"><i class="fa-regular fa-newspaper"></i>Game news</a>
-        <button class="nav-link" id="savedNavBtn" type="button"><i class="fa-regular fa-heart"></i>Saved games</button>
-        <button class="nav-link" id="recentNavBtn" type="button"><i class="fa-solid fa-clock-rotate-left"></i>Recently played</button>
+        <button class="nav-link" id="savedNavBtn" type="button" data-view="saved"><i class="fa-regular fa-heart" aria-hidden="true"></i>Saved games</button>
+        <button class="nav-link" id="recentNavBtn" type="button" data-view="recent"><i class="fa-solid fa-clock-rotate-left" aria-hidden="true"></i>Recently opened</button>
 
         <div class="nav-label">Categories</div>
         <a class="category-link active" href="/" data-filter="all"><i class="fa-solid fa-border-all"></i>All games</a>
@@ -984,7 +1068,7 @@
 
         <div class="top-actions">
           <button class="icon-btn saved-top-btn" id="savedTopBtn" type="button" aria-label="Open saved games"
-            title="Saved games">
+            title="Saved games" data-view="saved">
             <i class="fa-regular fa-heart"></i>
           </button>
           <button class="icon-btn share-top-btn" id="shareBtn" type="button" aria-label="Share HotGames.ai"
@@ -1000,11 +1084,17 @@
       <main class="content" id="main-content">
         <div class="page-heading">
           <div>
-            <h1>Find a game worth playing</h1>
+            <h1 tabindex="-1">Find a game worth playing</h1>
             <p>Free browser puzzles, hand-picked releases, and familiar games across web, mobile, PC, and console.</p>
           </div>
           <div class="catalog-count" id="catalogCount" aria-live="polite"></div>
         </div>
+
+        <nav class="library-nav" aria-label="Game collections">
+          <a class="view-link" href="/" data-view="discover" aria-current="page">Discover</a>
+          <a class="view-link" href="/?view=saved" data-view="saved">Saved <span class="view-count" id="savedCount">0</span></a>
+          <a class="view-link" href="/?view=recent" data-view="recent">Recently opened <span class="view-count" id="recentCount">0</span></a>
+        </nav>
 
         <div class="filter-bar" aria-label="Game filters">
           <div class="filter-list">
@@ -1036,13 +1126,13 @@
           </div>
         </section>
 
-        <section class="content-section collection-section" id="recentSection" hidden>
+        <section class="content-section collection-section" id="recentSection" hidden aria-labelledby="recentTitle">
           <div class="section-head">
-            <h2 class="section-title"><i class="fa-solid fa-clock-rotate-left"></i>Recently played</h2>
+            <h2 class="section-title" id="recentTitle"><i class="fa-solid fa-clock-rotate-left" aria-hidden="true"></i>Recently opened</h2>
             <div class="section-tools">
-              <span class="section-note">Stored on this device</span>
-              <button class="section-clear" id="clearRecentBtn" type="button" aria-label="Clear recently played"
-                title="Clear recently played">
+              <span class="section-note">This browser</span>
+              <button class="section-clear" id="clearRecentBtn" type="button" aria-label="Clear recently opened"
+                title="Clear recently opened">
                 <i class="fa-solid fa-trash-can"></i>
               </button>
             </div>
@@ -1050,11 +1140,11 @@
           <div class="game-grid" id="recentGrid"></div>
         </section>
 
-        <section class="content-section collection-section" id="favoritesSection" hidden>
+        <section class="content-section collection-section" id="favoritesSection" hidden aria-labelledby="savedTitle">
           <div class="section-head">
-            <h2 class="section-title"><i class="fa-solid fa-heart"></i>Saved games</h2>
+            <h2 class="section-title" id="savedTitle"><i class="fa-solid fa-heart" aria-hidden="true"></i>Saved games</h2>
             <div class="section-tools">
-              <span class="section-note">Your shortcuts</span>
+              <span class="section-note">This browser</span>
               <button class="section-clear" id="clearSavedBtn" type="button" aria-label="Clear saved games"
                 title="Clear saved games">
                 <i class="fa-solid fa-trash-can"></i>
@@ -1081,7 +1171,7 @@
         {{ with .Site.Params.new_games }}
         <section class="content-section source-section" data-filter-section>
           <div class="section-head">
-            <h2 class="section-title"><i class="fa-solid fa-sparkles"></i>{{ .title }}</h2>
+            <h2 class="section-title"><i class="fa-solid fa-compass" aria-hidden="true"></i>{{ .title }}</h2>
             <span class="section-note">More games to explore</span>
           </div>
           <div class="game-grid">
@@ -1108,31 +1198,44 @@
         </section>
         {{ end }}
 
-        <div class="empty-state" id="emptyState" role="status">
-          <i class="fa-solid fa-magnifying-glass"></i>
-          No games match this search.
+        <div class="empty-state" id="emptyState" hidden>
+          <i class="fa-solid fa-magnifying-glass" aria-hidden="true"></i>
+          <p id="emptyMessage" role="status">No games match these filters.</p>
+          <button class="play-link" type="button" id="emptyReset">Reset filters</button>
         </div>
       </main>
     </div>
   </div>
 
-  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+  <div class="toast" id="toast">
+    <span id="toastMessage" role="status" aria-live="polite"></span>
+    <button type="button" id="toastUndo" hidden>Undo</button>
+  </div>
 
   <script>
     document.addEventListener('DOMContentLoaded', () => {
+      const sessionValues = new Map();
       const storage = {
         get(key, fallback) {
+          if (sessionValues.has(key)) return sessionValues.get(key);
           try {
-            const value = JSON.parse(localStorage.getItem(key));
-            return value ?? fallback;
+            const raw = localStorage.getItem(key);
+            if (raw === null) return fallback;
+            const value = key === 'theme' ? raw : JSON.parse(raw);
+            sessionValues.set(key, value);
+            return value;
           } catch (_) {
             return fallback;
           }
         },
         set(key, value) {
+          sessionValues.set(key, value);
           try {
-            localStorage.setItem(key, JSON.stringify(value));
-          } catch (_) { }
+            localStorage.setItem(key, key === 'theme' ? value : JSON.stringify(value));
+            return true;
+          } catch (_) {
+            return false;
+          }
         }
       };
 
@@ -1143,10 +1246,28 @@
         if (!sourceMap.has(card.dataset.gameId)) sourceMap.set(card.dataset.gameId, card);
       });
 
-      const state = {
-        category: normalize(new URLSearchParams(location.search).get('cat')) || 'all',
-        query: ''
-      };
+      const legacyIds = new Map(sourceCards.map(card => [card.dataset.legacyId, card.dataset.gameId]));
+      const categories = new Set(Array.from(document.querySelectorAll('[data-filter]'), el => el.dataset.filter));
+      function readUrl() {
+        const params = new URLSearchParams(location.search);
+        const category = normalize(params.get('cat'));
+        return {
+          category: categories.has(category) ? category : 'all',
+          query: params.get('q') || '',
+          view: ['saved', 'recent'].includes(params.get('view')) ? params.get('view') : 'discover'
+        };
+      }
+      let state = readUrl();
+
+      function updateUrl(replace = false) {
+        const url = new URL(location.href);
+        for (const [key, value] of [['cat', state.category === 'all' ? '' : state.category],
+          ['q', state.query], ['view', state.view === 'discover' ? '' : state.view]]) {
+          if (value) url.searchParams.set(key, value);
+          else url.searchParams.delete(key);
+        }
+        if (url.href !== location.href) history[replace ? 'replaceState' : 'pushState'](null, '', url);
+      }
 
       const searchInput = document.getElementById('searchInput');
       const searchClear = document.getElementById('searchClear');
@@ -1158,32 +1279,52 @@
       const recentSection = document.getElementById('recentSection');
       const recentGrid = document.getElementById('recentGrid');
       const toast = document.getElementById('toast');
+      const toastMessage = document.getElementById('toastMessage');
+      const toastUndo = document.getElementById('toastUndo');
       let toastTimer;
+      let undoAction;
 
-      function showToast(message) {
-        toast.textContent = message;
+      function showToast(message, undo) {
+        toastMessage.textContent = message;
+        undoAction = undo;
+        toastUndo.hidden = !undo;
         toast.classList.add('show');
         clearTimeout(toastTimer);
-        toastTimer = setTimeout(() => toast.classList.remove('show'), 2200);
+        if (!undo) toastTimer = setTimeout(() => toast.classList.remove('show'), 3500);
+      }
+
+      toastUndo.addEventListener('click', () => {
+        if (undoAction) undoAction();
+        applyFilters();
+        document.querySelector('h1').focus({ preventScroll: true });
+        showToast('Restored');
+      });
+
+      function readIds(key) {
+        const value = storage.get(key, []);
+        if (!Array.isArray(value)) return [];
+        return [...new Set(value.filter(id => typeof id === 'string')
+          .map(id => sourceMap.has(id) ? id : legacyIds.get(id)).filter(id => sourceMap.has(id)))];
       }
 
       function getSaved() {
-        return new Set(storage.get('likedGames', []));
+        return new Set(readIds('likedGames'));
       }
 
       function setSaved(saved) {
-        storage.set('likedGames', Array.from(saved));
+        return storage.set('likedGames', Array.from(saved));
       }
 
       function getRecent() {
-        return storage.get('recentGames', []);
+        return readIds('recentGames').slice(0, 6);
       }
 
       function cardMatches(card) {
         const categoryMatches = state.category === 'all'
           || (state.category === 'browser' && normalize(card.dataset.platform).split(/\s+/).includes('web'))
           || normalize(card.dataset.category) === state.category;
-        const queryMatches = !state.query || normalize(card.dataset.search).includes(state.query);
+        const words = normalize(state.query).split(/\s+/).filter(Boolean);
+        const queryMatches = words.every(word => normalize(card.dataset.search).includes(word));
         return categoryMatches && queryMatches;
       }
 
@@ -1195,6 +1336,7 @@
           const isSaved = saved.has(card.dataset.gameId);
           button.setAttribute('aria-pressed', String(isSaved));
           button.setAttribute('aria-label', `${isSaved ? 'Remove' : 'Save'} ${card.dataset.gameName}`);
+          button.title = `${isSaved ? 'Remove' : 'Save'} ${card.dataset.gameName}`;
           const icon = button.querySelector('i');
           if (icon) icon.className = isSaved ? 'fa-solid fa-heart' : 'fa-regular fa-heart';
         });
@@ -1206,16 +1348,25 @@
           const source = sourceMap.get(id);
           if (!source || !cardMatches(source)) return;
           const clone = source.cloneNode(true);
+          clone.hidden = false;
+          clone.classList.replace('game-card--featured', 'game-card--catalog');
           clone.dataset.collectionCard = 'true';
           grid.appendChild(clone);
         });
-        section.hidden = grid.children.length === 0;
+        return grid.children.length;
       }
 
       function renderCollections() {
-        renderCollection(favoritesSection, favoritesGrid, Array.from(getSaved()));
-        renderCollection(recentSection, recentGrid, getRecent());
+        const saved = Array.from(getSaved());
+        const recent = getRecent();
+        const savedCount = renderCollection(favoritesSection, favoritesGrid, saved);
+        const recentCount = renderCollection(recentSection, recentGrid, recent);
+        favoritesSection.hidden = state.view !== 'saved' || savedCount === 0;
+        recentSection.hidden = state.view !== 'recent' || recentCount === 0;
+        document.getElementById('savedCount').textContent = saved.length;
+        document.getElementById('recentCount').textContent = recent.length;
         updateSavedUI();
+        return state.view === 'saved' ? savedCount : recentCount;
       }
 
       function setActiveFilter(category) {
@@ -1230,34 +1381,61 @@
         const visibleIds = new Set();
         sourceCards.forEach((card) => {
           const visible = cardMatches(card);
-          card.hidden = !visible;
+          card.hidden = state.view !== 'discover' || !visible;
           if (visible) visibleIds.add(card.dataset.gameId);
         });
 
         document.querySelectorAll('[data-filter-section]').forEach((section) => {
           const hasVisibleCard = Array.from(section.querySelectorAll('.game-card')).some((card) => !card.hidden);
-          section.hidden = !hasVisibleCard;
+          section.hidden = state.view !== 'discover' || !hasVisibleCard;
         });
 
-        catalogCount.textContent = `${visibleIds.size} game${visibleIds.size === 1 ? '' : 's'}`;
-        emptyState.style.display = visibleIds.size ? 'none' : 'block';
+        const collectionCount = renderCollections();
+        const count = state.view === 'discover' ? visibleIds.size : collectionCount;
+        catalogCount.textContent = `${count} game${count === 1 ? '' : 's'}`;
+        emptyState.hidden = count > 0;
+        const isEmptyCollection = state.view === 'saved' ? getSaved().size === 0
+          : state.view === 'recent' ? getRecent().length === 0 : false;
+        document.getElementById('emptyMessage').textContent = isEmptyCollection
+          ? (state.view === 'saved' ? 'No saved games yet.' : 'No recently opened games yet.')
+          : 'No games match these filters.';
+        document.getElementById('emptyReset').textContent = isEmptyCollection ? 'Browse games' : 'Reset filters';
         searchClear.hidden = !state.query;
         clearFilters.style.display = state.query || state.category !== 'all' ? 'inline-flex' : 'none';
         setActiveFilter(state.category);
-        renderCollections();
-        document.documentElement.classList.remove('cat-loading');
+        document.querySelectorAll('[data-view]').forEach(control => {
+          if (control.dataset.view === state.view) control.setAttribute('aria-current', 'page');
+          else control.removeAttribute('aria-current');
+        });
       }
 
       function changeCategory(category, updateHistory = true) {
         state.category = normalize(category) || 'all';
-        if (updateHistory) {
-          const nextUrl = state.category === 'all' ? '/' : `/?cat=${encodeURIComponent(state.category)}`;
-          history.pushState(null, '', nextUrl);
-        }
+        if (updateHistory) updateUrl();
         applyFilters();
       }
 
+      function resetFilters() {
+        searchInput.value = '';
+        state.query = '';
+        changeCategory('all');
+      }
+
+      function changeView(view) {
+        state.view = view;
+        resetFilters();
+        closeSidebar();
+        document.querySelector('h1').focus({ preventScroll: true });
+      }
+
       document.addEventListener('click', (event) => {
+        if (event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
+        const viewControl = event.target.closest('[data-view]');
+        if (viewControl) {
+          event.preventDefault();
+          changeView(viewControl.dataset.view);
+          return;
+        }
         const categoryControl = event.target.closest('[data-filter]');
         if (categoryControl) {
           event.preventDefault();
@@ -1271,42 +1449,45 @@
           event.preventDefault();
           const card = favoriteButton.closest('.game-card');
           const saved = getSaved();
-          if (saved.has(card.dataset.gameId)) {
+          const removed = saved.has(card.dataset.gameId);
+          if (removed) {
             saved.delete(card.dataset.gameId);
-            showToast(`${card.dataset.gameName} removed from saved games`);
           } else {
             saved.add(card.dataset.gameId);
-            showToast(`${card.dataset.gameName} saved`);
           }
-          setSaved(saved);
-          renderCollections();
+          const persisted = setSaved(saved);
+          const restoreFocus = card.dataset.collectionCard;
+          applyFilters();
+          if (restoreFocus) document.querySelector('h1').focus({ preventScroll: true });
+          showToast(`${card.dataset.gameName} ${removed ? 'removed' : 'saved'}${persisted ? '' : ' for this visit'}`);
           return;
         }
 
-        const launch = event.target.closest('.game-launch');
-        if (launch) {
-          const card = launch.closest('.game-card');
-          const id = card?.dataset.gameId;
-          if (id) {
-            const recent = getRecent().filter((recentId) => recentId !== id);
-            recent.unshift(id);
-            storage.set('recentGames', recent.slice(0, 6));
-            renderCollections();
-          }
+      });
 
-          const userAgent = navigator.userAgent || '';
-          let target = launch.dataset.linkWeb || launch.href;
-          if (/android/i.test(userAgent) && launch.dataset.linkAndroid) target = launch.dataset.linkAndroid;
-          if (/iPad|iPhone|iPod/.test(userAgent) && launch.dataset.linkIos) target = launch.dataset.linkIos;
-          if (target && target !== launch.href) {
-            event.preventDefault();
-            window.open(target, '_blank', 'noopener');
-          }
-        }
+      // Keep native link navigation intact, including modifier and middle clicks.
+      function recordOpen(event) {
+        if (event.type === 'auxclick' && event.button !== 1) return;
+        const launch = event.target.closest('.game-launch');
+        const id = launch?.closest('.game-card')?.dataset.gameId;
+        if (!id || event.defaultPrevented) return;
+        storage.set('recentGames', [id, ...getRecent().filter(value => value !== id)].slice(0, 6));
+        setTimeout(applyFilters, 0);
+      }
+      document.addEventListener('click', recordOpen);
+      document.addEventListener('auxclick', recordOpen);
+
+      sourceCards.forEach(card => {
+        card.querySelectorAll('.game-launch').forEach(link => {
+          const agent = navigator.userAgent || '';
+          if (/android/i.test(agent) && link.dataset.linkAndroid) link.href = link.dataset.linkAndroid;
+          else if (/iPad|iPhone|iPod/.test(agent) && link.dataset.linkIos) link.href = link.dataset.linkIos;
+        });
       });
 
       searchInput.addEventListener('input', () => {
-        state.query = normalize(searchInput.value);
+        state.query = searchInput.value;
+        updateUrl(true);
         applyFilters();
       });
 
@@ -1314,69 +1495,63 @@
         searchInput.value = '';
         state.query = '';
         searchInput.focus();
+        updateUrl(true);
         applyFilters();
       });
 
-      clearFilters.addEventListener('click', () => {
-        searchInput.value = '';
-        state.query = '';
-        changeCategory('all');
+      clearFilters.addEventListener('click', resetFilters);
+      document.getElementById('emptyReset').addEventListener('click', () => {
+        const empty = state.view === 'saved' ? getSaved().size === 0 : getRecent().length === 0;
+        if (state.view !== 'discover' && empty) changeView('discover');
+        else resetFilters();
       });
 
       window.addEventListener('popstate', () => {
-        state.category = normalize(new URLSearchParams(location.search).get('cat')) || 'all';
+        state = readUrl();
+        searchInput.value = state.query;
         applyFilters();
       });
 
       document.addEventListener('keydown', (event) => {
         if (event.key === '/' && !event.metaKey && !event.ctrlKey && !event.altKey
-          && !['INPUT', 'TEXTAREA'].includes(document.activeElement.tagName)) {
+          && !document.activeElement.isContentEditable
+          && !['INPUT', 'TEXTAREA', 'SELECT'].includes(document.activeElement.tagName)) {
           event.preventDefault();
           searchInput.focus();
         }
-        if (event.key === 'Escape' && document.activeElement === searchInput) {
+        if (event.key === 'Escape' && sidebar.classList.contains('open')) {
+          closeSidebar();
+          mobileMenuBtn.focus();
+        } else if (event.key === 'Escape' && document.activeElement === searchInput) {
           searchInput.value = '';
           state.query = '';
           searchInput.blur();
+          updateUrl(true);
           applyFilters();
         }
       });
 
-      function scrollToCollection(section, emptyMessage) {
-        renderCollections();
-        if (section.hidden) {
-          showToast(emptyMessage);
-          return;
-        }
-        section.scrollIntoView({ behavior: 'smooth', block: 'start' });
-      }
-
-      document.getElementById('savedNavBtn').addEventListener('click', () => {
-        closeSidebar();
-        scrollToCollection(favoritesSection, 'No saved games yet');
-      });
-      document.getElementById('savedTopBtn').addEventListener('click', () => {
-        scrollToCollection(favoritesSection, 'No saved games yet');
-      });
-      document.getElementById('recentNavBtn').addEventListener('click', () => {
-        closeSidebar();
-        scrollToCollection(recentSection, 'No recently played games yet');
-      });
-
       document.getElementById('clearSavedBtn').addEventListener('click', () => {
+        const previous = getSaved();
         setSaved(new Set());
-        renderCollections();
-        showToast('Saved games cleared');
+        applyFilters();
+        document.querySelector('h1').focus({ preventScroll: true });
+        showToast('Saved games cleared', () => setSaved(new Set([...getSaved(), ...previous])));
       });
 
       document.getElementById('clearRecentBtn').addEventListener('click', () => {
+        const previous = getRecent();
         storage.set('recentGames', []);
-        renderCollections();
-        showToast('Recently played cleared');
+        applyFilters();
+        document.querySelector('h1').focus({ preventScroll: true });
+        showToast('Recently opened cleared', () => storage.set('recentGames',
+          [...new Set([...getRecent(), ...previous])].slice(0, 6)));
       });
 
       document.getElementById('surpriseBtn').addEventListener('click', () => {
-        const visibleCards = sourceCards.filter((card) => !card.hidden);
+        closeSidebar();
+        const visibleCards = Array.from(document.querySelectorAll('main .game-card'))
+          .filter(card => !card.closest('[hidden]'));
         if (!visibleCards.length) {
           showToast('No games match the current filters');
           return;
@@ -1388,37 +1563,69 @@
       const sidebar = document.getElementById('sidebar');
       const sidebarOverlay = document.getElementById('sidebarOverlay');
       const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+      const mobileLayout = matchMedia('(max-width: 860px)');
+      const mainShell = document.querySelector('.main-shell');
+
+      function syncSidebar() {
+        const open = sidebar.classList.contains('open');
+        sidebar.inert = mobileLayout.matches && !open;
+        mainShell.inert = mobileLayout.matches && open;
+        document.body.style.overflow = mobileLayout.matches && open ? 'hidden' : '';
+      }
 
       function openSidebar() {
         sidebar.classList.add('open');
         sidebarOverlay.classList.add('active');
         mobileMenuBtn.setAttribute('aria-expanded', 'true');
+        syncSidebar();
+        sidebar.querySelector('a').focus();
       }
 
       function closeSidebar() {
         sidebar.classList.remove('open');
         sidebarOverlay.classList.remove('active');
         mobileMenuBtn.setAttribute('aria-expanded', 'false');
+        syncSidebar();
       }
 
       mobileMenuBtn.addEventListener('click', () => {
         sidebar.classList.contains('open') ? closeSidebar() : openSidebar();
       });
       sidebarOverlay.addEventListener('click', closeSidebar);
+      document.getElementById('closeMenuBtn').addEventListener('click', () => {
+        closeSidebar();
+        mobileMenuBtn.focus();
+      });
+      mobileLayout.addEventListener('change', closeSidebar);
+      sidebar.addEventListener('keydown', event => {
+        if (event.key !== 'Tab' || !mobileLayout.matches) return;
+        const controls = Array.from(sidebar.querySelectorAll('a[href], button')).filter(el => !el.disabled);
+        const first = controls[0];
+        const last = controls[controls.length - 1];
+        if (event.shiftKey && document.activeElement === first) {
+          event.preventDefault();
+          last.focus();
+        } else if (!event.shiftKey && document.activeElement === last) {
+          event.preventDefault();
+          first.focus();
+        }
+      });
 
       const html = document.documentElement;
       const themeButton = document.getElementById('themeBtn');
       const themeIcon = document.getElementById('themeIcon');
 
       function setTheme(theme) {
+        theme = theme === 'light' ? 'light' : 'dark';
         html.dataset.theme = theme;
         storage.set('hotgamesTheme', theme);
+        storage.set('theme', theme);
         const useLight = theme === 'dark';
         themeIcon.className = useLight ? 'fa-solid fa-sun' : 'fa-solid fa-moon';
         themeButton.setAttribute('aria-label', useLight ? 'Use light theme' : 'Use dark theme');
       }
 
-      setTheme(storage.get('hotgamesTheme', storage.get('theme', 'dark')));
+      setTheme(storage.get('theme', storage.get('hotgamesTheme', 'dark')));
       themeButton.addEventListener('click', () => {
         setTheme(html.dataset.theme === 'dark' ? 'light' : 'dark');
       });
@@ -1431,9 +1638,20 @@
             await navigator.clipboard.writeText(location.href);
             showToast('Link copied');
           }
-        } catch (_) { }
+        } catch (error) {
+          if (error.name !== 'AbortError') showToast('Sharing is unavailable in this browser');
+        }
       });
 
+      window.addEventListener('storage', event => {
+        if (event.key && !['likedGames', 'recentGames', 'theme'].includes(event.key)) return;
+        sessionValues.clear();
+        if (event.key === 'theme') setTheme(storage.get('theme', 'dark'));
+        applyFilters();
+      });
+
+      searchInput.value = state.query;
+      syncSidebar();
       applyFilters();
     });
   </script>

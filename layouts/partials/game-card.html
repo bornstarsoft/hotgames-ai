@@ -10,10 +10,11 @@
 
 <article class="game-card game-card--{{ $variant }}"
   data-game-id="{{ $id }}"
+  data-legacy-id="{{ $link | urlize }}"
   data-game-name="{{ $name }}"
   data-category="{{ $game.category | default "other" | lower }}"
   data-platform="{{ delimit $platforms " " | lower }}"
-  data-search="{{ printf "%s %s %s %s" $name ($game.category | default "") ($short | default "") (delimit $platforms " ") | lower }}">
+  data-search="{{ printf "%s %s %s %s" $name ($game.category | default "") ($short | default "") (delimit $platforms " ") | lower }}{{ if in $platforms "web" }} browser{{ end }}">
   <button class="fav-btn" type="button" aria-label="Save {{ $name }}" aria-pressed="false">
     <i class="fa-regular fa-heart" aria-hidden="true"></i>
   </button>
@@ -25,7 +26,7 @@
     data-link-web="{{ $web }}"
     data-link-android="{{ $game.android | default "" }}"
     data-link-ios="{{ $game.ios | default "" }}"
-    aria-label="Play {{ $name }}">
+    aria-label="{{ $game.cta | default (printf "Visit %s" $name) }}">
     {{ if $image }}
       {{- $rel := strings.TrimPrefix "/" $image -}}
       {{- $fsPath := printf "static/%s" $rel -}}
@@ -85,7 +86,7 @@
 
     <div class="card-actions">
       {{ with $game.details }}
-      <a class="detail-link" href="{{ . }}">Details</a>
+      <a class="detail-link" href="{{ . }}" aria-label="About {{ $name }}">Details</a>
       {{ end }}
       <a class="play-link game-launch"
         href="{{ $link }}"
