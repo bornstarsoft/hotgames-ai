@@ -1,0 +1,83 @@
+{{ define "main" }}
+    {{/* Preserve the existing /games/page/1/ pagination alias. */}}
+    {{ $paginator := .Paginate .RegularPages }}
+    <header class="guide-intro">
+      <a href="/" class="back-link"><i class="fa-solid fa-arrow-left" aria-hidden="true"></i> All games</a>
+      <h1>Find your kind of puzzle</h1>
+      <p>Numbers, shapes, or colors. Three free browser puzzles from BornstarSoft / Puzzlepia, each with a different way to play.</p>
+      <nav class="guide-jumps" aria-label="On this page">
+        <a href="#puzzles">The games</a>
+        <a href="#compare">Compare play styles</a>
+        <a href="#questions">Before you play</a>
+      </nav>
+    </header>
+
+    <section id="puzzles" aria-labelledby="puzzles-title">
+      <div class="guide-section-head">
+        <h2 id="puzzles-title">Choose a puzzle</h2>
+        <p>Free &middot; No download &middot; No sign-up</p>
+      </div>
+      <div class="puzzle-grid">
+        {{ range .Site.Params.new_games.list }}
+        {{ if .puzzle_type }}
+        <article class="puzzle-guide-card">
+          <a class="puzzle-cover" href="{{ .details }}" aria-label="About {{ .name }}">
+            {{ partial "game-image.html" (dict "game" . "eager" true "sizes" "(max-width: 680px) calc(100vw - 40px), 33vw") }}
+            <span class="art-label">Illustration</span>
+          </a>
+          <div class="puzzle-card-body">
+            <p class="puzzle-kind">{{ .puzzle_type }}</p>
+            <h3><a href="{{ .details }}">{{ .name }}</a></h3>
+            <p class="puzzle-summary">{{ .short_desc }}</p>
+            <div class="puzzle-card-actions">
+              <a class="guide-play" href="{{ .link }}" target="_blank" rel="noopener">{{ .cta }} <i class="fa-solid fa-arrow-up-right-from-square" aria-hidden="true"></i></a>
+              <a class="guide-detail" href="{{ .details }}">Game guide <i class="fa-solid fa-arrow-right" aria-hidden="true"></i></a>
+            </div>
+          </div>
+        </article>
+        {{ end }}
+        {{ end }}
+      </div>
+    </section>
+
+    <section id="compare" class="guide-band" aria-labelledby="compare-title">
+      <h2 id="compare-title">Which puzzle fits your mood?</h2>
+      <p class="guide-lead">Choose by the kind of puzzle you enjoy.</p>
+      <div class="comparison-grid">
+        {{ range .Site.Params.new_games.list }}
+        {{ if .puzzle_type }}
+        <article class="comparison-column">
+          <h3><a href="{{ .details }}">{{ .name }} <i class="fa-solid fa-arrow-right" aria-hidden="true"></i></a></h3>
+          <dl>
+            <dt>Pick it for</dt><dd>{{ .best_for }}</dd>
+            <dt>How to begin</dt><dd>{{ .first_move }}</dd>
+            <dt>Your goal</dt><dd>{{ .puzzle_goal }}</dd>
+          </dl>
+        </article>
+        {{ end }}
+        {{ end }}
+      </div>
+    </section>
+
+    <section id="questions" class="guide-band" aria-labelledby="questions-title">
+      <h2 id="questions-title">Before you play</h2>
+      <div class="puzzle-faq">
+        <details open>
+          <summary>Do I need an account or a download?</summary>
+          <p>No. Blockzzle, Ringzzle, and DaySudoku are free to play in the browser without signing up or downloading an app. Each Play link opens the game's own site.</p>
+        </details>
+        <details>
+          <summary>Which one is a daily puzzle?</summary>
+          <p><a href="{{ (index (where .Site.Params.new_games.list "id" "daysudoku") 0).details }}">DaySudoku</a> offers one free daily Sudoku puzzle. Find the Key9 first, then continue to the full board. Blockzzle and Ringzzle are separate score-chasing puzzles.</p>
+        </details>
+        <details>
+          <summary>Are these pictures actual game screens?</summary>
+          <p>No. The covers are AI-generated editorial illustrations of each puzzle type. Open a game to see its actual board and controls.</p>
+        </details>
+        <details>
+          <summary>Where can I find another kind of game?</summary>
+          <p>Explore the <a href="/?cat=browser">browser game selection</a>, browse <a href="/?cat=puzzle">more puzzle games</a>, or return to <a href="/?view=saved">your saved games</a>. Saved games belong to this browser, not an online account.</p>
+        </details>
+      </div>
+    </section>
+{{ end }}

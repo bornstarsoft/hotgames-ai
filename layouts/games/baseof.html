@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  {{ partial "head.html" . }}
+  {{ $styles := resources.Get "css/puzzle-guide.css" | minify | fingerprint }}
+  <link rel="stylesheet" href="{{ $styles.RelPermalink }}">
+</head>
+<body class="puzzle-directory">
+  <a class="skip-link" href="#main-content">Skip to puzzles</a>
+  <header class="guide-header">
+    <a class="guide-brand" href="/"><img src="/apple-touch-icon.png" width="28" height="28" alt="">HotGames<span>.ai</span></a>
+    <nav aria-label="Site navigation">
+      <a href="/">Discover</a>
+      <a href="/games/"{{ if .IsSection }} aria-current="page"{{ end }}>Game guides</a>
+      <a href="/?view=saved" aria-label="Saved games" title="Saved games"><i class="fa-regular fa-heart" aria-hidden="true"></i></a>
+      <button id="guideTheme" type="button" aria-label="Use light theme" title="Change theme"><i class="fa-solid fa-sun" aria-hidden="true"></i></button>
+    </nav>
+  </header>
+  <main id="main-content">
+    {{ block "main" . }}{{ end }}
+    <footer class="guide-footer">
+      <a href="/">Back to all games <i class="fa-solid fa-arrow-right" aria-hidden="true"></i></a>
+      <nav aria-label="Footer">{{ range .Site.Params.footer_menu }}<a href="{{ .url }}">{{ .name }}</a>{{ end }}</nav>
+    </footer>
+  </main>
+  <script>
+    (() => {
+      const button = document.getElementById('guideTheme');
+      function setTheme(theme) {
+        const light = theme === 'light';
+        document.documentElement.dataset.theme = light ? 'light' : 'dark';
+        button.setAttribute('aria-label', light ? 'Use dark theme' : 'Use light theme');
+        button.querySelector('i').className = light ? 'fa-solid fa-moon' : 'fa-solid fa-sun';
+      }
+      try { setTheme(localStorage.getItem('theme')); } catch (_) { setTheme('dark'); }
+      button.addEventListener('click', () => {
+        const theme = document.documentElement.dataset.theme === 'light' ? 'dark' : 'light';
+        setTheme(theme);
+        try { localStorage.setItem('theme', theme); } catch (_) {}
+      });
+      window.addEventListener('storage', (event) => { if (event.key === 'theme') setTheme(event.newValue); });
+
+      {{ $playTargets := dict }}
+      {{ range .Site.Params.new_games.list }}
+        {{ if .puzzle_type }}{{ $playTargets = merge $playTargets (dict .link .id) }}{{ end }}
+      {{ end }}
+      const playTargets = {{ $playTargets | jsonify | safeJS }};
+      // Keep guide launches in the same browser-local history as homepage launches.
+      function rememberOpen(event) {
+        if (event.button !== 0 && event.button !== 1) return;
+        const link = event.target.closest('a[href]');
+        const id = link && playTargets[link.href];
+        if (!id) return;
+        let recent = [];
+        try {
+          const stored = JSON.parse(localStorage.getItem('recentGames') || '[]');
+          if (Array.isArray(stored)) recent = stored.filter(value => typeof value === 'string' && value !== id);
+        } catch (_) {}
+        try {
+          localStorage.setItem('recentGames', JSON.stringify([id, ...new Set(recent)].slice(0, 6)));
+        } catch (_) {}
+      }
+      document.addEventListener('click', rememberOpen);
+      document.addEventListener('auxclick', rememberOpen);
+    })();
+  </script>
+</body>
+</html>

@@ -566,9 +566,7 @@
     }
 
     .game-card--featured {
-      display: grid;
-      grid-template-columns: minmax(150px, 42%) 1fr;
-      min-height: 218px;
+      display: flex;
     }
 
     .card-media {
@@ -582,8 +580,11 @@
     }
 
     .game-card--featured .card-media {
-      height: 100%;
-      aspect-ratio: auto;
+      aspect-ratio: 3 / 2;
+    }
+
+    .card-media--illustrated {
+      aspect-ratio: 3 / 2;
     }
 
     .card-image {
@@ -692,7 +693,52 @@
     }
 
     .game-card--featured .card-heading {
-      padding-right: 35px;
+      padding-right: 0;
+    }
+
+    .game-card--featured .card-heading h3 {
+      font-size: 1.3rem;
+    }
+
+    .puzzle-type {
+      margin-bottom: 5px;
+      color: var(--muted);
+      font-size: 0.75rem;
+      font-weight: 700;
+    }
+
+    .art-label {
+      position: absolute;
+      right: 8px;
+      bottom: 8px;
+      padding: 2px 6px;
+      border-radius: 3px;
+      background: #111315;
+      color: #fff;
+      font-size: 0.62rem;
+    }
+
+    .puzzle-paths {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      margin-top: 18px;
+      font-size: 0.85rem;
+    }
+
+    .puzzle-paths p {
+      color: var(--muted);
+    }
+
+    .puzzle-paths a {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      min-height: 44px;
+      color: var(--text);
+      text-underline-offset: 4px;
     }
 
     .card-heading h3 {
@@ -720,7 +766,28 @@
     }
 
     .game-card--featured .game-desc {
-      -webkit-line-clamp: 3;
+      display: block;
+      overflow: visible;
+    }
+
+    .game-card--featured .play-link {
+      background: var(--text);
+      color: var(--page);
+      border-color: var(--text);
+      min-height: 42px;
+    }
+
+    .game-card--featured .play-link:hover {
+      background: var(--accent-strong);
+      color: var(--page);
+    }
+
+    .game-card--featured .detail-link {
+      min-height: 42px;
+    }
+
+    .game-card--featured .platform-chips {
+      display: none;
     }
 
     .platform-chips {
@@ -847,19 +914,15 @@
       display: none;
     }
 
-    @media (max-width: 1360px) {
+    @media (min-width: 861px) and (max-width: 1150px) {
       .featured-grid {
         grid-template-columns: repeat(2, minmax(0, 1fr));
       }
     }
 
-    @media (max-width: 1080px) {
+    @media (min-width: 621px) and (max-width: 860px) {
       .featured-grid {
-        grid-template-columns: 1fr;
-      }
-
-      .game-card--featured {
-        grid-template-columns: 220px 1fr;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
       }
     }
 
@@ -934,9 +997,18 @@
         font-size: 1.7rem;
       }
 
+      .page-heading {
+        margin-bottom: 16px;
+      }
+
+      .library-nav {
+        margin-bottom: 8px;
+      }
+
       .filter-bar {
         align-items: flex-start;
         flex-direction: column;
+        margin-bottom: 20px;
       }
 
       .filter-list {
@@ -971,12 +1043,12 @@
       }
 
       .game-card--featured {
-        display: block;
+        display: flex;
       }
 
       .game-card--featured .card-media {
         height: auto;
-        aspect-ratio: 16 / 9;
+        aspect-ratio: 3 / 2;
       }
 
       .game-card--featured .card-heading {
@@ -987,6 +1059,91 @@
         right: 16px;
         bottom: 16px;
       }
+    }
+
+    .home-collections--preview {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(min(100%, 320px), 1fr));
+      gap: 28px;
+      margin-bottom: 36px;
+    }
+
+    .home-collections .collection-section {
+      min-width: 0;
+      margin-top: 0;
+    }
+
+    .home-collections--preview .section-head {
+      flex-direction: row;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .home-collections--preview .section-title { font-size: 1.05rem; }
+
+    .home-collections--preview .game-grid {
+      grid-template-columns: minmax(0, 1fr);
+      gap: 10px;
+    }
+
+    .home-collections--preview .collection-device { display: none; }
+
+    .collection-all {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      min-height: 44px;
+      font-size: 0.84rem;
+      color: var(--text);
+    }
+
+    .collection-all:hover { color: var(--accent); }
+
+    .game-card--preview {
+      display: grid;
+      grid-template-columns: 88px minmax(0, 1fr);
+    }
+
+    .game-card--preview .card-media {
+      height: 100%;
+      min-height: 108px;
+      aspect-ratio: auto;
+    }
+
+    .game-card--preview .card-info { padding: 10px 12px; }
+
+    .game-card--preview .card-heading h3 {
+      white-space: normal;
+      overflow-wrap: anywhere;
+      font-size: 0.95rem;
+    }
+
+    .game-card--preview .card-actions {
+      justify-content: flex-start;
+      padding-top: 4px;
+    }
+
+    .game-card--preview .play-link {
+      min-height: 44px;
+      white-space: normal;
+      overflow-wrap: anywhere;
+    }
+
+    .game-card--preview .fav-btn,
+    .game-card--preview .game-desc,
+    .game-card--preview .platform-chips,
+    .game-card--preview .badge,
+    .game-card--preview .puzzle-type,
+    .game-card--preview .detail-link,
+    .game-card--preview .fallback-art span { display: none; }
+    .game-card--preview .fallback-art { min-height: 0; }
+
+    .game-card--preview .art-label {
+      right: 3px;
+      bottom: 3px;
+      padding: 2px 3px;
+      font-size: 0.5rem;
     }
 
     @media (prefers-reduced-motion: reduce) {
@@ -1084,8 +1241,8 @@
       <main class="content" id="main-content">
         <div class="page-heading">
           <div>
-            <h1 tabindex="-1">Find a game worth playing</h1>
-            <p>Free browser puzzles, hand-picked releases, and familiar games across web, mobile, PC, and console.</p>
+            <h1 tabindex="-1">HotGames.ai</h1>
+            <p>Free browser puzzles. Pick numbers, shapes, or colors.</p>
           </div>
           <div class="catalog-count" id="catalogCount" aria-live="polite"></div>
         </div>
@@ -1110,10 +1267,40 @@
           </button>
         </div>
 
+        <div class="home-collections" id="homeCollections" hidden>
+          <section class="content-section collection-section" id="recentSection" hidden aria-labelledby="recentTitle">
+            <div class="section-head">
+              <h2 class="section-title" id="recentTitle"><i class="fa-solid fa-clock-rotate-left" aria-hidden="true"></i>Recently opened</h2>
+              <div class="section-tools">
+                <span class="section-note collection-device">This browser</span>
+                <a class="collection-all" href="/?view=recent" data-view="recent" hidden>View all <i class="fa-solid fa-arrow-right" aria-hidden="true"></i></a>
+                <button class="section-clear" id="clearRecentBtn" type="button" aria-label="Clear recently opened" title="Clear recently opened">
+                  <i class="fa-solid fa-trash-can" aria-hidden="true"></i>
+                </button>
+              </div>
+            </div>
+            <div class="game-grid" id="recentGrid"></div>
+          </section>
+
+          <section class="content-section collection-section" id="favoritesSection" hidden aria-labelledby="savedTitle">
+            <div class="section-head">
+              <h2 class="section-title" id="savedTitle"><i class="fa-solid fa-heart" aria-hidden="true"></i>Saved games</h2>
+              <div class="section-tools">
+                <span class="section-note collection-device">This browser</span>
+                <a class="collection-all" href="/?view=saved" data-view="saved" hidden>View all <i class="fa-solid fa-arrow-right" aria-hidden="true"></i></a>
+                <button class="section-clear" id="clearSavedBtn" type="button" aria-label="Clear saved games" title="Clear saved games">
+                  <i class="fa-solid fa-trash-can" aria-hidden="true"></i>
+                </button>
+              </div>
+            </div>
+            <div class="game-grid" id="favoritesGrid"></div>
+          </section>
+        </div>
+
         <section class="content-section source-section" data-filter-section id="browserPuzzles">
           <div class="section-head">
-            <h2 class="section-title"><i class="fa-solid fa-play"></i>Play in your browser</h2>
-            <span class="section-note">Free to play · No install</span>
+            <h2 class="section-title"><i class="fa-solid fa-play"></i>Three puzzles, three ways to play</h2>
+            <span class="section-note">Free &middot; No install &middot; No sign-up</span>
           </div>
           <div class="game-grid featured-grid">
             {{ with .Site.Params.new_games }}
@@ -1124,34 +1311,10 @@
               {{ end }}
             {{ end }}
           </div>
-        </section>
-
-        <section class="content-section collection-section" id="recentSection" hidden aria-labelledby="recentTitle">
-          <div class="section-head">
-            <h2 class="section-title" id="recentTitle"><i class="fa-solid fa-clock-rotate-left" aria-hidden="true"></i>Recently opened</h2>
-            <div class="section-tools">
-              <span class="section-note">This browser</span>
-              <button class="section-clear" id="clearRecentBtn" type="button" aria-label="Clear recently opened"
-                title="Clear recently opened">
-                <i class="fa-solid fa-trash-can"></i>
-              </button>
-            </div>
+          <div class="puzzle-paths">
+            <p>Browser puzzles from BornstarSoft / Puzzlepia.</p>
+            <a href="/games/#compare">Which puzzle is for you? <i class="fa-solid fa-arrow-right" aria-hidden="true"></i></a>
           </div>
-          <div class="game-grid" id="recentGrid"></div>
-        </section>
-
-        <section class="content-section collection-section" id="favoritesSection" hidden aria-labelledby="savedTitle">
-          <div class="section-head">
-            <h2 class="section-title" id="savedTitle"><i class="fa-solid fa-heart" aria-hidden="true"></i>Saved games</h2>
-            <div class="section-tools">
-              <span class="section-note">This browser</span>
-              <button class="section-clear" id="clearSavedBtn" type="button" aria-label="Clear saved games"
-                title="Clear saved games">
-                <i class="fa-solid fa-trash-can"></i>
-              </button>
-            </div>
-          </div>
-          <div class="game-grid" id="favoritesGrid"></div>
         </section>
 
         {{ with .Site.Params.hot_games_week }}
@@ -1278,6 +1441,7 @@
       const favoritesGrid = document.getElementById('favoritesGrid');
       const recentSection = document.getElementById('recentSection');
       const recentGrid = document.getElementById('recentGrid');
+      const homeCollections = document.getElementById('homeCollections');
       const toast = document.getElementById('toast');
       const toastMessage = document.getElementById('toastMessage');
       const toastUndo = document.getElementById('toastUndo');
@@ -1342,7 +1506,7 @@
         });
       }
 
-      function renderCollection(section, grid, ids) {
+      function renderCollection(grid, ids, preview) {
         grid.replaceChildren();
         ids.forEach((id) => {
           const source = sourceMap.get(id);
@@ -1350,6 +1514,7 @@
           const clone = source.cloneNode(true);
           clone.hidden = false;
           clone.classList.replace('game-card--featured', 'game-card--catalog');
+          clone.classList.toggle('game-card--preview', preview);
           clone.dataset.collectionCard = 'true';
           grid.appendChild(clone);
         });
@@ -1359,10 +1524,19 @@
       function renderCollections() {
         const saved = Array.from(getSaved());
         const recent = getRecent();
-        const savedCount = renderCollection(favoritesSection, favoritesGrid, saved);
-        const recentCount = renderCollection(recentSection, recentGrid, recent);
-        favoritesSection.hidden = state.view !== 'saved' || savedCount === 0;
-        recentSection.hidden = state.view !== 'recent' || recentCount === 0;
+        const preview = state.view === 'discover' && state.category === 'all' && !normalize(state.query);
+        const savedCount = renderCollection(favoritesGrid, preview ? saved.slice().reverse().slice(0, 2) : saved, preview);
+        const recentCount = renderCollection(recentGrid, preview ? recent.slice(0, 2) : recent, preview);
+        favoritesSection.hidden = (!preview && state.view !== 'saved') || savedCount === 0;
+        recentSection.hidden = (!preview && state.view !== 'recent') || recentCount === 0;
+        homeCollections.hidden = favoritesSection.hidden && recentSection.hidden;
+        homeCollections.classList.toggle('home-collections--preview', preview);
+        for (const [section, total, label] of [[favoritesSection, saved.length, 'saved games'], [recentSection, recent.length, 'recently opened games']]) {
+          const viewAll = section.querySelector('.collection-all');
+          viewAll.hidden = !preview;
+          viewAll.setAttribute('aria-label', `View all ${total} ${label}`);
+          section.querySelector('.section-clear').hidden = preview;
+        }
         document.getElementById('savedCount').textContent = saved.length;
         document.getElementById('recentCount').textContent = recent.length;
         updateSavedUI();
@@ -1550,7 +1724,7 @@
 
       document.getElementById('surpriseBtn').addEventListener('click', () => {
         closeSidebar();
-        const visibleCards = Array.from(document.querySelectorAll('main .game-card'))
+        const visibleCards = Array.from(document.querySelectorAll(state.view === 'discover' ? '.source-section .game-card' : '.collection-section .game-card'))
           .filter(card => !card.closest('[hidden]'));
         if (!visibleCards.length) {
           showToast('No games match the current filters');

@@ -1,0 +1,7 @@
+{{- $game := .game -}}
+<img src="{{ $game.image }}" class="{{ .class | default "puzzle-image" }}"
+  alt="{{ $game.image_alt | default (printf "%s game artwork" $game.name) }}"
+  {{ if $game.image_small }}srcset="{{ $game.image_small }} 480w, {{ $game.image }} 960w"
+  sizes="{{ .sizes | default "(max-width: 620px) calc(100vw - 36px), (max-width: 1150px) 45vw, 30vw" }}"
+  width="960" height="640"{{ else }}width="640" height="360"{{ end }}
+  {{ if not .eager }}loading="lazy"{{ end }} decoding="async">

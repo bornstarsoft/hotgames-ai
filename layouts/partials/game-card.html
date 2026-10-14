@@ -14,12 +14,12 @@
   data-game-name="{{ $name }}"
   data-category="{{ $game.category | default "other" | lower }}"
   data-platform="{{ delimit $platforms " " | lower }}"
-  data-search="{{ printf "%s %s %s %s" $name ($game.category | default "") ($short | default "") (delimit $platforms " ") | lower }}{{ if in $platforms "web" }} browser{{ end }}">
+  data-search="{{ printf "%s %s %s %s %s" $name ($game.category | default "") ($short | default "") (delimit $platforms " ") ($game.puzzle_type | default "") | lower }}{{ if in $platforms "web" }} browser{{ end }}">
   <button class="fav-btn" type="button" aria-label="Save {{ $name }}" aria-pressed="false">
     <i class="fa-regular fa-heart" aria-hidden="true"></i>
   </button>
 
-  <a class="card-media game-launch"
+  <a class="card-media{{ if $game.illustration }} card-media--illustrated{{ end }} game-launch"
     href="{{ $link }}"
     target="_blank"
     rel="noopener"
@@ -31,8 +31,7 @@
       {{- $rel := strings.TrimPrefix "/" $image -}}
       {{- $fsPath := printf "static/%s" $rel -}}
       {{ if fileExists $fsPath }}
-      <img src="/{{ $rel }}" class="card-image" alt="{{ $name }} game artwork"
-        width="640" height="360" {{ if ne $variant "featured" }}loading="lazy"{{ end }} decoding="async">
+      {{ partial "game-image.html" (dict "game" $game "class" "card-image" "eager" (eq $variant "featured")) }}
       {{ else }}
       <div class="fallback-art fallback-art--{{ $id }}" aria-hidden="true">
         <i class="fa-solid fa-gamepad"></i>
@@ -55,9 +54,11 @@
     {{ with $game.badge }}
     <span class="badge" style="--badge-color: {{ $game.badge_color | default "#f97316" }};">{{ . }}</span>
     {{ end }}
+    {{ if $game.illustration }}<span class="art-label">Illustration</span>{{ end }}
   </a>
 
   <div class="card-info">
+    {{ with $game.puzzle_type }}<p class="puzzle-type">{{ . }}</p>{{ end }}
     <div class="card-heading">
       <h3>{{ $name }}</h3>
       <i class="fa-solid fa-arrow-up-right-from-square external-mark" aria-hidden="true"></i>

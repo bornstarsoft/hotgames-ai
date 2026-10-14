@@ -1,0 +1,26 @@
+{{ define "main" }}
+  {{ $game := dict }}
+  {{ range .Site.Params.new_games.list }}
+    {{ if eq .details $.RelPermalink }}{{ $game = . }}{{ end }}
+  {{ end }}
+  <article class="game-guide">
+    <header class="guide-intro">
+      <a class="back-link" href="/games/"><i class="fa-solid fa-arrow-left" aria-hidden="true"></i> Puzzle guides</a>
+      <h1>{{ .Title }}</h1>
+      {{ with $game.puzzle_type }}<p>{{ . }} &middot; Free browser play &middot; No sign-up</p>{{ end }}
+      {{ with $game.link }}
+      <div class="game-guide-actions">
+        <a class="guide-play" href="{{ . }}" target="_blank" rel="noopener">{{ $game.cta }} <i class="fa-solid fa-arrow-up-right-from-square" aria-hidden="true"></i></a>
+        <a class="guide-detail" href="/games/#compare">Compare the puzzles <i class="fa-solid fa-arrow-right" aria-hidden="true"></i></a>
+      </div>
+      {{ end }}
+    </header>
+    {{ with $game.image }}
+    <figure class="game-guide-art">
+      {{ partial "game-image.html" (dict "game" $game "eager" true "sizes" "(max-width: 680px) calc(100vw - 40px), 760px") }}
+      <figcaption>AI-generated puzzle illustration, not a game screenshot.</figcaption>
+    </figure>
+    {{ end }}
+    <div class="game-guide-content">{{ .Content }}</div>
+  </article>
+{{ end }}
