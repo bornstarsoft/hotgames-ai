@@ -34,6 +34,15 @@
 - Verify the Cloudflare Pages check for the pushed source commit, then normal production URLs (without cache-busting queries), the fingerprinted CSS, and browser-local save/return behavior.
 - Production verification is pending until the release result is recorded below; a successful Git push alone is not deployment evidence.
 
+### Release Result and Cache Handoff
+
+- Source commit: 9542761b33e12524e1c94bf20316e78dc65e26bc, Add saved-game controls to puzzle guides; pushed to GitHub main without force.
+- Cloudflare Pages check: completed/success at 2026-10-15 15:17:50 KST. Deployment ID: 3bbf6fd9-1ccd-4f37-bc62-0434546f6dff.
+- Unique deployment URL: https://3bbf6fd9.hotgames-ai.pages.dev/. WebKit verification passed directory save -> homepage collection -> detail removal -> browser Back.
+- Actual https://hotgames.ai/games/daysudoku/ returned the new controls, but normal /games/ and / still served older HTML during production acceptance. The /games/ response at 15:23:34 KST was HTTP 200, CF-Cache-Status HIT, Age 348, with no save controls; the unique deployment URL contained the controls. Thus this is a confirmed stale-cache boundary, not proof of complete custom-domain acceptance.
+- Cloudflare dashboard required login. Owner was asked to authenticate directly in the opened dashboard tab; no credentials were read, requested, stored, or entered by the agent. No cache or security settings changed.
+- Final acceptance remains pending: clear affected HTML cache after owner login, then rerun the normal-domain save/home/detail/Back workflow and verify fingerprinted CSS and sitemap. No query-string cache bypass should be substituted for the normal URL checks.
+
 ## Regression Checklist
 
 1. Save a puzzle from /games/ and open Saved games in the header; confirm it is present on the homepage.

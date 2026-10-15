@@ -1,25 +1,17 @@
 # HotGames Current State
 
-ACTIVE_WRITER = CODEX (HOTGAMES-GUIDE-SAVE; owner-approved guide saving, validation and production deployment; main / hotgames-ai; 2026-10-15)
+ACTIVE_WRITER = NONE
 
-- Phase: mobile validation complete; approved Git delivery. Production deployment is not established by this record.
-- Authoritative scope: owner approved preserving existing changes, mobile validation, then commit and push if checks pass.
-- Starting HEAD: bb559f8 on main. The release commit containing this record includes the previously uncommitted work; use git log/status and remote refs for the final delivery result.
-- Preserved work: puzzle illustrations/layouts and game comparison (HOTGAMES-PUZZLE-VISUALS), duplicate article archival and validator (HOTGAMES-URL-CLEANUP), returning-user homepage previews (HOTGAMES-RETURN-HOME).
-- Last AI / work: CODEX / HOTGAMES-MOBILE-RELEASE, DONE for source review and mobile QA (2026-10-14); writer released for the approved commit/push.
-- QA: PASS for warning-fatal isolated Hugo build, whitespace/generated-file checks, Chrome Pixel and WebKit iPhone touch flows, 80 responsive/theme combinations, exact Play links, leaderboards, sitemap, and preservation of the archived original article. Physical devices and production deployment checks NOT_RUN.
-- QA details: Docs/HotGames_Mobile_Release_Note.md. No application source correction was required during this validation task.
-- NEXT_SINGLE_TASK: verify the pushed revision on production, including Cloudflare-served assets and a physical mobile browser, when deployment verification is authorized.
-- Hosting approval: owner explicitly approved continued GitHub use as an exception for this repository on 2026-10-14, plus commit and normal push after successful mobile validation. Keep origin unchanged; no force push.
-- Remote preflight: fetched origin on 2026-10-14; HEAD and origin/main both bb559f8, no divergence. Existing WIP matches recorded prior work.
-- Current scope: validate the combined existing changes, preserve them, commit exact intended source/assets/docs, and push to GitHub. No separate deployment or Cloudflare changes.
-- BLOCKER: none for approved normal GitHub delivery. Authentication failures or remote divergence must stop delivery rather than force push.
-
-## Active Follow-up
-
-- Phase: implementation, then validation and approved production deployment.
-- Start: clean main at ad8ca42, matching origin/main after fetch on 2026-10-15. Previous release is present on the public /games/ page.
-- Scope: save/remove games from the existing directory and detail pages using likedGames; keep the homepage layout unchanged and preserve prior work. Refresh its stored data when restoring Back/Forward cache, retaining session-only fallbacks.
-- Owner approval: choose the next modest retention improvement and deploy after verification. GitHub exception remains in force; use the existing Cloudflare Pages Git workflow.
-- QA: local build, Chrome and WebKit checks PASS (56 assertions per engine, including 64 total responsive combinations); production verification pending. No other active writer found.
-- NEXT_SINGLE_TASK: finish validation, commit/push through the existing Cloudflare Pages integration, and verify the production release.
+- Phase: source deployed; custom-domain cache verification awaiting owner authentication.
+- Work ID / last AI: HOTGAMES-GUIDE-SAVE / CODEX (2026-10-15). Implementation, local QA, commit/push, and Cloudflare build DONE; normal-domain end-to-end acceptance is NOT complete.
+- Start: clean main at ad8ca42 matching origin/main. Prior puzzle artwork, guides, article archival, and returning-user homepage work are preserved.
+- Source HEAD: 9542761b33e12524e1c94bf20316e78dc65e26bc, pushed normally to GitHub main. This handoff is a documentation-only follow-up; use git log/status for its containing commit.
+- Scope: directory/detail save controls using existing likedGames; unchanged homepage layout with Back/Forward cache data refresh and preserved session-only fallback.
+- Owner approval: project-specific GitHub exception remains in force; owner explicitly authorized the next modest retention improvement and actual production deployment after validation on 2026-10-15. No force push or remote changes.
+- QA PASS: strict isolated Hugo build, Git hygiene, 56 assertions per Chrome/WebKit engine including 64 responsive/theme combinations, storage failure cases, and Back restoration. No new dependencies or tracking. See Docs/HotGames_Guide_Save_Note.md.
+- Deployment: Cloudflare Pages check for source 9542761 completed successfully at 2026-10-15 15:17:50 KST, deployment 3bbf6fd9-1ccd-4f37-bc62-0434546f6dff. The unique deployed URL passed save/home/detail/Back checks in WebKit.
+- Production observations: https://hotgames.ai/games/daysudoku/ serves new save controls. Normal /games/ and / still served earlier cached HTML during acceptance checks; /games/ was a Cloudflare HIT with Age 348 at 15:23:34 KST. Do not equate preview success with custom-domain acceptance.
+- BLOCKER: Cloudflare in-app dashboard session is logged out. Owner was asked to log in directly (no password/token sharing). No cache purge or rule change has been made.
+- NEXT_SINGLE_TASK: after owner Cloudflare login, purge affected HTML URLs as needed and rerun normal-domain mobile save/return checks; record the acceptance result.
+- Purge candidates: /, /games/, /games/blockzzle/, /games/ringzzle/, /games/daysudoku/ and the homepage Saved/Recent query views if stale. Keep rules unchanged and avoid a site-wide purge.
+- Remaining QA: physical-device testing NOT_RUN. Source writer released while awaiting authentication; resume from this state without repeating implementation.
