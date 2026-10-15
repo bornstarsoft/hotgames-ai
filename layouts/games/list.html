@@ -31,6 +31,7 @@
             <p class="puzzle-summary">{{ .short_desc }}</p>
             <div class="puzzle-card-actions">
               <a class="guide-play" href="{{ .link }}" target="_blank" rel="noopener">{{ .cta }} <i class="fa-solid fa-arrow-up-right-from-square" aria-hidden="true"></i></a>
+              {{ partial "guide-save.html" . }}
               <a class="guide-detail" href="{{ .details }}">Game guide <i class="fa-solid fa-arrow-right" aria-hidden="true"></i></a>
             </div>
           </div>

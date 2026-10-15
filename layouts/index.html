@@ -1378,6 +1378,7 @@
   <script>
     document.addEventListener('DOMContentLoaded', () => {
       const sessionValues = new Map();
+      const sessionOnlyKeys = new Set();
       const storage = {
         get(key, fallback) {
           if (sessionValues.has(key)) return sessionValues.get(key);
@@ -1395,8 +1396,10 @@
           sessionValues.set(key, value);
           try {
             localStorage.setItem(key, key === 'theme' ? value : JSON.stringify(value));
+            sessionOnlyKeys.delete(key);
             return true;
           } catch (_) {
+            sessionOnlyKeys.add(key);
             return false;
           }
         }
@@ -1820,7 +1823,18 @@
       window.addEventListener('storage', event => {
         if (event.key && !['likedGames', 'recentGames', 'theme'].includes(event.key)) return;
         sessionValues.clear();
+        sessionOnlyKeys.clear();
         if (event.key === 'theme') setTheme(storage.get('theme', 'dark'));
+        applyFilters();
+      });
+
+      window.addEventListener('pageshow', event => {
+        if (!event.persisted) return;
+        // Refresh persisted values without losing this page's storage-failure fallback.
+        for (const key of sessionValues.keys()) {
+          if (!sessionOnlyKeys.has(key)) sessionValues.delete(key);
+        }
+        setTheme(storage.get('theme', 'dark'));
         applyFilters();
       });
 

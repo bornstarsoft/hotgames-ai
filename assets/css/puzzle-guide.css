@@ -60,6 +60,40 @@
 .puzzle-card-actions { display: flex; align-items: center; flex-wrap: wrap; gap: 8px 16px; padding-top: 22px; margin-top: auto; }
 .guide-play { display: inline-flex; align-items: center; justify-content: center; gap: 9px; padding: 10px 12px; min-height: 44px; background: var(--text); color: var(--page) !important; border: 1px solid var(--text); border-radius: 6px; font-size: 0.84rem; font-weight: 750; text-decoration: none; }
 .guide-play:hover { border-color: var(--accent); }
+.guide-save {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 44px;
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--surface);
+  color: var(--text);
+  font-size: 1rem;
+  cursor: pointer;
+}
+.guide-save[hidden] { display: none; }
+.guide-save:hover { border-color: var(--accent); }
+.guide-save[aria-pressed="true"] { color: var(--accent); border-color: var(--accent); }
+.guide-save-status {
+  position: fixed;
+  z-index: 20;
+  right: 20px;
+  bottom: 20px;
+  max-width: min(400px, calc(100% - 40px));
+  padding: 12px 16px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--surface);
+  color: var(--text);
+  font-size: 0.9rem;
+  overflow-wrap: anywhere;
+  pointer-events: none;
+}
+.guide-save-status:empty { padding: 0; border: 0; }
 .guide-detail { display: inline-flex; align-items: center; gap: 8px; min-height: 44px; font-size: 0.8rem; }
 .guide-band { padding: 40px 0; margin-top: 40px; border-top: 1px solid var(--border); }
 .guide-band .guide-lead { margin: 10px 0 26px; }

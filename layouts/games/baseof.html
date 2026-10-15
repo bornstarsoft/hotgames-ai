@@ -23,6 +23,7 @@
       <nav aria-label="Footer">{{ range .Site.Params.footer_menu }}<a href="{{ .url }}">{{ .name }}</a>{{ end }}</nav>
     </footer>
   </main>
+  <p class="guide-save-status" id="guideSaveStatus" role="status" aria-live="polite" aria-atomic="true"></p>
   <script>
     (() => {
       const button = document.getElementById('guideTheme');
@@ -45,6 +46,71 @@
         {{ if .puzzle_type }}{{ $playTargets = merge $playTargets (dict .link .id) }}{{ end }}
       {{ end }}
       const playTargets = {{ $playTargets | jsonify | safeJS }};
+      {{ $savedAliases := dict }}
+      {{ range .Site.Params.new_games.list }}
+        {{ if .puzzle_type }}{{ $savedAliases = merge $savedAliases (dict (.link | urlize) .id) }}{{ end }}
+      {{ end }}
+      const savedAliases = new Map(Object.entries({{ $savedAliases | jsonify | safeJS }}));
+      const saveButtons = document.querySelectorAll('[data-save-game]');
+      const saveStatus = document.getElementById('guideSaveStatus');
+      let statusTimer;
+
+      function readSaved() {
+        try {
+          const raw = localStorage.getItem('likedGames');
+          let ids;
+          try { ids = JSON.parse(raw || '[]'); } catch (_) { ids = []; }
+          // Preserve other catalog games while normalizing the guides' legacy IDs.
+          return new Set(Array.isArray(ids)
+            ? ids.filter(id => typeof id === 'string').map(id => savedAliases.get(id) || id) : []);
+        } catch (_) { return null; }
+      }
+
+      function syncSaved() {
+        const saved = readSaved();
+        saveButtons.forEach(control => {
+          const active = saved?.has(control.dataset.saveGame) || false;
+          const label = `${active ? 'Remove' : 'Save'} ${control.dataset.gameName}`;
+          control.setAttribute('aria-pressed', String(active));
+          control.setAttribute('aria-label', label);
+          control.title = label;
+          control.querySelector('i').className = active ? 'fa-solid fa-heart' : 'fa-regular fa-heart';
+          control.hidden = false;
+        });
+      }
+
+      function announceSave(message) {
+        clearTimeout(statusTimer);
+        saveStatus.textContent = message;
+        statusTimer = setTimeout(() => { saveStatus.textContent = ''; }, 4500);
+      }
+
+      saveButtons.forEach(control => control.addEventListener('click', () => {
+        // Read again for each action so changes from another page are retained.
+        const saved = readSaved();
+        if (!saved) {
+          announceSave('Saving is unavailable in this browser.');
+          return;
+        }
+        const id = control.dataset.saveGame;
+        const removing = saved.has(id);
+        if (removing) saved.delete(id);
+        else saved.add(id);
+        try {
+          localStorage.setItem('likedGames', JSON.stringify([...saved]));
+        } catch (_) {
+          announceSave('Changes could not be saved in this browser.');
+          return;
+        }
+        syncSaved();
+        announceSave(`${control.dataset.gameName} ${removing ? 'removed from saved games' : 'saved'}.`);
+      }));
+      window.addEventListener('storage', event => {
+        if (event.key === null || event.key === 'likedGames') syncSaved();
+      });
+      window.addEventListener('pageshow', syncSaved);
+      syncSaved();
+
       // Keep guide launches in the same browser-local history as homepage launches.
       function rememberOpen(event) {
         if (event.button !== 0 && event.button !== 1) return;

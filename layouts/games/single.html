@@ -11,6 +11,7 @@
       {{ with $game.link }}
       <div class="game-guide-actions">
         <a class="guide-play" href="{{ . }}" target="_blank" rel="noopener">{{ $game.cta }} <i class="fa-solid fa-arrow-up-right-from-square" aria-hidden="true"></i></a>
+        {{ partial "guide-save.html" $game }}
         <a class="guide-detail" href="/games/#compare">Compare the puzzles <i class="fa-solid fa-arrow-right" aria-hidden="true"></i></a>
       </div>
       {{ end }}
