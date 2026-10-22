@@ -438,6 +438,18 @@
       gap: 8px;
     }
 
+    .saved-backup {
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin: -14px 0 24px;
+    }
+
+    .saved-backup .icon-btn { width: 44px; height: 44px; }
+    .saved-backup button:disabled { opacity: 0.45; cursor: default; }
+    .saved-backup-status { flex-basis: 100%; margin: 0; color: var(--muted); font-size: 0.85rem; }
+
     .filter-btn {
       min-height: 36px;
       padding: 7px 13px;
@@ -1339,6 +1351,18 @@
           </button>
         </div>
 
+        <div class="saved-backup" id="savedBackup" role="group" aria-label="Saved game list backup" hidden>
+          <span class="section-note">Saved list</span>
+          <button class="icon-btn" id="exportSaved" type="button" aria-label="Export saved game list" title="Export saved game list" disabled>
+            <i class="fa-solid fa-download" aria-hidden="true"></i>
+          </button>
+          <button class="icon-btn" id="importSaved" type="button" aria-label="Import saved game list" title="Import saved game list">
+            <i class="fa-solid fa-upload" aria-hidden="true"></i>
+          </button>
+          <input id="savedBackupFile" type="file" accept=".json,application/json" aria-label="Saved game list file" hidden>
+          <p class="saved-backup-status" id="savedBackupStatus" role="status"></p>
+        </div>
+
         <div class="home-collections" id="homeCollections" hidden>
           <section class="content-section collection-section" id="recentSection" hidden aria-labelledby="recentTitle">
             <div class="section-head">
@@ -1529,6 +1553,11 @@
       const favoritesGrid = document.getElementById('favoritesGrid');
       const savedOrder = document.getElementById('savedOrder');
       const savedOrderControl = document.getElementById('savedOrderControl');
+      const savedBackup = document.getElementById('savedBackup');
+      const exportSaved = document.getElementById('exportSaved');
+      const importSaved = document.getElementById('importSaved');
+      const savedBackupFile = document.getElementById('savedBackupFile');
+      const savedBackupStatus = document.getElementById('savedBackupStatus');
       const recentSection = document.getElementById('recentSection');
       const recentGrid = document.getElementById('recentGrid');
       const homeCollections = document.getElementById('homeCollections');
@@ -1642,6 +1671,8 @@
       function renderCollections() {
         const saved = Array.from(getSaved());
         const recent = getRecent();
+        savedBackup.hidden = state.view !== 'saved';
+        exportSaved.disabled = saved.length === 0;
         const preview = state.view === 'discover' && state.category === 'all' && !normalize(state.query);
         const order = storage.get('savedGameOrder', 'newest') === 'name' ? 'name' : 'newest';
         savedOrder.value = order;
@@ -1848,6 +1879,85 @@
         const persisted = storage.set('savedGameOrder', order);
         applyFilters();
         if (!persisted) showToast('Sort order changed for this visit');
+      });
+
+      exportSaved.addEventListener('click', () => {
+        const ids = Array.from(getSaved());
+        if (!ids.length) return;
+        try {
+          const backup = { format: 'hotgames-saved-games', version: 1, savedGames: ids };
+          const blob = new Blob([JSON.stringify(backup, null, 2) + '\n'], { type: 'application/json' });
+          const url = URL.createObjectURL(blob);
+          const download = document.createElement('a');
+          download.href = url;
+          download.download = 'hotgames-saved-games.json';
+          document.body.appendChild(download);
+          download.click();
+          download.remove();
+          setTimeout(() => URL.revokeObjectURL(url), 1000);
+          savedBackupStatus.textContent = 'Saved game list download requested. Game progress is not included.';
+        } catch (_) {
+          savedBackupStatus.textContent = 'The saved list could not be downloaded. Please try again.';
+        }
+      });
+
+      importSaved.addEventListener('click', () => savedBackupFile.click());
+
+      savedBackupFile.addEventListener('change', async () => {
+        const file = savedBackupFile.files[0];
+        savedBackupFile.value = '';
+        if (!file) return;
+        importSaved.disabled = true;
+        savedBackup.setAttribute('aria-busy', 'true');
+        savedBackupStatus.textContent = '';
+        try {
+          if (file.size > 32768) throw new Error('Backup exceeds the 32 KB limit.');
+          const backup = JSON.parse(await file.text());
+          if (!backup || backup.format !== 'hotgames-saved-games' || backup.version !== 1
+            || !Array.isArray(backup.savedGames) || backup.savedGames.length > 1000
+            || !backup.savedGames.every(id => typeof id === 'string' && id.length > 0 && id.length <= 128)) {
+            throw new Error('Invalid saved game list.');
+          }
+          if (state.view !== 'saved') return;
+          const unique = [...new Set(backup.savedGames)];
+          const known = unique.filter(id => sourceMap.has(id));
+          const skipped = unique.length - known.length;
+          const addedCount = known.filter(id => !getSaved().has(id)).length;
+          if (!addedCount) {
+            savedBackupStatus.textContent = !unique.length ? 'This backup has no saved games.'
+              : !known.length ? 'No games in this backup are currently in the catalog.'
+                : 'All available games in this backup are already saved.';
+            return;
+          }
+          const skippedNote = skipped ? ` ${skipped} unavailable game${skipped === 1 ? '' : 's'} will be skipped.` : '';
+          if (!window.confirm(`Add ${addedCount} game${addedCount === 1 ? '' : 's'} to Saved? Your current saved games will stay.${skippedNote}`)) {
+            savedBackupStatus.textContent = 'Import canceled. Your saved games are unchanged.';
+            return;
+          }
+          // Another tab may have changed persistent saves while the file or confirmation was open.
+          if (!sessionOnlyKeys.has('likedGames')) sessionValues.delete('likedGames');
+          const current = getSaved();
+          const added = known.filter(id => !current.has(id));
+          if (!added.length) {
+            savedBackupStatus.textContent = 'All available games in this backup are already saved.';
+            applyFilters();
+            return;
+          }
+          const persisted = setSaved(new Set([...current, ...added]));
+          applyFilters();
+          savedBackupStatus.textContent = `Added ${added.length} saved game${added.length === 1 ? '' : 's'}${persisted ? '.' : ' for this visit only; browser storage could not be updated.'}`;
+          showToast(persisted ? 'Saved games imported' : 'Games imported for this visit', () => {
+            const restored = getSaved();
+            added.forEach(id => restored.delete(id));
+            savedBackupStatus.textContent = 'Import undone.';
+            return setSaved(restored);
+          });
+        } catch (_) {
+          savedBackupStatus.textContent = 'Import failed. Choose a HotGames saved-list JSON file up to 32 KB. Your saved games are unchanged.';
+        } finally {
+          importSaved.disabled = false;
+          savedBackup.removeAttribute('aria-busy');
+        }
       });
 
       searchClear.addEventListener('click', () => {
