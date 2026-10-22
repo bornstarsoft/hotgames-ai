@@ -33,4 +33,9 @@ No other repository, game source, iframe, backend, account, login, ads, analytic
 - PASS: mobile screenshots inspected; removal targets are 44px, action controls do not overlap, existing illustrations render, and guide links wrap without horizontal overflow. Existing analytics requests suppressed in isolated browser QA.
 - PASS: 17 additional sitemap and no-JavaScript assertions. All 126 unique sitemap URLs, updated detail lastmod, old Sudoku fragment, 24 catalog cards and all three exact Play destinations retained.
 - Physical-device QA and business outcome measurements: NOT_RUN.
-- Deployment verification: pending source push and Cloudflare Pages check.
+- PASS: all 24 catalog cards fit at 320px; native Play opens the exact external URL in a new tab and puts a previously removed game back at the front. Undo does not duplicate or reorder a reopened target. External game content was mocked for this navigation-only test.
+- Source commit: 62cba213137a6bb86cf94b2d34c24a7c165dddb3, Improve recent game curation and puzzle reading links. Normal push to GitHub main; no rebase or force push required.
+- Deployment PASS: Cloudflare Pages check succeeded for source commit 62cba21, deployment a3c1e758-2251-4fe1-ba08-a397765f8881. Verified on 2026-10-23 around 01:13 KST at https://a3c1e758.hotgames-ai.pages.dev/.
+- Deployed URL PASS: WebKit repeated all 65 functional assertions and 24 layout/theme combinations; all 17 sitemap/no-JavaScript checks passed. Deployed mobile screenshot inspected.
+- Normal-domain acceptance: home, games directory and all three details returned HTTP 200. The three changed URLs (/, /games/daysudoku/, /games/ringzzle/) did not yet contain the new removal/reading markers at 01:12 KST. Deployment success is not a claim that the custom-domain HTML has refreshed. No cache purge, bypass, rule edits or login requests made.
+- Next manual check: on a physical phone, verify Recent removal/Undo and the two updated guides when normal-domain HTML reflects this release. Cache operations remain excluded unless separately authorized.
