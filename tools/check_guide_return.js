@@ -118,10 +118,14 @@ async (page) => {
         check((await link.getAttribute('aria-label')).endsWith(': when you get stuck'), view + '/' + id + ' accessible purpose');
         await link.click();
         check(new URL(page.url()).hash === '#when-you-get-stuck', view + '/' + id + ' native fragment');
-        check(await page.locator('#when-you-get-stuck').evaluate(el => {
+        await page.waitForLoadState('load');
+        await page.waitForFunction(() => {
+          const el = document.getElementById('when-you-get-stuck');
+          if (!el) return false;
           const rect = el.getBoundingClientRect();
           return rect.top >= 0 && rect.top < innerHeight;
-        }), view + '/' + id + ' target in viewport');
+        }, undefined, { timeout: 5000 });
+        check(true, view + '/' + id + ' target in viewport');
         check(await page.evaluate(() => localStorage.getItem('recentGames')) === preserved, view + '/' + id + ' reading leaves recents unchanged');
         check(await page.evaluate(() => localStorage.getItem('likedGames')) === preserved, view + '/' + id + ' reading leaves saves unchanged');
         await page.goBack();
@@ -204,6 +208,8 @@ async (page) => {
     await plain.goto(root + '/games/');
     check(await plain.locator('#starting-tips a[href$="#when-you-get-stuck"]').count() === 3, 'directory help available without JS');
     await plain.locator('#starting-tips a[href="/games/daysudoku/#when-you-get-stuck"]').click();
+    await plain.waitForURL(root + '/games/daysudoku/#when-you-get-stuck');
+    await plain.locator('#when-you-get-stuck').waitFor({ state: 'visible' });
     check(new URL(plain.url()).hash === '#when-you-get-stuck' && await plain.locator('#when-you-get-stuck').isVisible(), 'no-JS native help navigation');
     await noJS.close();
     noJS = undefined;

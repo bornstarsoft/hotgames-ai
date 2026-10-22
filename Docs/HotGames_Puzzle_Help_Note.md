@@ -31,6 +31,10 @@ No new page, external service, JavaScript dependency, analytics, account, backen
 
 ## Release
 
-Pending normal commit/push and deployed acceptance. Ordinary-domain prior-release content was still older at the start. Cache operations remain excluded; distinguish successful Pages deployment from ordinary-domain freshness.
+- Source commit: 89d119def75e93a67582d88550bba79354046e20, Add contextual puzzle help to saved and recent games. Normally pushed to GitHub main without rebase or force push.
+- Deployment PASS: public GitHub check 119971496133 reports Deployed successfully. Deployment 818fc5c2-1531-4a4e-86fd-f3262eaa06c4, https://818fc5c2.hotgames-ai.pages.dev/. Home and directory return HTTP 200 with the new help metadata/links.
+- Deployed browser QA PASS: final Chrome (unique deployment) and WebKit (production Pages address) each repeated all 208 assertions / 48 layouts. Native help scrolling and no-JavaScript navigation required waiting for document/navigation completion under real network latency; test-only waits were added, not application scroll overrides. The final test file is included in the verification follow-up commit.
+- Ordinary-domain acceptance PARTIAL around 02:16 KST: the plain homepage initially had no new metadata, while the normal Saved and Recent URLs showed all three Puzzle help links with 44px targets and no horizontal overflow. The guide directory also showed all three help links. However, all three normal detail responses still lacked #when-you-get-stuck and the prior release's bottom actions. Full help navigation on hotgames.ai is therefore NOT accepted yet.
+- No cache purge, bypass, rule changes or credentials accessed. Remaining manual check: confirm ordinary detail freshness and follow the help links end-to-end on a physical mobile device. The implementation's Pages deployment is verified; do not equate that with full custom-domain acceptance.
 
 Repeat the existing CLI smoke function in an isolated browser profile already open on the desired origin: run-code "$(cat tools/check_guide_return.js)". It seeds browser-local test collections; do not use the owner's personal browser profile.
