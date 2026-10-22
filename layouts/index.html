@@ -920,8 +920,19 @@
       text-align: center;
     }
 
-    .empty-state button {
+    .empty-actions {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 12px;
       margin-top: 16px;
+    }
+
+    .empty-actions > * {
+      min-height: 44px;
+      max-width: 100%;
+      white-space: normal;
+      overflow-wrap: anywhere;
       cursor: pointer;
     }
 
@@ -1276,7 +1287,7 @@
 
         <div class="search-box" role="search">
           <i class="fa-solid fa-magnifying-glass search-icon" aria-hidden="true"></i>
-          <label class="sr-only" for="searchInput">Search games</label>
+          <label class="sr-only" id="searchLabel" for="searchInput">Search games</label>
           <input class="search-input" id="searchInput" type="search"
             placeholder="Search games" autocomplete="off">
           <button class="search-clear" id="searchClear" type="button" aria-label="Clear search" hidden>
@@ -1433,7 +1444,10 @@
         <div class="empty-state" id="emptyState" hidden>
           <i class="fa-solid fa-magnifying-glass" aria-hidden="true"></i>
           <p id="emptyMessage" role="status">No games match these filters.</p>
-          <button class="play-link" type="button" id="emptyReset">Reset filters</button>
+          <div class="empty-actions">
+            <a class="play-link" id="emptyDiscover" href="/" hidden>Search all games</a>
+            <button class="play-link" type="button" id="emptyReset">Reset filters</button>
+          </div>
         </div>
       </main>
     </div>
@@ -1510,6 +1524,7 @@
       const clearFilters = document.getElementById('clearFilters');
       const catalogCount = document.getElementById('catalogCount');
       const emptyState = document.getElementById('emptyState');
+      const emptyDiscover = document.getElementById('emptyDiscover');
       const favoritesSection = document.getElementById('favoritesSection');
       const favoritesGrid = document.getElementById('favoritesGrid');
       const savedOrder = document.getElementById('savedOrder');
@@ -1684,8 +1699,21 @@
           : state.view === 'recent' ? getRecent().length === 0 : false;
         document.getElementById('emptyMessage').textContent = isEmptyCollection
           ? (state.view === 'saved' ? 'No saved games yet.' : 'No recently opened games yet.')
-          : 'No games match these filters.';
+          : (state.view === 'saved' ? 'No saved games match these filters.'
+            : state.view === 'recent' ? 'No recently opened games match these filters.'
+              : 'No games match these filters.');
         document.getElementById('emptyReset').textContent = isEmptyCollection ? 'Browse games' : 'Reset filters';
+        emptyDiscover.hidden = count > 0 || state.view === 'discover' || visibleIds.size === 0
+          || (!normalize(state.query) && state.category === 'all');
+        // Keep a native, shareable destination as well as same-page navigation.
+        const discoveryUrl = new URL(location.href);
+        discoveryUrl.searchParams.delete('view');
+        emptyDiscover.href = discoveryUrl.pathname + discoveryUrl.search + discoveryUrl.hash;
+        emptyDiscover.textContent = `Search all games (${visibleIds.size})`;
+        const searchLabel = state.view === 'saved' ? 'Search saved games'
+          : state.view === 'recent' ? 'Search recently opened games' : 'Search games';
+        document.getElementById('searchLabel').textContent = searchLabel;
+        searchInput.placeholder = state.view === 'recent' ? 'Search recent games' : searchLabel;
         searchClear.hidden = !state.query;
         clearFilters.style.display = state.query || state.category !== 'all' ? 'inline-flex' : 'none';
         setActiveFilter(state.category);
@@ -1716,6 +1744,14 @@
 
       document.addEventListener('click', (event) => {
         if (event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
+        if (event.target.closest('#emptyDiscover')) {
+          event.preventDefault();
+          state.view = 'discover';
+          updateUrl();
+          applyFilters();
+          document.querySelector('h1').focus({ preventScroll: true });
+          return;
+        }
         const viewControl = event.target.closest('[data-view]');
         if (viewControl) {
           event.preventDefault();

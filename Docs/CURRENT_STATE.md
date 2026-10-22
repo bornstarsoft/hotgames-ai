@@ -1,22 +1,18 @@
 # HotGames Current State
 
-ACTIVE_WRITER = NONE
+ACTIVE_WRITER = CODEX (HOTGAMES-COLLECTION-SEARCH; scoped empty-result recovery, QA and approved GitHub deployment; main; 2026-10-23)
 
-- Phase: release verification; implementation, QA, normal GitHub push and Pages deployment DONE. Ordinary-domain end-to-end acceptance PARTIAL.
-- Work ID / last AI: HOTGAMES-PUZZLE-HELP / CODEX (2026-10-23).
-- Start: clean main 407acaa, matching origin/main after fetch; no other writer or owner WIP.
+- Phase: release preparation; implementation and local QA DONE; approved normal GitHub push and deployment verification next.
+- Work ID / last AI: HOTGAMES-COLLECTION-SEARCH / CODEX (2026-10-23).
+- Start: clean main 1ed4b24, matching origin/main after fetch; no other writer or owner WIP.
 - Owner approval: useful content and return-visit improvement, simple homepage, validation and deployment. Existing GitHub exception retained; cache operations excluded.
-- Scope: Puzzle help links in full Saved/Recent collections; descriptive help links in the existing guide directory. Native #when-you-get-stuck targets, distinct Play links, no collection writes on help navigation.
-- Main remains simple: no section/button added; Discover cards and compact two-game previews keep existing behavior. Collection help touch targets now 44px. Existing guide CSS hashes, detail body/output and timestamps unchanged.
-- QA PASS: strict isolated Hugo build, node syntax, Git hygiene, 128 pages / 7 aliases / four style hashes. Three detail outputs byte-identical to before. Sitemap 126 unique URLs, directory timestamp updated only.
-- Browser QA PASS: Chrome and WebKit each 208 assertions / 48 responsive-theme combinations. Saved/Recent help, native Back/filters, Undo, storage edge cases, no-JS guide links and prior guide-return functionality included. Mobile and desktop screenshots inspected.
-- Guard QA PASS: isolated missing-heading fixture fails Hugo as expected; source content untouched by fault test.
-- Source/QA detail: Docs/HotGames_Puzzle_Help_Note.md and tools/check_guide_return.js.
-- Previous release: source d483c9b, documentation 407acaa; deployment and ordinary-domain freshness limitation recorded in Docs/HotGames_Guide_Return_Note.md.
-- DONE / HEAD: source 89d119def75e93a67582d88550bba79354046e20 pushed normally. This test/documentation follow-up records final release evidence; use Git for its containing commit and WIP.
-- Deployment PASS: Cloudflare public GitHub check 119971496133; deployment 818fc5c2-1531-4a4e-86fd-f3262eaa06c4, https://818fc5c2.hotgames-ai.pages.dev/.
-- Deployed QA PASS: final Chrome and WebKit each 208 assertions / 48 layouts. Test-only waits for native scrolling/navigation completion fixed network timing races; application code unchanged after source release.
-- Ordinary-domain PARTIAL (02:16 KST): Saved/Recent have all three 44px help links and the directory has the contextual links, without mobile overflow. Plain home was initially older; all three detail responses still lack the help target and previous bottom actions. End-to-end help flow is not accepted on the custom domain yet.
-- BLOCKER: no source/build/Pages-deployment blocker. Ordinary detail freshness remains unresolved; no cache purge/bypass/rules changes. Physical-device QA and measured business effects NOT_RUN.
-- NEXT_SINGLE_TASK: verify ordinary detail freshness and help navigation end-to-end without cache operations, followed by physical-mobile acceptance.
-- Existing watch server 1316 untouched; isolated QA server 1317 stopped after validation.
+- Scope: scoped search labels and truthful empty-result messages; Search all games recovery retains query/category when other catalog matches exist. Native link, keyboard and Back/Forward supported; no collection writes.
+- Main remains simple: no new section or normal-home action. Recovery appears only in filtered, empty collections with catalog matches. Existing Play, Save, help and compact previews unchanged.
+- QA PASS: strict isolated Hugo --gc --minify, node syntax and Git hygiene; 128 pages / 7 aliases / four style hashes. Full output comparison differs only in index.html; all detail pages, sitemap and assets identical.
+- Browser QA PASS: Chrome and WebKit each 70 search assertions / 16 layouts plus 208 guide-return assertions / 48 layouts. Mobile/desktop screenshots inspected; 44px actions, no overlap or overflow.
+- Source/QA detail: Docs/HotGames_Collection_Search_Note.md, tools/check_collection_search.js and tools/check_guide_return.js.
+- Previous release: source 89d119d, verification 1ed4b24; details and domain freshness limitation in Docs/HotGames_Puzzle_Help_Note.md.
+- Deployment / deployed QA: pending source push.
+- BLOCKER: none for source/build. Prior ordinary-domain detail freshness remains unresolved; no cache operations. Physical-device QA and measured business effects NOT_RUN.
+- NEXT_SINGLE_TASK: push validated source normally and verify GitHub/Pages deployment and ordinary-domain behavior.
+- Existing watch server 1316 untouched; isolated QA server 1317 currently serving completed output.
