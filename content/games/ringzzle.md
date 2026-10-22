@@ -7,6 +7,7 @@ lastmod: 2026-10-23T01:52:00+09:00
 url: "/games/ringzzle/"
 startingTip: "Check color and ring size"
 startingTipSummary: "Notice which size slots remain open before choosing a matching color."
+helpTip: "Stuck? Check the remaining ring sizes"
 ---
 
 Ringzzle is a free color rings puzzle game online. You can open it in the browser, start playing instantly, and chase a better score without installing an app.

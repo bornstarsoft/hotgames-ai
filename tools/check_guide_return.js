@@ -94,6 +94,86 @@ async (page) => {
       check(await page.locator('#favoritesGrid [data-game-id="' + id + '"]').count() === 1, id + ' saved game reachable');
     }
 
+    // Help links must not turn reading into a recorded game launch.
+    await page.goto(root + '/');
+    const extraId = await page.locator('.source-section .game-card:not([data-guide-help])').first().getAttribute('data-game-id');
+    const ids = [...Object.keys(games), extraId];
+    await page.evaluate(ids => {
+      localStorage.setItem('likedGames', JSON.stringify(ids));
+      localStorage.setItem('recentGames', JSON.stringify(ids));
+      localStorage.setItem('savedGameOrder', 'name');
+    }, ids);
+    const preserved = JSON.stringify(ids);
+    for (const view of ['saved', 'recent']) {
+      const grid = view === 'saved' ? '#favoritesGrid' : '#recentGrid';
+      await page.goto(root + '/?view=' + view);
+      check(await page.locator(grid + ' .detail-link[href$="#when-you-get-stuck"]').count() === 3, view + ' three help links');
+      check(await page.locator(grid + ' [data-game-id="' + extraId + '"] a[href$="#when-you-get-stuck"]').count() === 0, view + ' no invented help for other games');
+      for (const id of Object.keys(games)) {
+        const url = root + '/?view=' + view + '&cat=puzzle&q=' + id;
+        await page.goto(url);
+        const link = page.locator(grid + ' [data-game-id="' + id + '"] .detail-link');
+        check(await link.textContent() === 'Puzzle help', view + '/' + id + ' clear label');
+        check(await link.evaluate(a => a.href) === root + '/games/' + id + '/#when-you-get-stuck', view + '/' + id + ' exact help destination');
+        check((await link.getAttribute('aria-label')).endsWith(': when you get stuck'), view + '/' + id + ' accessible purpose');
+        await link.click();
+        check(new URL(page.url()).hash === '#when-you-get-stuck', view + '/' + id + ' native fragment');
+        check(await page.locator('#when-you-get-stuck').evaluate(el => {
+          const rect = el.getBoundingClientRect();
+          return rect.top >= 0 && rect.top < innerHeight;
+        }), view + '/' + id + ' target in viewport');
+        check(await page.evaluate(() => localStorage.getItem('recentGames')) === preserved, view + '/' + id + ' reading leaves recents unchanged');
+        check(await page.evaluate(() => localStorage.getItem('likedGames')) === preserved, view + '/' + id + ' reading leaves saves unchanged');
+        await page.goBack();
+        check(page.url() === url, view + '/' + id + ' Back retains filters');
+        check(await link.isVisible(), view + '/' + id + ' Back restores help');
+      }
+      await page.goto(root + '/?view=' + view);
+      for (const width of [320, 390, 768, 1440]) {
+        await page.setViewportSize({ width, height: 900 });
+        for (const theme of ['light', 'dark']) {
+          await page.evaluate(value => document.documentElement.dataset.theme = value, theme);
+          check(await page.locator(grid + ' .detail-link[href$="#when-you-get-stuck"]').evaluateAll(links =>
+            document.documentElement.scrollWidth <= innerWidth && links.every(link => {
+              const r = link.getBoundingClientRect(), card = link.closest('.game-card').getBoundingClientRect();
+              return r.height >= 44 && r.left >= card.left && r.right <= card.right;
+            })), view + ' help layout ' + width + '/' + theme);
+          layouts++;
+        }
+      }
+    }
+    await page.goto(root + '/?view=saved');
+    await page.locator('#favoritesGrid [data-game-id="daysudoku"] .fav-btn').click();
+    await page.locator('#toastUndo').click();
+    check(await page.locator('#favoritesGrid [data-game-id="daysudoku"] .detail-link').textContent() === 'Puzzle help', 'Saved Undo restores help link');
+    await page.goto(root + '/?view=recent');
+    await page.locator('#recentGrid [data-game-id="daysudoku"] .recent-remove').click();
+    await page.locator('#toastUndo').click();
+    check(await page.locator('#recentGrid [data-game-id="daysudoku"] .detail-link').textContent() === 'Puzzle help', 'Recent Undo restores help link');
+    await page.goto(root + '/');
+    check(await page.locator('.source-section .detail-link').evaluateAll(links => links.every(a => a.textContent === 'Details' && !a.hash)), 'Discover guide links unchanged');
+    check(await page.locator('#homeCollections .detail-link').evaluateAll(links => links.every(a => getComputedStyle(a).display === 'none')), 'no added preview links');
+    await page.goto(root + '/games/');
+    const directoryHelp = page.locator('#starting-tips .guide-detail[href$="#when-you-get-stuck"]');
+    check(await directoryHelp.count() === 3, 'directory has three contextual help links');
+    for (const width of [320, 390, 768, 1440]) {
+      await page.setViewportSize({ width, height: 900 });
+      for (const theme of ['light', 'dark']) {
+        await page.evaluate(value => document.documentElement.dataset.theme = value, theme);
+        check(await directoryHelp.evaluateAll(links => document.documentElement.scrollWidth <= innerWidth && links.every(a => {
+          const box = a.getBoundingClientRect();
+          return box.height >= 44 && box.left >= 0 && box.right <= innerWidth;
+        })), 'directory help layout ' + width + '/' + theme);
+        layouts++;
+      }
+    }
+    for (const id of Object.keys(games)) {
+      const link = page.locator('#starting-tips a[href="/games/' + id + '/#when-you-get-stuck"]');
+      await link.click();
+      check(new URL(page.url()).hash === '#when-you-get-stuck' && await page.locator('#when-you-get-stuck').count() === 1, id + ' directory help resolves');
+      await page.goBack();
+    }
+
     await page.goto(root + '/games/daysudoku/');
     other = await context.newPage();
     await other.goto(root + '/games/daysudoku/');
@@ -121,6 +201,10 @@ async (page) => {
       check(await plain.locator('[data-save-game]').evaluateAll(items => items.every(el => getComputedStyle(el).display === 'none')), id + ' no dead save controls without JS');
       check(await plain.locator('#when-you-get-stuck').isVisible(), id + ' content visible without JS');
     }
+    await plain.goto(root + '/games/');
+    check(await plain.locator('#starting-tips a[href$="#when-you-get-stuck"]').count() === 3, 'directory help available without JS');
+    await plain.locator('#starting-tips a[href="/games/daysudoku/#when-you-get-stuck"]').click();
+    check(new URL(plain.url()).hash === '#when-you-get-stuck' && await plain.locator('#when-you-get-stuck').isVisible(), 'no-JS native help navigation');
     await noJS.close();
     noJS = undefined;
 

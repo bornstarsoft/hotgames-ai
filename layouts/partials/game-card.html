@@ -7,11 +7,23 @@
 {{- $platforms := $game.platforms | default $game.platform -}}
 {{- $short := $game.short | default $game.short_desc -}}
 {{- $image := $game.image -}}
+{{- $help := "" -}}
+{{- with $game.details -}}
+  {{- with site.GetPage . -}}
+    {{- if .Params.helpTip -}}
+      {{- if not (in .Fragments.Identifiers "when-you-get-stuck") -}}
+        {{- errorf "Puzzle help target missing for %s" .RelPermalink -}}
+      {{- end -}}
+      {{- $help = printf "%s#when-you-get-stuck" .RelPermalink -}}
+    {{- end -}}
+  {{- end -}}
+{{- end -}}
 
 <article class="game-card game-card--{{ $variant }}"
   data-game-id="{{ $id }}"
   data-legacy-id="{{ $link | urlize }}"
   data-game-name="{{ $name }}"
+  {{ with $help }}data-guide-help="{{ . }}"{{ end }}
   data-category="{{ $game.category | default "other" | lower }}"
   data-platform="{{ delimit $platforms " " | lower }}"
   data-search="{{ printf "%s %s %s %s %s" $name ($game.category | default "") ($short | default "") (delimit $platforms " ") ($game.puzzle_type | default "") | lower }}{{ if in $platforms "web" }} browser{{ end }}">

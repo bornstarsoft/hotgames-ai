@@ -894,6 +894,8 @@
       color: var(--muted);
     }
 
+    .collection-section .detail-link { min-height: 44px; }
+
     .detail-link:hover {
       color: var(--text);
       background: var(--surface-soft);
@@ -1599,6 +1601,12 @@
           clone.classList.replace('game-card--featured', 'game-card--catalog');
           clone.classList.toggle('game-card--preview', preview);
           clone.dataset.collectionCard = 'true';
+          const helpLink = clone.querySelector('.detail-link');
+          if (!preview && source.dataset.guideHelp && helpLink) {
+            helpLink.href = source.dataset.guideHelp;
+            helpLink.textContent = 'Puzzle help';
+            helpLink.setAttribute('aria-label', `${clone.dataset.gameName}: when you get stuck`);
+          }
           if (grid === recentGrid && state.view === 'recent') {
             const remove = document.createElement('button');
             remove.type = 'button';

@@ -55,6 +55,12 @@
           <p class="puzzle-kind">{{ .Title }}</p>
           <h3><a href="{{ .RelPermalink }}#a-simple-starting-strategy">{{ .Params.startingTip }} <i class="fa-solid fa-arrow-right" aria-hidden="true"></i></a></h3>
           <p class="starting-tip-summary">{{ .Params.startingTipSummary }}</p>
+          {{ if .Params.helpTip }}
+          {{ if not (in .Fragments.Identifiers "when-you-get-stuck") }}
+            {{ errorf "Puzzle help target missing for %s" .RelPermalink }}
+          {{ end }}
+          <a class="guide-detail" href="{{ .RelPermalink }}#when-you-get-stuck" aria-label="{{ .Title }}: {{ .Params.helpTip }}">{{ .Params.helpTip }} <i class="fa-solid fa-arrow-right" aria-hidden="true"></i></a>
+          {{ end }}
         </article>
         {{ end }}
         {{ end }}
