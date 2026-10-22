@@ -45,5 +45,25 @@ No storage writes are introduced. Small screens use wrapping 44px actions.
 - Visual inspection PASS: 320px dark Chrome, 390px light WebKit and 1440px light
   Chrome. Actions fit, wrap as needed and do not overlap. Screenshots remain
   outside the repository in /private/tmp/hg-search-{mobile,webkit,desktop}.png.
-- Deployment evidence: pending normal GitHub push and Pages verification.
 - Physical devices and measured retention/business impact: NOT_RUN.
+
+## Release Evidence
+
+- Source commit: 88968db8094ce35a6729dcaf50f82a02feaa66ba, pushed normally to
+  GitHub origin/main; no force push or rebase needed.
+- Cloudflare GitHub check 119979849318: Deployed successfully.
+- Deployment: e69daab1-d136-4c6e-91fd-34fbfe715f95.
+- Verified URL: https://e69daab1.hotgames-ai.pages.dev/ (Chrome search 70/16).
+- Production Pages: https://hotgames-ai.pages.dev/ (WebKit search 70/16 and
+  existing guide-return 208/48).
+- Ordinary-domain acceptance PARTIAL, 02:32 KST: https://hotgames.ai/ still
+  serves HTML without the recovery action. Starting at that home and switching
+  to Saved retains the old behavior. Direct navigation to the actual app route
+  https://hotgames.ai/?view=saved&q=Ringzzle exposes the recovery link; it opens
+  /?q=Ringzzle and shows the matching game without 390px overflow.
+- This is not full ordinary-home rollout acceptance. No purge, request-header
+  bypass, arbitrary query cachebuster or cache rule edits were performed.
+- Temporary 1317 QA server and both task-created browser sessions stopped;
+  existing 1316 watch server untouched. No generated output tracked/staged.
+- Next single task: verify ordinary-home freshness and the search recovery flow
+  on a physical phone without changing cache policy.
