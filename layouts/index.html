@@ -2154,9 +2154,16 @@
       shareButtons.forEach(button => button.addEventListener('click', shareGames));
 
       window.addEventListener('storage', event => {
+        if (event.storageArea !== localStorage) return;
         if (event.key && !['likedGames', 'recentGames', 'theme', 'savedGameOrder'].includes(event.key)) return;
-        sessionValues.clear();
-        sessionOnlyKeys.clear();
+        // Other keys must not discard this tab's storage-failure fallback.
+        if (event.key === null) {
+          sessionValues.clear();
+          sessionOnlyKeys.clear();
+        } else {
+          sessionValues.delete(event.key);
+          sessionOnlyKeys.delete(event.key);
+        }
         if (event.key === 'theme') setTheme(storage.get('theme', 'dark'));
         applyFilters();
       });

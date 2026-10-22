@@ -1,21 +1,19 @@
 # HotGames Current State
 
-ACTIVE_WRITER = NONE
+ACTIVE_WRITER = CODEX (HOTGAMES-STORAGE-ISOLATION; protect temporary collections across unrelated tab changes, QA and approved GitHub deployment; main; 2026-10-23)
 
-- Phase: release verification; implementation, QA, normal GitHub push and Pages deployment DONE. Ordinary-domain acceptance PARTIAL.
-- Work ID / last AI: HOTGAMES-PUBLIC-SHARE / CODEX (2026-10-23).
-- Start: clean main 6f9de2b, matching origin/main after fetch; no other writer or owner WIP.
+- Phase: release preparation; storage isolation implemented and local QA complete; approved GitHub deployment next.
+- Work ID / last AI: HOTGAMES-STORAGE-ISOLATION / CODEX (2026-10-23).
+- Start: clean main bb37693, matching origin/main after fetch; no other writer or owner WIP.
 - Owner approval: useful content and return-visit improvement, simple homepage, validation and deployment. Existing GitHub exception retained; cache operations excluded.
-- Scope: existing Share sends canonical public search/category URLs, never local collection state; mobile menu entry, native cancellation, clipboard fallback, truthful errors and duplicate-request guard.
+- Scope: preserve temporary collection/sort state on unrelated cross-tab changes; invalidate only the changed localStorage key, while respecting direct same-key writes/removal and explicit clear.
 - Main remains simple: no new section or card. Existing Play, Save, help, backup and compact previews unchanged.
 - QA PASS: strict isolated Hugo --gc --minify, node syntax and Git hygiene; 128 pages / 7 aliases / four style hashes. Full output comparison differs only in index.html; all detail pages, sitemap and assets identical.
-- Browser QA PASS: Chrome and WebKit each 80 share / 70 search / 45 backup / 208 guide-return assertions (403 total), 84 viewport/theme combinations. Mobile/desktop screenshots inspected. Share/clipboard APIs stubbed; physical-device sharing NOT_RUN.
-- Source/QA detail: Docs/HotGames_Public_Share_Note.md and tools/check_public_share.js; existing regressions unchanged.
-- Previous release: source 31998ba, verification 6f9de2b; details and domain freshness limitation in Docs/HotGames_Saved_Backup_Note.md.
-- DONE / HEAD: source d0c2aa28c5e92b050c20bc0e8c65e1eaf84fe95d pushed normally. This documentation follow-up records evidence; use Git for its containing commit and WIP.
-- Deployment PASS: GitHub Cloudflare check 120000205719; e2ad7a90-74a8-4d94-95d1-72f6ea80cf3e, https://e2ad7a90.hotgames-ai.pages.dev/.
-- Deployed QA PASS: Chrome share 80/12 on unique deployment and WebKit share 80/12 on production Pages. Native/clipboard APIs stubbed; no actual external share or clipboard write by tests.
-- Ordinary-domain PARTIAL (03:13-03:14 KST): Chrome home and Saved, WebKit home and curl home lacked the new menu action. Chrome puzzle/Ringzzle search showed it and shared the exact canonical public search URL. Full domain-wide acceptance not claimed.
-- BLOCKER: none for source/build/Pages. Ordinary-domain consistency and physical-device native sharing remain unaccepted; no cache operations. Measured business effects NOT_RUN.
-- NEXT_SINGLE_TASK: ordinary-domain physical iOS/Android native sharing and recipient-open acceptance without changing cache policy.
-- Existing watch server 1316 untouched; isolated QA server 1317 and task browser sessions stopped.
+- Browser QA PASS: Chrome and WebKit each storage isolation 39/8, search 70/16, backup 45/8, share 80/12 and guide-return 208/48 (442 assertions / 92 layouts). Mobile/desktop screenshots inspected. Pre-fix Chrome test reproduced temporary recent removal loss after another tab changed theme.
+- Source/QA detail: Docs/HotGames_Storage_Isolation_Note.md and tools/check_storage_isolation.js; existing regressions unchanged.
+- Previous release: source d0c2aa2, verification bb37693; details and ordinary-domain limitation in Docs/HotGames_Public_Share_Note.md.
+- DONE / HEAD: implementation complete, source uncommitted; use Git for WIP.
+- Deployment: NOT_RUN for this work ID.
+- BLOCKER: none locally. Ordinary-domain acceptance remains separate; physical-device quota and measured business effects NOT_RUN. Cache operations excluded.
+- NEXT_SINGLE_TASK: commit and deploy verified storage isolation, then validate deployed code and ordinary domain separately.
+- Existing watch server 1316 untouched; isolated QA server 1317 and task browser sessions active.
