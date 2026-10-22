@@ -3,7 +3,7 @@ title: "Blockzzle"
 seoTitle: "Blockzzle — Free Block Puzzle Game Online"
 description: "Play Blockzzle, a free block puzzle game online with instant browser play, line clears, best-score chasing, and an anonymous leaderboard."
 date: 2026-06-09
-lastmod: 2026-10-23T00:50:06+09:00
+lastmod: 2026-10-23T01:52:00+09:00
 url: "/games/blockzzle/"
 startingTip: "Leave room for the next block"
 startingTipSummary: "Compare the open space left by a placement, not just the line it might clear."
@@ -30,6 +30,12 @@ The core loop is about placing block pieces carefully, making room for the next 
 For your next run, focus on keeping room for later pieces rather than filling the first available gap. A clear opens space, but the shape of the space left behind matters too.
 
 [Read the official block puzzle overview](https://blockzzle.com/block-puzzle/).
+
+## When You Get Stuck
+
+Several empty squares do not necessarily make room for a block: the open squares need to match its shape in one placement. When the board feels crowded, compare the outline of a piece with the connected gaps, rather than counting all the empty squares.
+
+Before committing to a placement that clears a row or column, consider the space that clear would leave. On your next run, try to spot the move that splits a useful open area into smaller gaps. This is a placement habit to practise, not a promise of a higher score.
 
 ## Leaderboard
 

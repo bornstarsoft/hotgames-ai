@@ -29,5 +29,12 @@
     </figure>
     {{ end }}
     <div class="game-guide-content">{{ .Content }}</div>
+    {{ with $game.link }}
+    <nav class="guide-band game-guide-actions" aria-label="{{ $game.name }} next steps">
+      <a class="guide-play" href="{{ . }}" target="_blank" rel="noopener">{{ $game.cta }} <i class="fa-solid fa-arrow-up-right-from-square" aria-hidden="true"></i></a>
+      {{ partial "guide-save.html" $game }}
+      <a class="guide-detail" href="/?view=saved"><i class="fa-regular fa-heart" aria-hidden="true"></i> Saved games</a>
+    </nav>
+    {{ end }}
   </article>
 {{ end }}

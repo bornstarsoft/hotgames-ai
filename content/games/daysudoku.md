@@ -3,7 +3,7 @@ title: "DaySudoku"
 seoTitle: "DaySudoku - Free Daily Sudoku Puzzle Online"
 description: "Play DaySudoku, a free daily Sudoku puzzle in your browser. Learn the rules and find a logical first move without signing up."
 date: 2026-06-15
-lastmod: 2026-10-23T01:04:14+09:00
+lastmod: 2026-10-23T01:52:00+09:00
 url: "/games/daysudoku/"
 gameUrl: "https://daysudoku.com/"
 gamePlatform: "Web Browser"
@@ -29,6 +29,12 @@ Fill empty cells with numbers from 1 to 9. Each row, column, and 3x3 box must co
 For your next puzzle, focus on finding one certain move before looking further across the board.
 
 [Read the official Sudoku rules](https://daysudoku.com/how-to-play/).
+
+## When You Get Stuck
+
+If no cell has just one possible number, reverse the question: where can one missing number go? Choose a row, column, or box, then check every empty cell against its crossing row, column, and box. If that number can go in only one of those cells, you have a certain placement.
+
+Do not treat the first possible cell as the only possible cell. Finish checking the whole row, column, or box before entering the number. These checks will not resolve every position; moving to another part of the board is a reasonable next step.
 
 ## More Ways To Learn
 

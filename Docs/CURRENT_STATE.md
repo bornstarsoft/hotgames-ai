@@ -1,20 +1,16 @@
 # HotGames Current State
 
-ACTIVE_WRITER = NONE
+ACTIVE_WRITER = CODEX (HOTGAMES-GUIDE-RETURN; concise stuck-point tips and end-of-guide play/save actions, validation and GitHub deployment; main; 2026-10-23)
 
-- Phase: release verification; implementation, local QA, normal GitHub push and Pages deployment verified. Ordinary-domain acceptance remains PARTIAL. Cache work remains excluded.
-- Work ID / last AI: HOTGAMES-RETURN-RELIABILITY / CODEX (2026-10-23).
-- Start: clean main at 9df4b6d, matching origin/main after fetch. Existing owner changes preserved.
-- Scope: publish three historical guide stylesheet versions from exact Git source snapshots, keep original hash URLs and bytes, and guard the current and retained versions against accidental changes. Homepage/content/UI and existing game destinations remain unchanged.
-- Owner approval: project-specific GitHub exception, relevant content, modest retention improvement, validation and deployment. Cache work excluded; no purge, rule edits, force push, remote changes or credentials accessed.
-- QA PASS: strict isolated Hugo build, Git hygiene, 128 pages / 7 aliases, four output styles with correct SHA-256. Historical sources match Git byte-for-byte. Two negative manifest tests correctly fail the build.
-- Browser QA PASS: Chrome and WebKit each passed 46 historical-page assertions / 16 layouts; current WebKit regression passed 117 assertions / 56 layouts. Mobile screenshots inspected. Home and four guide HTML outputs are byte-identical to the prior release build.
-- Pre-release ordinary-domain issue reproduced: old list HTML requests 0a749f6f... CSS, old detail HTML requests ccb5ba78... CSS. The missing old CSS returned HTML. This release restores those original files, without changing cache rules or cached HTML.
-- Source and QA detail: Docs/HotGames_Return_Reliability_Note.md. No other repository, new JavaScript, dependencies, analytics, backend, generated output or game code changed.
-- Previous release: 9df4b6d (documentation), source 6667ace. See Docs/HotGames_Guide_Shortcuts_Note.md for the original public-site acceptance warning.
-- DONE / HEAD: source c5f8dec3eec955852d8061155175386676a87fdb pushed to origin/main. This documentation-only follow-up records release evidence; use Git for its containing commit and current WIP.
-- Deployment PASS by direct public verification: https://hotgames-ai.pages.dev/ serves all four exact CSS hashes with HTTP 200 / text/css. Deployed WebKit replay passed 46 assertions / 16 layouts; Chrome latest-feature regression passed 117 assertions / 56 layouts.
-- Ordinary-domain QA PARTIAL (2026-10-23, 01:48 KST): three CSS versions pass. The 0a749f6f... URL still returns HTML, so /games/ remains unstyled and overflows at 390px. /games/daysudoku/ now parses its ccb5ba78... CSS (82 rules) and fits 390px. Exact Play links remain intact.
-- BLOCKER: ordinary-domain directory acceptance is not complete. No cache changes, purge or bypass were performed. GitHub check-run metadata was unavailable due to its unauthenticated API rate limit; deployment ID/check conclusion not independently retrieved. Physical-device QA and business effects remain NOT_RUN.
-- NEXT_SINGLE_TASK: recheck ordinary /games/ CSS MIME and mobile rendering without cache operations before selecting the next content improvement.
-- Local preview remains at http://127.0.0.1:1316/.
+- Phase: release preparation; implementation and local QA DONE. Normal push and deployed acceptance pending.
+- Work ID / last AI: HOTGAMES-GUIDE-RETURN / CODEX (2026-10-23).
+- Start: clean main aaa88d5, matching origin/main after fetch; no other active writer or owner WIP.
+- Owner approval: useful content, modest returning-user improvement, simple homepage, validation and deployment. Existing project-specific GitHub exception retained. Cache work excluded.
+- Scope: concise When You Get Stuck content in the three existing puzzle guides; bottom native Play, shared Save and Saved games links. No homepage or directory changes, new CSS/JavaScript, storage keys, dependencies, analytics, backend or other repository changes.
+- QA PASS: strict isolated Hugo --gc --minify via tools/check_site.sh, node syntax and Git hygiene. 128 pages / 7 aliases, four unchanged style hashes. Home and directory outputs byte-identical to before; sitemap 126 unique URLs with correct detail timestamps.
+- Browser QA PASS: Chrome and WebKit each passed 116 assertions / 24 responsive-theme combinations on completed production output. Save/Undo/focus, native Play, recent history, cross-tab/legacy/malformed/blocked storage, no-JS, existing content and fragment checks included. Final desktop/mobile screenshots inspected.
+- Preview warning: existing watch server at 1316 served transient partial content and stale sitemap; final QA used an isolated static production build at 1317. Existing server left untouched.
+- Source and QA detail: Docs/HotGames_Guide_Return_Note.md; repeatable CLI smoke function tools/check_guide_return.js.
+- Previous release: source c5f8dec, documentation aaa88d5; historical CSS retention and ordinary-domain limitation recorded in Docs/HotGames_Return_Reliability_Note.md.
+- BLOCKER: none for this source/build. Ordinary /games/ still returned HTML for historical 0a749f6f... CSS at start; no purge, bypass or rule edits permitted. Physical-device QA and business effects NOT_RUN.
+- NEXT_SINGLE_TASK: normal GitHub push, verify deployed guide content/actions, and report ordinary-domain acceptance separately without cache operations.

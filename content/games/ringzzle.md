@@ -3,7 +3,7 @@ title: "Ringzzle"
 seoTitle: "Ringzzle — Free Color Rings Puzzle Game Online"
 description: "Play Ringzzle, a free color rings puzzle game online with instant browser play, Color Burst clears, and an anonymous leaderboard."
 date: 2026-06-09
-lastmod: 2026-10-23T01:04:14+09:00
+lastmod: 2026-10-23T01:52:00+09:00
 url: "/games/ringzzle/"
 startingTip: "Check color and ring size"
 startingTipSummary: "Notice which size slots remain open before choosing a matching color."
@@ -30,6 +30,12 @@ The core loop is simple: place colorful rings on the board, line up matching col
 For your next run, check which sizes a cell can still accept before committing to a color match.
 
 [Read the official Ringzzle rules](https://ringzzle.com/how-to-play/).
+
+## When You Get Stuck
+
+If a ring will not fit, check its size slot, not just its color. A cell with a small ring can still accept a large ring, but it cannot accept another small ring. Look at every remaining tray piece before deciding that you have no move.
+
+One blocked piece does not end the run while another piece can still be placed. A playable ring might complete a clear and reopen a slot for the blocked one. Check the whole tray and the board together; a color match alone does not guarantee usable space.
 
 ## More Ways To Learn
 
