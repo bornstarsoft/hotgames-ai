@@ -53,9 +53,24 @@ or recent history. Search terms are intentionally included when sharing a search
 
 ## Release Evidence
 
-Pending normal GitHub push, Cloudflare Pages deployment and deployed validation.
-Ordinary hotgames.ai acceptance is reported separately from Pages deployment;
-no purge, cache rules or bypass requests are authorized.
+- Source commit: d0c2aa28c5e92b050c20bc0e8c65e1eaf84fe95d, pushed normally to
+  GitHub main. No force push; origin/main matched before release.
+- Cloudflare GitHub check 120000205719: Deployed successfully.
+- Deployment: e2ad7a90-74a8-4d94-95d1-72f6ea80cf3e,
+  https://e2ad7a90.hotgames-ai.pages.dev/.
+- Deployed QA PASS: Chrome 80 assertions / 12 layouts on the unique deployment,
+  WebKit 80/12 on https://hotgames-ai.pages.dev/. Share/clipboard stubs retained.
+- Ordinary-domain acceptance PARTIAL (03:13-03:14 KST): Chrome / and
+  /?view=saved returned older HTML without shareMenuBtn. WebKit / also lacked
+  that control while its existing mobile menu worked without overflow.
+  Chrome /?cat=puzzle&q=Ringzzle included the new action, displayed Ringzzle,
+  and generated exactly https://hotgames.ai/?cat=puzzle&q=Ringzzle when clicked.
+  A normal curl of / also lacked the new action. Full domain-wide acceptance is
+  not claimed. No purge, rule changes, bypass parameters or bypass headers used.
+- Temporary QA server 1317 and both task browser sessions stopped. Existing
+  watch server 1316 untouched. Generated output/dependencies not tracked/staged.
+- Next single task: ordinary-domain acceptance on physical iOS/Android, including
+  native share cancellation and recipient open, without changing cache policy.
 
 ## Manual Check
 
