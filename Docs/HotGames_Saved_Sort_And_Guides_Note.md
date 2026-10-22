@@ -41,7 +41,12 @@ Tips are editorial suggestions based on those rules, not guarantees of scores or
 - WebKit initially rendered the native select at 21px despite min-height. Fixed its styled appearance and explicit height to provide a consistent 44px target. Final reruns: Chrome and WebKit each PASS 56 assertions and 32 responsive/theme combinations (64 total). Mobile screenshots inspected.
 - Additional Chrome checks passed: all 24 catalog games sorted correctly, category filtering retained preference, legacy DaySudoku fragment resolved, and content remained accessible with JavaScript disabled.
 - Tests run in isolated storage with existing analytics suppressed. No real gameplay or retention/business lift is inferred. Physical-device testing: NOT_RUN.
-- Pending final browser QA, source commit and existing GitHub-to-Cloudflare Pages production deployment. Do not purge or alter cache rules.
+- Final source commit: 2e0d6c49b481d4c2f33a25af0bbd807da97a3ac5, Improve saved game sorting and puzzle guides; normally pushed to GitHub main.
+- Cloudflare Pages check completed successfully, deployment b77c5945-81c1-4d96-9098-5b2ef5645a11. Verified around 2026-10-23 00:53 KST.
+- Deployed URL: https://b77c5945.hotgames-ai.pages.dev/. Five affected routes returned HTTP 200 with new content. Mobile remembered sorting, 44px select, remove/Undo, all three strategies, exact Play targets, legacy fragment and updated sitemap PASS. Screenshot inspected.
+- Final generated sitemap has 126 unique URLs; all four updated guide/directory entries use 2026-10-23T00:50:06+09:00. Existing page/alias counts remain 128/7.
+- All five normal hotgames.ai URLs returned HTTP 200 but earlier HTML during acceptance. Normal-domain freshness is not confirmed. Owner-directed cache exclusion is preserved: no purge, rules change, credential handling or outstanding login request.
+- No implementation/Git blocker remains. Physical-device acceptance can be checked when the normal domain serves the new HTML; do not purge or alter cache rules for this task.
 
 ## Manual Regression
 
