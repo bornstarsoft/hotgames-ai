@@ -58,5 +58,19 @@ page generates real same-origin localStorage events.
 
 ## Release
 
-Pending normal GitHub push, Pages deployment and deployed tests. Ordinary-domain
-response acceptance will be recorded separately; no cache intervention.
+- Source commit: c3ec5121ef11217fd4dac05724034e776228bf73, normal GitHub main push.
+- Cloudflare GitHub check 120005466684: Deployed successfully.
+- Deployment: 72e1461f-3b8a-48fd-81fa-783a7e8e1423,
+  https://72e1461f.hotgames-ai.pages.dev/.
+- Deployed QA PASS: Chrome 39 assertions / 8 layouts on unique deployment;
+  WebKit 39/8 on https://hotgames-ai.pages.dev/.
+- Ordinary-domain acceptance PENDING (03:22-03:23 KST): normal curl of / and
+  Chrome /, /?view=saved, /?cat=puzzle&q=Ringzzle still lack the new storageArea
+  guard and serve the earlier handler. The browser routes retain all 24 source
+  cards. Full domain rollout is not claimed; no purge, rule/header changes or
+  cache bypass requests were made.
+- Temporary QA server 1317 and both task browser profiles stopped; existing
+  watch server 1316 untouched. Generated output/dependencies not tracked/staged.
+- Next single task: confirm the new handler on ordinary hotgames.ai and repeat
+  cross-tab Saved/Recent acceptance, including a physical mobile browser; no
+  cache intervention without renewed owner approval.
