@@ -1922,7 +1922,8 @@
           const unique = [...new Set(backup.savedGames)];
           const known = unique.filter(id => sourceMap.has(id));
           const skipped = unique.length - known.length;
-          const addedCount = known.filter(id => !getSaved().has(id)).length;
+          const candidates = known.filter(id => !getSaved().has(id));
+          const addedCount = candidates.length;
           if (!addedCount) {
             savedBackupStatus.textContent = !unique.length ? 'This backup has no saved games.'
               : !known.length ? 'No games in this backup are currently in the catalog.'
@@ -1937,7 +1938,7 @@
           // Another tab may have changed persistent saves while the file or confirmation was open.
           if (!sessionOnlyKeys.has('likedGames')) sessionValues.delete('likedGames');
           const current = getSaved();
-          const added = known.filter(id => !current.has(id));
+          const added = candidates.filter(id => !current.has(id));
           if (!added.length) {
             savedBackupStatus.textContent = 'All available games in this backup are already saved.';
             applyFilters();

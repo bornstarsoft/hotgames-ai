@@ -67,6 +67,15 @@ async (page) => {
     check(JSON.stringify(await saved()) === '["blockzzle","daysudoku"]' && (await status()).includes('canceled'), 'cancel preserves list');
     await upload(page, exported);
     check((await status()).includes('already saved'), 'round-trip backup recognizes existing games');
+    await page.evaluate(() => {
+      window.confirm = () => { localStorage.setItem('likedGames', '["daysudoku"]'); return true; };
+    });
+    await upload(page, payload(['blockzzle', 'ringzzle']));
+    check(JSON.stringify(await saved()) === '["daysudoku","ringzzle"]', 'import preserves concurrent removal of already-saved game');
+    await page.locator('#toastUndo').click();
+    check(JSON.stringify(await saved()) === '["daysudoku"]', 'Undo preserves concurrent removal too');
+    await page.evaluate(() => localStorage.setItem('likedGames', '["blockzzle","daysudoku"]'));
+    await page.reload();
     for (const [label, text] of [
       ['broken JSON', '{'], ['wrong format', '{"format":"other","version":1,"savedGames":["ringzzle"]}'],
       ['future version', '{"format":"hotgames-saved-games","version":2,"savedGames":["ringzzle"]}'],
