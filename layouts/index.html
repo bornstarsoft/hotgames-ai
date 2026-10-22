@@ -859,6 +859,22 @@
       padding-top: 15px;
     }
 
+    .recent-remove {
+      flex: 0 0 44px;
+      width: 44px;
+      height: 44px;
+      margin-right: auto;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      background: var(--surface-soft);
+      color: var(--muted);
+      cursor: pointer;
+    }
+
+    .recent-remove:hover {
+      color: var(--text);
+    }
+
     .detail-link,
     .play-link {
       min-height: 34px;
@@ -1583,6 +1599,18 @@
           clone.classList.replace('game-card--featured', 'game-card--catalog');
           clone.classList.toggle('game-card--preview', preview);
           clone.dataset.collectionCard = 'true';
+          if (grid === recentGrid && state.view === 'recent') {
+            const remove = document.createElement('button');
+            remove.type = 'button';
+            remove.className = 'recent-remove';
+            remove.title = `Remove ${clone.dataset.gameName} from recently opened`;
+            remove.setAttribute('aria-label', remove.title);
+            const icon = document.createElement('i');
+            icon.className = 'fa-solid fa-xmark';
+            icon.setAttribute('aria-hidden', 'true');
+            remove.appendChild(icon);
+            clone.querySelector('.card-actions').prepend(remove);
+          }
           grid.appendChild(clone);
         });
         return grid.children.length;
@@ -1691,6 +1719,30 @@
           event.preventDefault();
           changeCategory(categoryControl.dataset.filter);
           closeSidebar();
+          return;
+        }
+
+        const recentRemove = event.target.closest('.recent-remove');
+        if (recentRemove) {
+          event.preventDefault();
+          const card = recentRemove.closest('.game-card');
+          const id = card.dataset.gameId;
+          const previous = getRecent();
+          const remaining = previous.filter(value => value !== id);
+          const persisted = storage.set('recentGames', remaining);
+          applyFilters();
+          document.querySelector('h1').focus({ preventScroll: true });
+          showToast(`${card.dataset.gameName} removed from recently opened${persisted ? '' : ' for this visit'}`, () => {
+            const current = getRecent();
+            if (!current.includes(id)) {
+              // Preserve newer history edits; restore the original slot only if nothing else changed.
+              const unchanged = current.length === remaining.length
+                && current.every((value, index) => value === remaining[index]);
+              const index = unchanged ? previous.indexOf(id) : current.length;
+              current.splice(Math.min(index, 5), 0, id);
+            }
+            return storage.set('recentGames', current.slice(0, 6));
+          });
           return;
         }
 

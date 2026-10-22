@@ -3,7 +3,7 @@ title: "Ringzzle"
 seoTitle: "Ringzzle — Free Color Rings Puzzle Game Online"
 description: "Play Ringzzle, a free color rings puzzle game online with instant browser play, Color Burst clears, and an anonymous leaderboard."
 date: 2026-06-09
-lastmod: 2026-10-23T00:50:06+09:00
+lastmod: 2026-10-23T01:04:14+09:00
 url: "/games/ringzzle/"
 ---
 
@@ -28,6 +28,11 @@ The core loop is simple: place colorful rings on the board, line up matching col
 For your next run, check which sizes a cell can still accept before committing to a color match.
 
 [Read the official Ringzzle rules](https://ringzzle.com/how-to-play/).
+
+## More Ways To Learn
+
+- [Keep space open for your next ring](https://ringzzle.com/guides/keep-space-open/): see how ring sizes and the whole tray affect the space left for your next move.
+- [Understand color line clears](https://ringzzle.com/guides/color-line-clears/): use mixed-size examples to see which rings clear and which colors stay.
 
 ## Leaderboard
 

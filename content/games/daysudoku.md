@@ -3,7 +3,7 @@ title: "DaySudoku"
 seoTitle: "DaySudoku - Free Daily Sudoku Puzzle Online"
 description: "Play DaySudoku, a free daily Sudoku puzzle in your browser. Learn the rules and find a logical first move without signing up."
 date: 2026-06-15
-lastmod: 2026-10-23T00:50:06+09:00
+lastmod: 2026-10-23T01:04:14+09:00
 url: "/games/daysudoku/"
 gameUrl: "https://daysudoku.com/"
 gamePlatform: "Web Browser"
@@ -27,6 +27,11 @@ Fill empty cells with numbers from 1 to 9. Each row, column, and 3x3 box must co
 For your next puzzle, focus on finding one certain move before looking further across the board.
 
 [Read the official Sudoku rules](https://daysudoku.com/how-to-play/).
+
+## More Ways To Learn
+
+- [Find your next Sudoku move](https://daysudoku.com/sudoku-tips/): compare simple row, column, and box checks with worked examples.
+- [Review a Sudoku mistake](https://daysudoku.com/sudoku-mistakes/): check a doubtful entry and learn why avoiding repeated digits does not always confirm an answer.
 
 ## Who It Is For
 
