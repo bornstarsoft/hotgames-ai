@@ -33,7 +33,11 @@ No new ranking, popularity, score guarantee, cognitive/health benefit, account, 
 - The existing watch-mode server at 1316 temporarily served partially rendered content/stale sitemap metadata after edits. It was not modified or restarted. Final acceptance was rerun against an isolated completed production build at 1317, including assertions that pre-existing final sections and learning links remain intact. Do not use watch-mode output as release evidence.
 - Existing analytics suppressed in isolated test profiles. External game Play requests fulfilled with a local QA response; no game visit/score state changed.
 - Previous ordinary-domain /games/ CSS MIME failure was reproduced before editing. Cache operations and measured business effects are outside this task; do not claim complete ordinary-domain acceptance unless actually verified.
-- Release: pending normal GitHub push and deployed acceptance.
+- Source commit: d483c9bcf797ee155c41486a2c4137b6325211aa, Improve puzzle guide tips and return-to-play actions. Normally pushed to origin/main without rebase or force push.
+- Deployment PASS: Cloudflare check succeeded in the public GitHub checks page, deployment 7b92b3bc-8822-4fdb-8e9e-113217d61ab3, https://7b92b3bc.hotgames-ai.pages.dev/. Verified around 02:01-02:03 KST. The API was rate-limited; public web check 119964783039 confirmed Deployed successfully without credentials.
+- Deployed QA PASS: all three routes have the new content/actions. WebKit on hotgames-ai.pages.dev and Chrome on the unique deployment each repeated 116 assertions / 24 layouts. Deployed sitemap has 126 unique URLs and the correct three updated lastmod entries.
+- Ordinary-domain acceptance PARTIAL: Chrome at 390px checked /games/ and all three details; WebKit checked /games/ and DaySudoku. All these observations now loaded current 3a8dcd7c... CSS (88 rules) without horizontal overflow. The earlier unstyled-directory symptom was not reproduced in these final browser checks, but the detail HTML still lacked this release's stuck-point content and bottom action row. Do not claim ordinary-domain freshness or universal cache convergence.
+- No cache operations or bypass performed. Remaining manual check: ordinary-domain new-content visibility and physical-mobile saved/play flow. The isolated validation server is stopped after QA; the pre-existing watch server is untouched.
 
 ## Repeat Browser QA
 
