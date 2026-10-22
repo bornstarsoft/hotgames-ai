@@ -1,6 +1,12 @@
 # HotGames Current State
 
-ACTIVE_WRITER = NONE
+ACTIVE_WRITER = CODEX (HOTGAMES-SAVE-UNDO; saved-game recovery, validation and production deployment; main; 2026-10-23)
+
+- Current phase: release preparation. Owner authorized a modest returning-user improvement and production deployment, retaining the project-specific GitHub exception.
+- Current start: clean main at 6ae9bda, matching origin/main after fetch. Previous guide-save controls now appear on the normal production /games/ URL. Preserve previous work and keep the homepage layout unchanged.
+- Current task: add immediate Undo for individual saved-game removal on home and guide pages; validate mobile, persistence and concurrent-tab behavior before normal push/deployment.
+- Current QA: strict isolated Hugo build and Git hygiene PASS; Chrome and WebKit each passed 49 assertions and 40 responsive/theme combinations. See Docs/HotGames_Saved_Game_Undo_Note.md.
+- Current owner direction: do not perform cache work. Proceed with validation, commit/push and Pages deployment; report custom-domain freshness separately without purging or editing cache rules.
 
 - Phase: source deployed; custom-domain cache verification awaiting owner authentication.
 - Work ID / last AI: HOTGAMES-GUIDE-SAVE / CODEX (2026-10-15). Implementation, local QA, commit/push, and Cloudflare build DONE; normal-domain end-to-end acceptance is NOT complete.

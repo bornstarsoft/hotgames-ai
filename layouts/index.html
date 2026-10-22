@@ -888,6 +888,7 @@
       font-size: 0.85rem;
       font-weight: 800;
       opacity: 0;
+      visibility: hidden;
       pointer-events: none;
       transform: translateY(12px);
       transition: opacity 0.18s ease, transform 0.18s ease;
@@ -895,12 +896,15 @@
 
     .toast.show {
       opacity: 1;
+      visibility: visible;
       transform: translateY(0);
       pointer-events: auto;
     }
 
     .toast button {
       margin-left: 12px;
+      min-width: 44px;
+      min-height: 44px;
       padding: 4px;
       border: 0;
       background: transparent;
@@ -1372,7 +1376,8 @@
 
   <div class="toast" id="toast">
     <span id="toastMessage" role="status" aria-live="polite"></span>
-    <button type="button" id="toastUndo" hidden>Undo</button>
+    <button type="button" id="toastUndo" hidden><i class="fa-solid fa-rotate-left" aria-hidden="true"></i> Undo</button>
+    <button type="button" id="toastDismiss" aria-label="Dismiss notification" title="Dismiss notification" hidden><i class="fa-solid fa-xmark" aria-hidden="true"></i></button>
   </div>
 
   <script>
@@ -1448,6 +1453,7 @@
       const toast = document.getElementById('toast');
       const toastMessage = document.getElementById('toastMessage');
       const toastUndo = document.getElementById('toastUndo');
+      const toastDismiss = document.getElementById('toastDismiss');
       let toastTimer;
       let undoAction;
 
@@ -1455,16 +1461,25 @@
         toastMessage.textContent = message;
         undoAction = undo;
         toastUndo.hidden = !undo;
+        toastDismiss.hidden = !undo;
         toast.classList.add('show');
         clearTimeout(toastTimer);
         if (!undo) toastTimer = setTimeout(() => toast.classList.remove('show'), 3500);
       }
 
       toastUndo.addEventListener('click', () => {
-        if (undoAction) undoAction();
+        if (!undoAction) return;
+        const persisted = undoAction();
         applyFilters();
         document.querySelector('h1').focus({ preventScroll: true });
-        showToast('Restored');
+        showToast(persisted === false ? 'Restored for this visit' : 'Restored');
+      });
+
+      toastDismiss.addEventListener('click', () => {
+        clearTimeout(toastTimer);
+        undoAction = undefined;
+        toast.classList.remove('show');
+        document.querySelector('h1').focus({ preventScroll: true });
       });
 
       function readIds(key) {
@@ -1636,7 +1651,13 @@
           const restoreFocus = card.dataset.collectionCard;
           applyFilters();
           if (restoreFocus) document.querySelector('h1').focus({ preventScroll: true });
-          showToast(`${card.dataset.gameName} ${removed ? 'removed' : 'saved'}${persisted ? '' : ' for this visit'}`);
+          const id = card.dataset.gameId;
+          showToast(`${card.dataset.gameName} ${removed ? 'removed' : 'saved'}${persisted ? '' : ' for this visit'}`, removed ? () => {
+            // Restore only this game, retaining edits made in other tabs.
+            const current = getSaved();
+            current.add(id);
+            return setSaved(current);
+          } : undefined);
           return;
         }
 

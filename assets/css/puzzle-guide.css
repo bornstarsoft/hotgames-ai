@@ -91,9 +91,22 @@
   color: var(--text);
   font-size: 0.9rem;
   overflow-wrap: anywhere;
-  pointer-events: none;
 }
-.guide-save-status:empty { padding: 0; border: 0; }
+.guide-save-status[hidden] { display: none; }
+.guide-save-status button {
+  min-width: 44px;
+  min-height: 44px;
+  margin-left: 8px;
+  padding: 4px;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+}
+.guide-save-status button[hidden] { display: none; }
+#guideSaveUndo { text-decoration: underline; }
 .guide-detail { display: inline-flex; align-items: center; gap: 8px; min-height: 44px; font-size: 0.8rem; }
 .guide-band { padding: 40px 0; margin-top: 40px; border-top: 1px solid var(--border); }
 .guide-band .guide-lead { margin: 10px 0 26px; }

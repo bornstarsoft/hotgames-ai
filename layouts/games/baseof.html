@@ -23,7 +23,11 @@
       <nav aria-label="Footer">{{ range .Site.Params.footer_menu }}<a href="{{ .url }}">{{ .name }}</a>{{ end }}</nav>
     </footer>
   </main>
-  <p class="guide-save-status" id="guideSaveStatus" role="status" aria-live="polite" aria-atomic="true"></p>
+  <div class="guide-save-status" id="guideSaveToast" hidden>
+    <span id="guideSaveStatus" role="status" aria-live="polite" aria-atomic="true"></span>
+    <button id="guideSaveUndo" type="button" hidden><i class="fa-solid fa-rotate-left" aria-hidden="true"></i> Undo</button>
+    <button id="guideSaveDismiss" type="button" aria-label="Dismiss notification" title="Dismiss notification" hidden><i class="fa-solid fa-xmark" aria-hidden="true"></i></button>
+  </div>
   <script>
     (() => {
       const button = document.getElementById('guideTheme');
@@ -53,7 +57,12 @@
       const savedAliases = new Map(Object.entries({{ $savedAliases | jsonify | safeJS }}));
       const saveButtons = document.querySelectorAll('[data-save-game]');
       const saveStatus = document.getElementById('guideSaveStatus');
+      const saveToast = document.getElementById('guideSaveToast');
+      const saveUndo = document.getElementById('guideSaveUndo');
+      const saveDismiss = document.getElementById('guideSaveDismiss');
       let statusTimer;
+      let undoSave;
+      let saveOrigin;
 
       function readSaved() {
         try {
@@ -79,13 +88,26 @@
         });
       }
 
-      function announceSave(message) {
+      function announceSave(message, undo) {
         clearTimeout(statusTimer);
+        undoSave = undo;
+        saveUndo.hidden = !undo;
+        saveDismiss.hidden = !undo;
+        saveToast.hidden = false;
         saveStatus.textContent = message;
-        statusTimer = setTimeout(() => { saveStatus.textContent = ''; }, 4500);
+        if (!undo) statusTimer = setTimeout(() => { saveToast.hidden = true; }, 4500);
       }
 
+      saveUndo.addEventListener('click', () => { if (undoSave) undoSave(); });
+      saveDismiss.addEventListener('click', () => {
+        clearTimeout(statusTimer);
+        undoSave = undefined;
+        saveOrigin?.focus({ preventScroll: true });
+        saveToast.hidden = true;
+      });
+
       saveButtons.forEach(control => control.addEventListener('click', () => {
+        saveOrigin = control;
         // Read again for each action so changes from another page are retained.
         const saved = readSaved();
         if (!saved) {
@@ -103,7 +125,25 @@
           return;
         }
         syncSaved();
-        announceSave(`${control.dataset.gameName} ${removing ? 'removed from saved games' : 'saved'}.`);
+        function restoreGame() {
+          // Merge into current storage; never restore an outdated whole collection.
+          const current = readSaved();
+          if (!current) {
+            announceSave('Saving is unavailable in this browser.', restoreGame);
+            return;
+          }
+          current.add(id);
+          try {
+            localStorage.setItem('likedGames', JSON.stringify([...current]));
+          } catch (_) {
+            announceSave('Changes could not be saved in this browser.', restoreGame);
+            return;
+          }
+          syncSaved();
+          control.focus({ preventScroll: true });
+          announceSave(`${control.dataset.gameName} restored.`);
+        }
+        announceSave(`${control.dataset.gameName} ${removing ? 'removed from saved games' : 'saved'}.`, removing ? restoreGame : undefined);
       }));
       window.addEventListener('storage', event => {
         if (event.key === null || event.key === 'likedGames') syncSaved();
