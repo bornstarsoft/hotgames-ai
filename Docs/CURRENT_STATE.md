@@ -1,6 +1,10 @@
 # HotGames Current State
 
-ACTIVE_WRITER = NONE
+ACTIVE_WRITER = CODEX (HOTGAMES-RETURN-GUIDES; saved-list ordering and factual puzzle guidance, QA and deployment; main; 2026-10-23)
+
+- Current phase: release preparation. Starting from clean main at 86fdfd3, matching origin/main after fetch. Owner approved another modest return-visit improvement, relevant content, and actual deployment; GitHub exception remains in force. No cache operations.
+- Current task: remembered saved-list sorting, concise game-specific starting strategies, and removal of outdated Key9 wording after checking the current official DaySudoku home/rules pages. Keep homepage sections and all existing routes intact.
+- Current QA: Chrome and WebKit each passed 56 assertions and 32 layout/theme combinations after correcting the WebKit select target height. Strict isolated Hugo build and Git hygiene passed. See Docs/HotGames_Saved_Sort_And_Guides_Note.md.
 
 - Phase: deployed; custom-domain freshness acceptance is partial and cache work is explicitly deferred by owner.
 - Work ID / last AI: HOTGAMES-SAVE-UNDO / CODEX (2026-10-23). Implementation, local QA, source commit/push and Cloudflare Pages production deployment DONE.

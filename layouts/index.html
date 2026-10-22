@@ -537,6 +537,45 @@
       color: var(--text);
     }
 
+    #favoritesSection .section-head,
+    #favoritesSection .section-tools {
+      flex-wrap: wrap;
+    }
+
+    .saved-order {
+      position: relative;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      max-width: 100%;
+      color: var(--muted);
+      font-size: 0.84rem;
+    }
+
+    .saved-order[hidden] { display: none; }
+
+    .saved-order select {
+      appearance: none;
+      -webkit-appearance: none;
+      width: 158px;
+      max-width: 100%;
+      height: 44px;
+      min-height: 44px;
+      padding: 8px 30px 8px 10px;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      background: var(--surface);
+      color: var(--text);
+      font: inherit;
+    }
+
+    .saved-order-icon {
+      position: absolute;
+      right: 10px;
+      pointer-events: none;
+      font-size: 0.7rem;
+    }
+
     .game-grid {
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(238px, 1fr));
@@ -1292,6 +1331,14 @@
               <div class="section-tools">
                 <span class="section-note collection-device">This browser</span>
                 <a class="collection-all" href="/?view=saved" data-view="saved" hidden>View all <i class="fa-solid fa-arrow-right" aria-hidden="true"></i></a>
+                <label class="saved-order" id="savedOrderControl" for="savedOrder" hidden>
+                  <span class="sr-only">Sort saved games</span>
+                  <select id="savedOrder">
+                    <option value="newest">Recently saved</option>
+                    <option value="name">Name A-Z</option>
+                  </select>
+                  <i class="fa-solid fa-chevron-down saved-order-icon" aria-hidden="true"></i>
+                </label>
                 <button class="section-clear" id="clearSavedBtn" type="button" aria-label="Clear saved games" title="Clear saved games">
                   <i class="fa-solid fa-trash-can" aria-hidden="true"></i>
                 </button>
@@ -1447,6 +1494,8 @@
       const emptyState = document.getElementById('emptyState');
       const favoritesSection = document.getElementById('favoritesSection');
       const favoritesGrid = document.getElementById('favoritesGrid');
+      const savedOrder = document.getElementById('savedOrder');
+      const savedOrderControl = document.getElementById('savedOrderControl');
       const recentSection = document.getElementById('recentSection');
       const recentGrid = document.getElementById('recentGrid');
       const homeCollections = document.getElementById('homeCollections');
@@ -1543,7 +1592,16 @@
         const saved = Array.from(getSaved());
         const recent = getRecent();
         const preview = state.view === 'discover' && state.category === 'all' && !normalize(state.query);
-        const savedCount = renderCollection(favoritesGrid, preview ? saved.slice().reverse().slice(0, 2) : saved, preview);
+        const order = storage.get('savedGameOrder', 'newest') === 'name' ? 'name' : 'newest';
+        savedOrder.value = order;
+        savedOrderControl.hidden = state.view !== 'saved';
+        // Sort a copy: collection order must not rewrite when games were saved.
+        const orderedSaved = saved.slice().reverse();
+        if (!preview && order === 'name') {
+          orderedSaved.sort((a, b) => sourceMap.get(a).dataset.gameName.localeCompare(
+            sourceMap.get(b).dataset.gameName, 'en', { sensitivity: 'base', numeric: true }));
+        }
+        const savedCount = renderCollection(favoritesGrid, preview ? orderedSaved.slice(0, 2) : orderedSaved, preview);
         const recentCount = renderCollection(recentGrid, preview ? recent.slice(0, 2) : recent, preview);
         favoritesSection.hidden = (!preview && state.view !== 'saved') || savedCount === 0;
         recentSection.hidden = (!preview && state.view !== 'recent') || recentCount === 0;
@@ -1687,6 +1745,13 @@
         state.query = searchInput.value;
         updateUrl(true);
         applyFilters();
+      });
+
+      savedOrder.addEventListener('change', () => {
+        const order = savedOrder.value === 'name' ? 'name' : 'newest';
+        const persisted = storage.set('savedGameOrder', order);
+        applyFilters();
+        if (!persisted) showToast('Sort order changed for this visit');
       });
 
       searchClear.addEventListener('click', () => {
@@ -1842,7 +1907,7 @@
       });
 
       window.addEventListener('storage', event => {
-        if (event.key && !['likedGames', 'recentGames', 'theme'].includes(event.key)) return;
+        if (event.key && !['likedGames', 'recentGames', 'theme', 'savedGameOrder'].includes(event.key)) return;
         sessionValues.clear();
         sessionOnlyKeys.clear();
         if (event.key === 'theme') setTheme(storage.get('theme', 'dark'));

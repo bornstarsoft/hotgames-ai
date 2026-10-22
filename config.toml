@@ -285,11 +285,11 @@ pagerSize = 10
     illustration = true
     puzzle_type = "Daily Sudoku"
     best_for = "A daily number and logic puzzle"
-    first_move = "Find the Key9 first, then continue to the full Sudoku board."
-    puzzle_goal = "Find the Key9, then finish the full Sudoku."
+    first_move = "Choose an empty cell and check its row, column, and 3x3 box."
+    puzzle_goal = "Fill each row, column, and 3x3 box with 1-9 exactly once."
     badge = "DAILY"
     badge_color = "#3b82f6"
-    short_desc = "Play one free daily Sudoku puzzle online. Find the Key9 first, then finish the full Sudoku."
+    short_desc = "Play one free daily Sudoku puzzle online. Fill the grid one logical move at a time."
     cta = "Play DaySudoku"
     source = "custom"
 
