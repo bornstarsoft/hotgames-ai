@@ -73,5 +73,29 @@ routes remain unchanged. Hugo also updates the home aggregate sitemap lastmod.
 
 ## Release
 
-Pending normal GitHub push, Pages deployment and deployed validation.
-Ordinary-domain acceptance will be checked separately without cache intervention.
+- Source commit: 39d60773a5f3a9fef881dd35642116cabe846bd2, normal GitHub main push.
+- Cloudflare GitHub check 120016196697: Deployed successfully.
+- Deployment: 280cc05a-d9cb-4893-92a3-4aad07a7e361,
+  https://280cc05a.hotgames-ai.pages.dev/.
+- Deployed QA PASS: Chrome 102 assertions / 24 layouts on the unique deployment;
+  WebKit 102/24 on https://hotgames-ai.pages.dev/.
+- Ordinary-domain detail acceptance PASS (03:43-03:44 KST): both Chrome and
+  WebKit directly opened all three /games/<game>/#try-a-move-check pages at
+  390px, expanded the explanation and showed the expected answer without
+  horizontal overflow. This is targeted detail QA, not a full-site pass.
+- Ordinary-domain directory acceptance PARTIAL: normal curl /games/ contained
+  all three new exercise links, while a normal Chrome /games/ navigation had
+  none. Thus a consistent directory-to-exercise journey is not accepted yet.
+  No purge, cache rule/header changes or bypass requests were performed.
+- Temporary server 1317 and both task browser profiles stopped. Existing watch
+  server 1316 untouched. Generated output/dependencies not tracked or staged.
+- Next single task: verify consistent ordinary /games/ links and follow them on
+  a physical mobile browser, including screen-reader summary announcements.
+
+## Manual Check
+
+1. Open Game guides, follow each Try a move check link, and reason through the
+   question before expanding Check your answer.
+2. Check focus, Space/Enter and screen-reader expanded/collapsed announcements.
+3. Return to Saved or launch the game; reading practice must not create a score
+   or recent-game entry. Confirm the existing Play and Save actions still work.
