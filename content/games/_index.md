@@ -1,6 +1,6 @@
 ---
 title: "Games"
-lastmod: 2026-10-23T02:07:00+09:00
+lastmod: 2026-10-23T03:36:00+09:00
 description: "Browse playable browser and casual game picks on HotGames.ai, including Sudoku, block puzzle, color puzzle, and HTML5 games."
 ---
 

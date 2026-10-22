@@ -3,7 +3,7 @@ title: "Ringzzle"
 seoTitle: "Ringzzle — Free Color Rings Puzzle Game Online"
 description: "Play Ringzzle, a free color rings puzzle game online with instant browser play, Color Burst clears, and an anonymous leaderboard."
 date: 2026-06-09
-lastmod: 2026-10-23T01:52:00+09:00
+lastmod: 2026-10-23T03:36:00+09:00
 url: "/games/ringzzle/"
 startingTip: "Check color and ring size"
 startingTipSummary: "Notice which size slots remain open before choosing a matching color."
@@ -37,6 +37,16 @@ For your next run, check which sizes a cell can still accept before committing t
 If a ring will not fit, check its size slot, not just its color. A cell with a small ring can still accept a large ring, but it cannot accept another small ring. Look at every remaining tray piece before deciding that you have no move.
 
 One blocked piece does not end the run while another piece can still be placed. A playable ring might complete a clear and reopen a slot for the blocked one. Check the whole tray and the board together; a color match alone does not guarantee usable space.
+
+## Try A Move Check
+
+In this example, a cell holds a small blue ring and a large red ring. Its medium slot is empty. You have a small red ring. Can it go into that cell just because another ring there is red?
+
+{{< move-check >}}
+**No.** The small slot is already occupied by the blue ring. A matching color does not make an occupied size slot available.
+
+A medium red ring would fit the empty medium slot, but it would not create Color Burst in this cell: the small ring would still be blue. Before your next placement, check the available size first, then the color match. This example is a rule check, not a suggested move on your current board.
+{{< /move-check >}}
 
 ## More Ways To Learn
 

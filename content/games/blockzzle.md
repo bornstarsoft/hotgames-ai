@@ -3,7 +3,7 @@ title: "Blockzzle"
 seoTitle: "Blockzzle — Free Block Puzzle Game Online"
 description: "Play Blockzzle, a free block puzzle game online with instant browser play, line clears, best-score chasing, and an anonymous leaderboard."
 date: 2026-06-09
-lastmod: 2026-10-23T01:52:00+09:00
+lastmod: 2026-10-23T03:36:00+09:00
 url: "/games/blockzzle/"
 startingTip: "Leave room for the next block"
 startingTipSummary: "Compare the open space left by a placement, not just the line it might clear."
@@ -37,6 +37,16 @@ For your next run, focus on keeping room for later pieces rather than filling th
 Several empty squares do not necessarily make room for a block: the open squares need to match its shape in one placement. When the board feels crowded, compare the outline of a piece with the connected gaps, rather than counting all the empty squares.
 
 Before committing to a placement that clears a row or column, consider the space that clear would leave. On your next run, try to spot the move that splits a useful open area into smaller gaps. This is a placement habit to practise, not a promise of a higher score.
+
+## Try A Move Check
+
+Imagine a horizontal piece that covers two neighboring squares. Gap A has two empty squares separated by an occupied square. Gap B has two empty squares next to each other. Which gap can hold that piece in its current orientation?
+
+{{< move-check >}}
+**Gap B.** The piece needs two connected squares in a horizontal line. Gap A has the same number of empty squares, but they are not arranged to fit it.
+
+This is a hypothetical placement check, not a current game board. Before your next placement, compare the shape of the usable space with the piece, rather than just counting empty squares. Fitting a piece does not by itself make that placement the strongest choice.
+{{< /move-check >}}
 
 ## Leaderboard
 

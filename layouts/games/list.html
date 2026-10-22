@@ -61,6 +61,10 @@
           {{ end }}
           <a class="guide-detail" href="{{ .RelPermalink }}#when-you-get-stuck" aria-label="{{ .Title }}: {{ .Params.helpTip }}">{{ .Params.helpTip }} <i class="fa-solid fa-arrow-right" aria-hidden="true"></i></a>
           {{ end }}
+          {{ if not (in .Fragments.Identifiers "try-a-move-check") }}
+            {{ errorf "Move check target missing for %s" .RelPermalink }}
+          {{ end }}
+          <a class="guide-detail" href="{{ .RelPermalink }}#try-a-move-check" aria-label="{{ .Title }}: try a move check">Try a move check <i class="fa-solid fa-arrow-right" aria-hidden="true"></i></a>
         </article>
         {{ end }}
         {{ end }}

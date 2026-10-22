@@ -3,7 +3,7 @@ title: "DaySudoku"
 seoTitle: "DaySudoku - Free Daily Sudoku Puzzle Online"
 description: "Play DaySudoku, a free daily Sudoku puzzle in your browser. Learn the rules and find a logical first move without signing up."
 date: 2026-06-15
-lastmod: 2026-10-23T01:52:00+09:00
+lastmod: 2026-10-23T03:36:00+09:00
 url: "/games/daysudoku/"
 gameUrl: "https://daysudoku.com/"
 gamePlatform: "Web Browser"
@@ -36,6 +36,16 @@ For your next puzzle, focus on finding one certain move before looking further a
 If no cell has just one possible number, reverse the question: where can one missing number go? Choose a row, column, or box, then check every empty cell against its crossing row, column, and box. If that number can go in only one of those cells, you have a certain placement.
 
 Do not treat the first possible cell as the only possible cell. Finish checking the whole row, column, or box before entering the number. These checks will not resolve every position; moving to another part of the board is a reasonable next step.
+
+## Try A Move Check
+
+An example row contains 1, 2, 3, 4, 6, 7, 8 and 9, with one empty cell. That cell's column and 3x3 box contain no 5. Which number completes the row?
+
+{{< move-check >}}
+**5.** It is the only missing number in the row, and the column and box checks do not rule it out.
+
+Now consider a different row missing both 5 and 8. If both numbers fit a chosen cell's column and box, the row alone cannot decide which belongs there. Check another cell or unit for more information instead of treating a possible number as a certain one. These are practice examples, not answers to today's DaySudoku puzzle.
+{{< /move-check >}}
 
 ## More Ways To Learn
 
