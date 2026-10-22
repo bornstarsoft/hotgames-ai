@@ -8,6 +8,8 @@ url: "/games/daysudoku/"
 gameUrl: "https://daysudoku.com/"
 gamePlatform: "Web Browser"
 gameGenres: ["Puzzle", "Sudoku", "Logic"]
+startingTip: "Find a certain first move"
+startingTipSummary: "Check one empty cell against its row, column, and box before choosing a number."
 ---
 
 DaySudoku is a free browser-based daily Sudoku game. Play one puzzle a day with no sign-up or download required.

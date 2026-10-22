@@ -16,6 +16,12 @@
       </div>
       {{ end }}
     </header>
+    {{ if .Fragments.Identifiers }}
+    <details class="guide-contents">
+      <summary>In this guide</summary>
+      {{ .TableOfContents }}
+    </details>
+    {{ end }}
     {{ with $game.image }}
     <figure class="game-guide-art">
       {{ partial "game-image.html" (dict "game" $game "eager" true "sizes" "(max-width: 680px) calc(100vw - 40px), 760px") }}

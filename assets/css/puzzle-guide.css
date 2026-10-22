@@ -130,6 +130,12 @@
 .game-guide { max-width: 760px; margin: 0 auto 48px; }
 .game-guide-actions { display: flex; align-items: center; flex-wrap: wrap; gap: 12px 24px; margin-top: 20px; }
 .game-guide-art { margin: 0 0 32px; }
+.guide-contents { margin: 0 0 28px; padding: 10px 0; border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); }
+.guide-contents summary { min-height: 44px; padding: 10px 0; cursor: pointer; font-weight: 650; }
+.guide-contents ul { margin: 0; padding: 0 0 0 24px; }
+.guide-contents a { display: inline-flex; align-items: center; min-height: 44px; padding: 6px 0; color: var(--accent); font-size: 0.9rem; overflow-wrap: anywhere; }
+.starting-tips h3 a { line-height: 1.4; }
+.puzzle-directory .starting-tip-summary { margin-top: 12px; color: var(--muted); font-size: 0.92rem; }
 .game-guide-art figcaption { margin-top: 8px; color: var(--muted); font-size: 0.75rem; }
 .game-guide-content { overflow-wrap: break-word; }
 .game-guide-content p { margin: 18px 0; }

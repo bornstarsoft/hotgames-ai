@@ -5,6 +5,8 @@ description: "Play Blockzzle, a free block puzzle game online with instant brows
 date: 2026-06-09
 lastmod: 2026-10-23T00:50:06+09:00
 url: "/games/blockzzle/"
+startingTip: "Leave room for the next block"
+startingTipSummary: "Compare the open space left by a placement, not just the line it might clear."
 ---
 
 Blockzzle is a free block puzzle game online. You can play instantly in the browser, place block pieces on the board, clear lines, and chase your best score without installing an app.
