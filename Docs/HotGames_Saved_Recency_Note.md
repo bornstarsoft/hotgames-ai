@@ -64,5 +64,27 @@ popularity, rankings, revenue or measured retention improvement.
 
 ## Release
 
-Pending normal GitHub push, Pages deployment and deployed validation.
-Ordinary-domain rollout will be checked separately without cache intervention.
+- Source commit: f518cdd38799b83ecdc2ea2d189d208ded0c218e, normal GitHub main push.
+- Cloudflare GitHub check 120010411337: Deployed successfully.
+- Deployment: c98d1de1-7dc2-4fa0-9732-30d2d7e46d79,
+  https://c98d1de1.hotgames-ai.pages.dev/.
+- Deployed QA PASS: Chrome 45 assertions / 8 layouts on the unique deployment;
+  WebKit 45/8 on https://hotgames-ai.pages.dev/.
+- Ordinary-domain acceptance PENDING (03:31-03:32 KST): normal curl home,
+  Chrome home/Saved and WebKit Saved still expose only `newest` and `name`.
+  The existing 24 source cards remain, and WebKit Saved has no horizontal
+  overflow at 390px. New recency sorting is not yet accepted on hotgames.ai.
+  No purge, cache rule/header change or bypass request was performed.
+- Temporary server 1317 and both task browser profiles stopped; existing watch
+  server 1316 untouched. Generated output/dependencies not tracked or staged.
+- Next single task: ordinary-domain acceptance for Recently opened sorting,
+  including a physical mobile native picker, once the updated HTML is served.
+
+## Manual Check
+
+1. Save two or more games, open one through Play, then choose Recently opened in
+   Saved. That game should lead the list if it remains in recent history.
+2. Reload and confirm the preference remains. Home previews must still use the
+   newest two saves. Check native picker selection on physical iOS and Android.
+3. Clear recent history: Saved falls back to newest-saved order without losing
+   saved games. Undo should restore the recent ordering.
