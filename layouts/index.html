@@ -1395,6 +1395,7 @@
                   <span class="sr-only">Sort saved games</span>
                   <select id="savedOrder">
                     <option value="newest">Recently saved</option>
+                    <option value="recent">Recently opened</option>
                     <option value="name">Name A-Z</option>
                   </select>
                   <i class="fa-solid fa-chevron-down saved-order-icon" aria-hidden="true"></i>
@@ -1559,6 +1560,7 @@
       const favoritesSection = document.getElementById('favoritesSection');
       const favoritesGrid = document.getElementById('favoritesGrid');
       const savedOrder = document.getElementById('savedOrder');
+      const savedOrders = new Set(Array.from(savedOrder.options, option => option.value));
       const savedOrderControl = document.getElementById('savedOrderControl');
       const savedBackup = document.getElementById('savedBackup');
       const exportSaved = document.getElementById('exportSaved');
@@ -1682,7 +1684,8 @@
         savedBackup.hidden = state.view !== 'saved';
         exportSaved.disabled = saved.length === 0;
         const preview = state.view === 'discover' && state.category === 'all' && !normalize(state.query);
-        const order = storage.get('savedGameOrder', 'newest') === 'name' ? 'name' : 'newest';
+        const storedOrder = storage.get('savedGameOrder', 'newest');
+        const order = savedOrders.has(storedOrder) ? storedOrder : 'newest';
         savedOrder.value = order;
         savedOrderControl.hidden = state.view !== 'saved';
         // Sort a copy: collection order must not rewrite when games were saved.
@@ -1690,6 +1693,11 @@
         if (!preview && order === 'name') {
           orderedSaved.sort((a, b) => sourceMap.get(a).dataset.gameName.localeCompare(
             sourceMap.get(b).dataset.gameName, 'en', { sensitivity: 'base', numeric: true }));
+        } else if (!preview && order === 'recent') {
+          const recentIndex = new Map(recent.map((id, index) => [id, index]));
+          // Stable sorting keeps games outside the retained history newest-saved first.
+          orderedSaved.sort((a, b) => (recentIndex.get(a) ?? recent.length)
+            - (recentIndex.get(b) ?? recent.length));
         }
         const savedCount = renderCollection(favoritesGrid, preview ? orderedSaved.slice(0, 2) : orderedSaved, preview);
         const recentCount = renderCollection(recentGrid, preview ? recent.slice(0, 2) : recent, preview);
@@ -1891,7 +1899,7 @@
       });
 
       savedOrder.addEventListener('change', () => {
-        const order = savedOrder.value === 'name' ? 'name' : 'newest';
+        const order = savedOrders.has(savedOrder.value) ? savedOrder.value : 'newest';
         const persisted = storage.set('savedGameOrder', order);
         applyFilters();
         if (!persisted) showToast('Sort order changed for this visit');
