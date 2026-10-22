@@ -1066,7 +1066,11 @@
       }
     }
 
+    .sidebar-share { display: none; }
+
     @media (max-width: 620px) {
+      .sidebar-share { display: flex; min-height: 44px; }
+
       .top-actions .share-top-btn {
         display: none;
       }
@@ -1278,6 +1282,9 @@
         <button class="surprise-btn" id="surpriseBtn" type="button">
           <i class="fa-solid fa-shuffle"></i>Surprise me
         </button>
+        <button class="nav-link sidebar-share" id="shareMenuBtn" type="button" data-share-games hidden>
+          <i class="fa-solid fa-share-nodes" aria-hidden="true"></i><span data-share-label>Share HotGames.ai</span>
+        </button>
 
         <footer class="side-footer">
           {{ range .Site.Params.footer_menu }}
@@ -1312,7 +1319,7 @@
             title="Saved games" data-view="saved">
             <i class="fa-regular fa-heart"></i>
           </button>
-          <button class="icon-btn share-top-btn" id="shareBtn" type="button" aria-label="Share HotGames.ai"
+          <button class="icon-btn share-top-btn" id="shareBtn" type="button" data-share-games aria-label="Share HotGames.ai"
             title="Share">
             <i class="fa-solid fa-share-nodes"></i>
           </button>
@@ -1558,6 +1565,7 @@
       const importSaved = document.getElementById('importSaved');
       const savedBackupFile = document.getElementById('savedBackupFile');
       const savedBackupStatus = document.getElementById('savedBackupStatus');
+      const shareButtons = Array.from(document.querySelectorAll('[data-share-games]'));
       const recentSection = document.getElementById('recentSection');
       const recentGrid = document.getElementById('recentGrid');
       const homeCollections = document.getElementById('homeCollections');
@@ -1745,6 +1753,14 @@
           : state.view === 'recent' ? 'Search recently opened games' : 'Search games';
         document.getElementById('searchLabel').textContent = searchLabel;
         searchInput.placeholder = state.view === 'recent' ? 'Search recent games' : searchLabel;
+        const shareLabel = normalize(state.query) || state.category !== 'all' ? 'Share game search' : 'Share HotGames.ai';
+        shareButtons.forEach(button => {
+          button.hidden = false;
+          button.title = shareLabel;
+          button.setAttribute('aria-label', shareLabel);
+          const label = button.querySelector('[data-share-label]');
+          if (label) label.textContent = shareLabel;
+        });
         searchClear.hidden = !state.query;
         clearFilters.style.display = state.query || state.category !== 'all' ? 'inline-flex' : 'none';
         setActiveFilter(state.category);
@@ -2100,18 +2116,42 @@
         setTheme(html.dataset.theme === 'dark' ? 'light' : 'dark');
       });
 
-      document.getElementById('shareBtn').addEventListener('click', async () => {
-        try {
-          if (navigator.share) {
-            await navigator.share({ title: document.title, url: location.href });
-          } else {
-            await navigator.clipboard.writeText(location.href);
-            showToast('Link copied');
-          }
-        } catch (error) {
-          if (error.name !== 'AbortError') showToast('Sharing is unavailable in this browser');
+      let sharing = false;
+      async function shareGames(event) {
+        if (sharing) return;
+        sharing = true;
+        const button = event.currentTarget;
+        button.setAttribute('aria-busy', 'true');
+        if (button.id === 'shareMenuBtn') {
+          closeSidebar();
+          mobileMenuBtn.focus();
         }
-      });
+        // Share public discovery, not browser-local collections or incidental URL parameters.
+        const url = new URL({{ .Site.Home.Permalink }});
+        if (state.category !== 'all') url.searchParams.set('cat', state.category);
+        if (state.query.trim()) url.searchParams.set('q', state.query.trim());
+        const filtered = url.search !== '';
+        const data = { title: filtered ? 'Game search | HotGames.ai' : document.title, url: url.href };
+        try {
+          try {
+            if (typeof navigator.share === 'function'
+              && (typeof navigator.canShare !== 'function' || navigator.canShare(data))) {
+              await navigator.share(data);
+              return;
+            }
+          } catch (error) {
+            if (error.name === 'AbortError') return;
+          }
+          await navigator.clipboard.writeText(data.url);
+          showToast(filtered ? 'Game search link copied' : 'HotGames.ai link copied');
+        } catch (_) {
+          showToast('Sharing is unavailable in this browser');
+        } finally {
+          sharing = false;
+          button.removeAttribute('aria-busy');
+        }
+      }
+      shareButtons.forEach(button => button.addEventListener('click', shareGames));
 
       window.addEventListener('storage', event => {
         if (event.key && !['likedGames', 'recentGames', 'theme', 'savedGameOrder'].includes(event.key)) return;
