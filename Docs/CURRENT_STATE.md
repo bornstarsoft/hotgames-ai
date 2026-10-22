@@ -1,23 +1,17 @@
 # HotGames Current State
 
-ACTIVE_WRITER = CODEX (HOTGAMES-SAVE-UNDO; saved-game recovery, validation and production deployment; main; 2026-10-23)
+ACTIVE_WRITER = NONE
 
-- Current phase: release preparation. Owner authorized a modest returning-user improvement and production deployment, retaining the project-specific GitHub exception.
-- Current start: clean main at 6ae9bda, matching origin/main after fetch. Previous guide-save controls now appear on the normal production /games/ URL. Preserve previous work and keep the homepage layout unchanged.
-- Current task: add immediate Undo for individual saved-game removal on home and guide pages; validate mobile, persistence and concurrent-tab behavior before normal push/deployment.
-- Current QA: strict isolated Hugo build and Git hygiene PASS; Chrome and WebKit each passed 49 assertions and 40 responsive/theme combinations. See Docs/HotGames_Saved_Game_Undo_Note.md.
-- Current owner direction: do not perform cache work. Proceed with validation, commit/push and Pages deployment; report custom-domain freshness separately without purging or editing cache rules.
-
-- Phase: source deployed; custom-domain cache verification awaiting owner authentication.
-- Work ID / last AI: HOTGAMES-GUIDE-SAVE / CODEX (2026-10-15). Implementation, local QA, commit/push, and Cloudflare build DONE; normal-domain end-to-end acceptance is NOT complete.
-- Start: clean main at ad8ca42 matching origin/main. Prior puzzle artwork, guides, article archival, and returning-user homepage work are preserved.
-- Source HEAD: 9542761b33e12524e1c94bf20316e78dc65e26bc, pushed normally to GitHub main. This handoff is a documentation-only follow-up; use git log/status for its containing commit.
-- Scope: directory/detail save controls using existing likedGames; unchanged homepage layout with Back/Forward cache data refresh and preserved session-only fallback.
-- Owner approval: project-specific GitHub exception remains in force; owner explicitly authorized the next modest retention improvement and actual production deployment after validation on 2026-10-15. No force push or remote changes.
-- QA PASS: strict isolated Hugo build, Git hygiene, 56 assertions per Chrome/WebKit engine including 64 responsive/theme combinations, storage failure cases, and Back restoration. No new dependencies or tracking. See Docs/HotGames_Guide_Save_Note.md.
-- Deployment: Cloudflare Pages check for source 9542761 completed successfully at 2026-10-15 15:17:50 KST, deployment 3bbf6fd9-1ccd-4f37-bc62-0434546f6dff. The unique deployed URL passed save/home/detail/Back checks in WebKit.
-- Production observations: https://hotgames.ai/games/daysudoku/ serves new save controls. Normal /games/ and / still served earlier cached HTML during acceptance checks; /games/ was a Cloudflare HIT with Age 348 at 15:23:34 KST. Do not equate preview success with custom-domain acceptance.
-- BLOCKER: Cloudflare in-app dashboard session is logged out. Owner was asked to log in directly (no password/token sharing). No cache purge or rule change has been made.
-- NEXT_SINGLE_TASK: after owner Cloudflare login, purge affected HTML URLs as needed and rerun normal-domain mobile save/return checks; record the acceptance result.
-- Purge candidates: /, /games/, /games/blockzzle/, /games/ringzzle/, /games/daysudoku/ and the homepage Saved/Recent query views if stale. Keep rules unchanged and avoid a site-wide purge.
-- Remaining QA: physical-device testing NOT_RUN. Source writer released while awaiting authentication; resume from this state without repeating implementation.
+- Phase: deployed; custom-domain freshness acceptance is partial and cache work is explicitly deferred by owner.
+- Work ID / last AI: HOTGAMES-SAVE-UNDO / CODEX (2026-10-23). Implementation, local QA, source commit/push and Cloudflare Pages production deployment DONE.
+- Start: clean main at 6ae9bda matching origin/main after fetch. Previous homepage, artwork, guide-save controls, game content and URLs preserved.
+- Source HEAD: c5c57435f3943016939c13e472530eeded3177bc, Add undo for saved game removal, normally pushed to GitHub main. This state is a documentation-only release follow-up; use git log/status for its containing commit.
+- Scope: individual saved-game removal Undo on home and guides; no new homepage section. Restore only the target game, preserve other-tab edits, provide dismissal and keyboard focus recovery, and accurately report failed or session-only writes.
+- Owner approval: project-specific GitHub exception; owner authorized the next modest return-visit improvement, verification and actual deployment. Owner subsequently directed that cache work be left alone. No purge, cache-rule edit, force push, remote change or credential handling occurred.
+- QA PASS: strict isolated Hugo --gc --minify build and Git hygiene; Chrome and WebKit each passed 49 assertions and 40 responsive/theme combinations; additional mobile tap/native-link/recent-history checks passed. Screenshots inspected. See Docs/HotGames_Saved_Game_Undo_Note.md.
+- Deployment PASS: Cloudflare Pages check for c5c5743 completed successfully; deployment 15451397-ab1b-4c6c-b0e8-2637ace13e91. Verified on 2026-10-23 at approximately 00:34 KST.
+- Deployed URL acceptance PASS: https://15451397.hotgames-ai.pages.dev/ returned new code on home, directory and all three details. Chrome mobile save/remove/Undo, persistence, Back, exact play links and sitemap passed.
+- Normal-domain observation: https://hotgames.ai/ and /games/ returned HTTP 200 with earlier HTML; all three detail pages returned new Undo code. The old /games/ HTML also referenced a previous fingerprinted stylesheet which the browser rejected as a non-CSS response. Full custom-domain visual/interaction acceptance is NOT complete; do not claim otherwise from deployment success.
+- BLOCKER / deferred scope: no implementation or Git blocker. Custom-domain cache freshness is deferred by explicit owner direction, not an outstanding login request. The unused dashboard login tab was closed.
+- NEXT_SINGLE_TASK: when checking the release next, verify normal-domain home/directory styling and saved-game Undo after the cached HTML has refreshed; do not change cache settings or purge without renewed owner direction.
+- Remaining QA: physical iPhone/Android hardware and retention/business impact measurement NOT_RUN. No new telemetry was introduced. Writer released; existing local preview at http://127.0.0.1:1316/ was left running.

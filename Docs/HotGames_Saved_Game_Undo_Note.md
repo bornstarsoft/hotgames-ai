@@ -20,7 +20,7 @@
 - Strict isolated Hugo build and Git hygiene: PASS via ./tools/check_site.sh (includes --gc --minify --panicOnWarning and git diff --check). Output remains outside the repository.
 - Chrome and WebKit mobile emulation: 49 assertions PASS per engine, including 40 layout combinations each across five routes, four widths (320/390/768/1440), and light/dark themes (80 combinations total).
 - Initial Chrome cross-tab run timed out on a background-tab action. The complete rerun with explicit test-tab foregrounding passed; no application change was required for this test-harness issue.
-- Production deployment: pending final result below.
+- Production deployment: PASS; custom-domain acceptance is partial, as recorded below.
 - Browser tests cover remove/Undo, persistence, keyboard focus, dismiss, multiple tabs, unrelated IDs, clear-all regression, failed writes and retry, session-only fallback, Back navigation, action replacement and no-JavaScript native links.
 - Additional Chrome mobile touch checks PASS: tap save/remove/Undo, native Play link opening a mocked external game, and the resulting Recently opened card. No actual game session was launched.
 - Inspected mobile screenshots of homepage and DaySudoku detail notifications. No horizontal overflow or missing tested cover images.
@@ -36,5 +36,10 @@
 
 ## Release
 
-- Pending verified source commit and Cloudflare Pages deployment.
+- Source commit: c5c57435f3943016939c13e472530eeded3177bc, Add undo for saved game removal, normally pushed to GitHub main.
+- Cloudflare Pages: completed/success, deployment 15451397-ab1b-4c6c-b0e8-2637ace13e91; verified 2026-10-23 at approximately 00:34 KST.
+- Deployed URL: https://15451397.hotgames-ai.pages.dev/. All five affected routes return HTTP 200 and the new controls. Chrome mobile touch save/remove/Undo, reload persistence, browser Back, exact game links and sitemap checks PASS. Deployed mobile screenshot inspected.
+- Normal https://hotgames.ai/ and /games/ still returned earlier HTML; the three detail routes returned the new controls. The old directory HTML referenced a previous fingerprinted stylesheet whose response was rejected as non-CSS by WebKit. Full normal-domain acceptance is therefore incomplete, not implied by Pages success.
+- Owner explicitly deferred cache work. No purge, cache rule change or credential entry was performed; no login request remains outstanding. Recheck normal-domain styling/behavior when checking the release after cached HTML refreshes.
+- Browser console integrity warnings for the existing Cloudflare beacon were caused by the test's intentional analytics suppression, not by newly added tracking or application code.
 - Do not purge cache or change cache rules for this task.
