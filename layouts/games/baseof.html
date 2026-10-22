@@ -2,7 +2,7 @@
 <html lang="en" data-theme="dark">
 <head>
   {{ partial "head.html" . }}
-  {{ $styles := resources.Get "css/puzzle-guide.css" | minify | fingerprint }}
+  {{ $styles := partialCached "guide-styles.html" . }}
   <link rel="stylesheet" href="{{ $styles.RelPermalink }}">
 </head>
 <body class="puzzle-directory">

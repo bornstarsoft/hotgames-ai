@@ -20,6 +20,31 @@ for page in index.html games/index.html games/page/1/index.html \
   fi
 done
 
+# Each retained source and the current stylesheet must be published under its byte hash.
+expected_styles=1
+for source in "$repo_root"/assets/css/retained/*.css; do
+  [ -f "$source" ] || continue
+  expected_styles=$((expected_styles + 1))
+done
+published_styles=0
+for stylesheet in "$build_dir"/site/css/puzzle-guide.min.*.css; do
+  [ -s "$stylesheet" ] || continue
+  filename=${stylesheet##*/}
+  expected_hash=${filename#puzzle-guide.min.}
+  expected_hash=${expected_hash%.css}
+  actual_hash=$(shasum -a 256 "$stylesheet")
+  actual_hash=${actual_hash%% *}
+  if [ "$actual_hash" != "$expected_hash" ]; then
+    printf 'FAIL: stylesheet bytes do not match published URL: %s\n' "$filename" >&2
+    exit 1
+  fi
+  published_styles=$((published_styles + 1))
+done
+if [ "$published_styles" -ne "$expected_styles" ]; then
+  printf 'FAIL: expected %s guide styles, published %s\n' "$expected_styles" "$published_styles" >&2
+  exit 1
+fi
+
 git -C "$repo_root" diff --check
 if [ -n "$(git -C "$repo_root" ls-files -- public resources/_gen node_modules)" ]; then
   printf '%s\n' 'FAIL: generated output or dependencies are tracked/staged.' >&2

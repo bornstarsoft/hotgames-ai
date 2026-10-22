@@ -1,0 +1,20 @@
+{{- $current := resources.Get "css/puzzle-guide.css" | minify | fingerprint -}}
+{{- if ne (sha256 $current.Content) site.Data.guide_style_versions.current_sha256 -}}
+  {{- errorf "Guide CSS changed: retain the previously published source and update data/guide_style_versions.json before release" -}}
+{{- end -}}
+{{- range site.Data.guide_style_versions.retained -}}
+  {{- $source := resources.Get .source -}}
+  {{- if not $source -}}
+    {{- errorf "Missing retained guide CSS: %s" .source -}}
+  {{- else -}}
+    {{- $style := $source | minify -}}
+    {{- $hash := sha256 $style.Content -}}
+    {{- if ne $hash .sha256 -}}
+      {{- errorf "Retained guide CSS changed: %s must keep its published bytes" .source -}}
+    {{- end -}}
+    {{/* Publishing the exact old bytes keeps previous HTML's fingerprinted URL valid. */}}
+    {{- $published := resources.Copy (printf "css/puzzle-guide.min.%s.css" $hash) $style -}}
+    {{- $url := $published.RelPermalink -}}
+  {{- end -}}
+{{- end -}}
+{{- return $current -}}

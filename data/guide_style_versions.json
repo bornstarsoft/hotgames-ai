@@ -1,0 +1,8 @@
+{
+  "current_sha256": "3a8dcd7c3ad48c0e70fbdc64d3fac75969a899faeb5312b7c99cc23c06628350",
+  "retained": [
+    {"source": "css/retained/puzzle-guide-ad8ca42.css", "commit": "ad8ca42", "sha256": "4ef3101b4c300769e325728f1442f21a6e1834a21d097ccee7539a2468cc119e"},
+    {"source": "css/retained/puzzle-guide-9542761.css", "commit": "9542761", "sha256": "0a749f6f1e1cdb7bad76f1caa7f1f09d58d74a1df0b271802e7a1219f1954df3"},
+    {"source": "css/retained/puzzle-guide-c5c5743.css", "commit": "c5c5743", "sha256": "ccb5ba7891109b496d917a06aef9631fa3ca3522b274005990ebb8925da4ab01"}
+  ]
+}
