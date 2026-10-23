@@ -32,6 +32,7 @@ async (page) => {
         await page.goto(from.href);
         const selector = view === 'saved' ? '#favoritesGrid' : view === 'recent' ? '#recentGrid' : '.source-section';
         await page.locator(selector + ' [data-game-id="' + game + '"] .detail-link').click();
+        await page.waitForLoadState('domcontentloaded');
         check(new URL(page.url()).pathname === '/games/' + game + '/', view + '/' + game + ' native guide navigation');
         const links = page.locator('[data-guide-back]');
         const expected = new URL('/', root);

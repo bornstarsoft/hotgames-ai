@@ -45,6 +45,9 @@ analytics or unsupported claim. Other game repositories remain untouched.
   both engines. Total: 725 assertions / 120 layouts per engine.
 - Initial new-test failure read page.url before keyboard navigation completed;
   fixed the test with waitForURL. Application code was not changed to bypass it.
+- Deployed runs also exposed a timing gap between document arrival and completion
+  of the inline enhancement. Added DOMContentLoaded waiting before inspecting
+  return links; both deployed reruns passed without changing application code.
 - Screenshots inspected: /private/tmp/hg-context-mobile.png and hg-context-end.png
   (320px Chrome light), hg-context-desktop.png (1440px WebKit dark).
 - Tests use isolated profiles; existing external Play and clipboard actions are
@@ -52,8 +55,25 @@ analytics or unsupported claim. Other game repositories remain untouched.
 
 ## Release
 
-Pending normal GitHub push, Cloudflare Pages deployment and ordinary-domain checks.
-No cache purge, rule/header change or bypass request is authorized.
+- Source commit: 710dce288b4bfe75915499ab2e5eb089eee0be64, normal GitHub main push.
+- Cloudflare GitHub check 120420700255: Deployed successfully.
+- Deployment: bda41e66-481a-4134-a69f-b093d7d34ec9,
+  https://bda41e66.hotgames-ai.pages.dev/.
+- Deployed QA PASS: Chrome unique deployment and WebKit production Pages each
+  141 assertions / 24 layouts for contextual return links.
+- Ordinary-domain acceptance PASS for this feature (21:48 KST): each engine
+  followed all three guides from Saved, Recent and Discover (nine round trips)
+  at 390px. Both return links had the correct destination, returning restored
+  the search, and there was no horizontal overflow. Functional view/cat/q URLs
+  only; no cache-bypass parameters or headers. An earlier ordinary curl still
+  served the preceding guide, so this is scoped route/flow acceptance rather
+  than a global edge consistency claim.
+- Existing third-party beacons were suppressed in isolated QA; resulting SRI
+  console failures are expected, not application runtime failures.
+- No cache purge, rule/header change or bypass request performed. Other game
+  repositories untouched. Physical-device/privacy-mode checks remain NOT_RUN.
+- Temporary server 1317 and both task browser profiles stopped; existing 1316
+  untouched. Generated output/dependencies not tracked or staged.
 
 ## Next Manual Check
 
