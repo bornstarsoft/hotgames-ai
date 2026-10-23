@@ -724,6 +724,11 @@
       background: #111315;
     }
 
+    .collection-section .fav-btn {
+      width: 44px;
+      height: 44px;
+    }
+
     .fav-btn[aria-pressed="true"] {
       color: var(--danger);
     }
@@ -979,6 +984,10 @@
       visibility: visible;
       transform: translateY(0);
       pointer-events: auto;
+    }
+
+    body:has(.toast.show) .content {
+      padding-bottom: 180px;
     }
 
     .toast button {
@@ -1577,13 +1586,16 @@
       const toastDismiss = document.getElementById('toastDismiss');
       let toastTimer;
       let undoAction;
+      let undoFocus;
 
-      function showToast(message, undo) {
+      function showToast(message, undo, focus) {
         toastMessage.textContent = message;
         undoAction = undo;
+        undoFocus = focus;
         toastUndo.hidden = !undo;
         toastDismiss.hidden = !undo;
         toast.classList.add('show');
+        if (focus) restoreCollectionFocus(focus);
         clearTimeout(toastTimer);
         if (!undo) toastTimer = setTimeout(() => toast.classList.remove('show'), 3500);
       }
@@ -1592,7 +1604,7 @@
         if (!undoAction) return;
         const persisted = undoAction();
         applyFilters();
-        document.querySelector('h1').focus({ preventScroll: true });
+        restoreCollectionFocus(undoFocus);
         showToast(persisted === false ? 'Restored for this visit' : 'Restored');
       });
 
@@ -1600,7 +1612,8 @@
         clearTimeout(toastTimer);
         undoAction = undefined;
         toast.classList.remove('show');
-        document.querySelector('h1').focus({ preventScroll: true });
+        restoreCollectionFocus(undoFocus);
+        undoFocus = undefined;
       });
 
       function readIds(key) {
@@ -1725,7 +1738,35 @@
         });
       }
 
+      function captureCollectionFocus(element = document.activeElement) {
+        const card = element?.closest('[data-collection-card]');
+        if (!card) return;
+        const control = ['.fav-btn', '.recent-remove', '.play-link', '.detail-link', '.game-launch']
+          .find(selector => element.matches(selector));
+        if (!control) return;
+        return { grid: card.parentElement.id, id: card.dataset.gameId, control,
+          index: Array.from(card.parentElement.children).indexOf(card), view: state.view };
+      }
+
+      function restoreCollectionFocus(focus, preventScroll = false) {
+        const grid = focus && focus.view === state.view && document.getElementById(focus.grid);
+        if (grid && !grid.closest('[hidden]')) {
+          const cards = Array.from(grid.children);
+          // Keep the same game after reordering; after removal prefer the next, then previous card.
+          const card = cards.find(card => card.dataset.gameId === focus.id)
+            || cards[Math.min(focus.index, cards.length - 1)];
+          const control = card?.querySelector(focus.control);
+          if (control && control.getClientRects().length) {
+            control.focus({ preventScroll });
+            if (!preventScroll) control.scrollIntoView({ block: 'center', behavior: 'instant' });
+            return;
+          }
+        }
+        document.querySelector('h1').focus({ preventScroll: true });
+      }
+
       function applyFilters() {
+        const collectionFocus = captureCollectionFocus();
         const visibleIds = new Set();
         sourceCards.forEach((card) => {
           const visible = cardMatches(card);
@@ -1776,6 +1817,7 @@
           if (control.dataset.view === state.view) control.setAttribute('aria-current', 'page');
           else control.removeAttribute('aria-current');
         });
+        if (collectionFocus) restoreCollectionFocus(collectionFocus, true);
       }
 
       function changeCategory(category, updateHistory = true) {
@@ -1826,11 +1868,11 @@
           event.preventDefault();
           const card = recentRemove.closest('.game-card');
           const id = card.dataset.gameId;
+          const focus = captureCollectionFocus(recentRemove);
           const previous = getRecent();
           const remaining = previous.filter(value => value !== id);
           const persisted = storage.set('recentGames', remaining);
           applyFilters();
-          document.querySelector('h1').focus({ preventScroll: true });
           showToast(`${card.dataset.gameName} removed from recently opened${persisted ? '' : ' for this visit'}`, () => {
             const current = getRecent();
             if (!current.includes(id)) {
@@ -1841,7 +1883,7 @@
               current.splice(Math.min(index, 5), 0, id);
             }
             return storage.set('recentGames', current.slice(0, 6));
-          });
+          }, focus);
           return;
         }
 
@@ -1857,16 +1899,15 @@
             saved.add(card.dataset.gameId);
           }
           const persisted = setSaved(saved);
-          const restoreFocus = card.dataset.collectionCard;
+          const focus = captureCollectionFocus(favoriteButton);
           applyFilters();
-          if (restoreFocus) document.querySelector('h1').focus({ preventScroll: true });
           const id = card.dataset.gameId;
           showToast(`${card.dataset.gameName} ${removed ? 'removed' : 'saved'}${persisted ? '' : ' for this visit'}`, removed ? () => {
             // Restore only this game, retaining edits made in other tabs.
             const current = getSaved();
             current.add(id);
             return setSaved(current);
-          } : undefined);
+          } : undefined, focus);
           return;
         }
 
