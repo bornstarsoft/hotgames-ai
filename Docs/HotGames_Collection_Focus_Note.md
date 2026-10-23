@@ -49,15 +49,32 @@ Ringzzle and DaySudoku repositories untouched. No claimed measured retention lif
   /private/tmp/hg-focus-webkit.png (390px dark WebKit), and
   /private/tmp/hg-focus-home.png (1440px Chrome). Images load, home remains compact,
   focus is visible, and mobile remove passes a pointer hit-test above the toast.
-- Deployed acceptance: pending.
+- Deployed QA PASS: Chrome on the unique deployment and WebKit on production
+  Pages each passed 145 assertions / 16 layouts.
 - Physical iOS/Android and screen-reader announcements: NOT_RUN.
 
 ## Release
 
-Pending validated normal GitHub push and Cloudflare Pages integration deployment.
-No purge, cache rule/header edit or bypass request will be performed.
+- Source commit: 14e9040224c4dac2bf765f398114dcb621aaf30a, normal GitHub main push.
+- Cloudflare GitHub check 120411224542: Deployed successfully.
+- Deployment: 04cbc75f-8784-4a30-8ba8-0b4d7ac0637b,
+  https://04cbc75f.hotgames-ai.pages.dev/.
+- Ordinary-domain acceptance PARTIAL (21:24-21:25 KST): normal Chrome direct
+  /?view=saved has 44px save controls and preserves Ringzzle button focus after
+  removing Blockzzle at 390px, with no overflow. The root home still serves old
+  markup; WebKit home-to-Saved navigation retains the old 36px/H1 behavior.
+  The normal /games/ directory exposes all three previous move-check links.
+  Full root-to-collection acceptance is not claimed.
+- QA suppresses existing third-party beacons. The expected SRI console failures
+  for those stubbed resources are not application runtime failures. No analytics
+  was added or configured by this work.
+- No purge, cache rule/header edit or bypass request performed.
+- Temporary server 1317 and both task profiles stopped; existing 1316 untouched.
+  No public/, resources/_gen/ or node_modules/ files tracked or staged.
 
 ## Next Manual Check
 
-Use a physical mobile screen reader to remove a game from Saved and Recent, then
-Undo. Confirm the adjacent/restored control is announced and remains operable.
+Verify the ordinary root home serves the new release, then use a physical mobile
+screen reader to remove a game from Saved and Recent and Undo. Confirm the
+adjacent/restored control is announced and remains operable. Cache operations
+remain outside approval.
