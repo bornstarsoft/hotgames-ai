@@ -64,7 +64,7 @@
           {{ if not (in .Fragments.Identifiers "try-a-move-check") }}
             {{ errorf "Move check target missing for %s" .RelPermalink }}
           {{ end }}
-          <a class="guide-detail" href="{{ .RelPermalink }}#try-a-move-check" aria-label="{{ .Title }}: try a move check">Try a move check <i class="fa-solid fa-arrow-right" aria-hidden="true"></i></a>
+          <a class="guide-detail" href="{{ .RelPermalink }}#try-a-move-check" aria-label="{{ .Title }}: try two move checks">Try two move checks <i class="fa-solid fa-arrow-right" aria-hidden="true"></i></a>
         </article>
         {{ end }}
         {{ end }}

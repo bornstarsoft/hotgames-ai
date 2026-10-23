@@ -3,7 +3,7 @@ title: "Blockzzle"
 seoTitle: "Blockzzle — Free Block Puzzle Game Online"
 description: "Play Blockzzle, a free block puzzle game online with instant browser play, line clears, best-score chasing, and an anonymous leaderboard."
 date: 2026-06-09
-lastmod: 2026-10-23T03:36:00+09:00
+lastmod: 2026-10-23T22:10:00+09:00
 url: "/games/blockzzle/"
 startingTip: "Leave room for the next block"
 startingTipSummary: "Compare the open space left by a placement, not just the line it might clear."
@@ -38,14 +38,26 @@ Several empty squares do not necessarily make room for a block: the open squares
 
 Before committing to a placement that clears a row or column, consider the space that clear would leave. On your next run, try to spot the move that splits a useful open area into smaller gaps. This is a placement habit to practise, not a promise of a higher score.
 
-## Try A Move Check
+## Try Two Move Checks {#try-a-move-check}
+
+**1. Check the fit.**
 
 Imagine a horizontal piece that covers two neighboring squares. Gap A has two empty squares separated by an occupied square. Gap B has two empty squares next to each other. Which gap can hold that piece in its current orientation?
 
-{{< move-check >}}
+{{< move-check label="Check answer 1" >}}
 **Gap B.** The piece needs two connected squares in a horizontal line. Gap A has the same number of empty squares, but they are not arranged to fit it.
 
 This is a hypothetical placement check, not a current game board. Before your next placement, compare the shape of the usable space with the piece, rather than just counting empty squares. Fitting a piece does not by itself make that placement the strongest choice.
+{{< /move-check >}}
+
+**2. Keep a space available.**
+
+Imagine you have a single-square piece and a two-by-two square piece. There is only one empty two-by-two area, plus a separate single-square gap. Placing the single-square piece would not clear a line in this example. Where can it go without blocking the larger piece?
+
+{{< move-check label="Check answer 2" >}}
+**In the separate single-square gap.** This leaves the only two-by-two area intact. Filling any square inside that area would stop the larger piece from fitting there.
+
+This is a hypothetical space-planning exercise, not a prediction of your next pieces. If a placement clears a line, check the board again: the available space has changed. The useful habit is to compare room for both pieces before committing to the first one.
 {{< /move-check >}}
 
 ## Leaderboard

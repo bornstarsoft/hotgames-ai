@@ -3,7 +3,7 @@ title: "DaySudoku"
 seoTitle: "DaySudoku - Free Daily Sudoku Puzzle Online"
 description: "Play DaySudoku, a free daily Sudoku puzzle in your browser. Learn the rules and find a logical first move without signing up."
 date: 2026-06-15
-lastmod: 2026-10-23T03:36:00+09:00
+lastmod: 2026-10-23T22:10:00+09:00
 url: "/games/daysudoku/"
 gameUrl: "https://daysudoku.com/"
 gamePlatform: "Web Browser"
@@ -37,14 +37,32 @@ If no cell has just one possible number, reverse the question: where can one mis
 
 Do not treat the first possible cell as the only possible cell. Finish checking the whole row, column, or box before entering the number. These checks will not resolve every position; moving to another part of the board is a reasonable next step.
 
-## Try A Move Check
+## Try Two Move Checks {#try-a-move-check}
+
+**1. Find the missing number.**
 
 An example row contains 1, 2, 3, 4, 6, 7, 8 and 9, with one empty cell. That cell's column and 3x3 box contain no 5. Which number completes the row?
 
-{{< move-check >}}
+{{< move-check label="Check answer 1" >}}
 **5.** It is the only missing number in the row, and the column and box checks do not rule it out.
 
 Now consider a different row missing both 5 and 8. If both numbers fit a chosen cell's column and box, the row alone cannot decide which belongs there. Check another cell or unit for more information instead of treating a possible number as a certain one. These are practice examples, not answers to today's DaySudoku puzzle.
+{{< /move-check >}}
+
+**2. Find the only place for a number.**
+
+A different example row is missing 2, 5 and 8. Its three empty cells are A, B and C. After checking each cell's column and box, these are all the remaining possibilities:
+
+- A: 2 or 5
+- B: 5 or 8
+- C: 5 or 8
+
+Every cell has two possibilities. Is there still a placement you can be certain about?
+
+{{< move-check label="Check answer 2" >}}
+**A must be 2.** The row needs a 2, and neither B nor C can contain it. Only A can take that number, even though A initially had two possibilities.
+
+The row alone still cannot decide which of B and C is 5 or 8. Check their columns and boxes again after making the certain placement. This is an invented candidate example, not an answer to today's puzzle.
 {{< /move-check >}}
 
 ## More Ways To Learn

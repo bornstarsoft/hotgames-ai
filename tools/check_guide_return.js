@@ -137,11 +137,13 @@ async (page) => {
         await page.setViewportSize({ width, height: 900 });
         for (const theme of ['light', 'dark']) {
           await page.evaluate(value => document.documentElement.dataset.theme = value, theme);
-          check(await page.locator(grid + ' .detail-link[href$="#when-you-get-stuck"]').evaluateAll(links =>
-            document.documentElement.scrollWidth <= innerWidth && links.every(link => {
+          // Wait for responsive layout after resizing before reading link bounds.
+          await page.waitForFunction(selector =>
+            document.documentElement.scrollWidth <= innerWidth && [...document.querySelectorAll(selector)].every(link => {
               const r = link.getBoundingClientRect(), card = link.closest('.game-card').getBoundingClientRect();
               return r.height >= 44 && r.left >= card.left && r.right <= card.right;
-            })), view + ' help layout ' + width + '/' + theme);
+            }), grid + ' .detail-link[href$="#when-you-get-stuck"]', { timeout: 5000 });
+          check(true, view + ' help layout ' + width + '/' + theme);
           layouts++;
         }
       }

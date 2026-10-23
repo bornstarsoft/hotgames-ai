@@ -3,7 +3,7 @@ title: "Ringzzle"
 seoTitle: "Ringzzle — Free Color Rings Puzzle Game Online"
 description: "Play Ringzzle, a free color rings puzzle game online with instant browser play, Color Burst clears, and an anonymous leaderboard."
 date: 2026-06-09
-lastmod: 2026-10-23T03:36:00+09:00
+lastmod: 2026-10-23T22:10:00+09:00
 url: "/games/ringzzle/"
 startingTip: "Check color and ring size"
 startingTipSummary: "Notice which size slots remain open before choosing a matching color."
@@ -38,14 +38,26 @@ If a ring will not fit, check its size slot, not just its color. A cell with a s
 
 One blocked piece does not end the run while another piece can still be placed. A playable ring might complete a clear and reopen a slot for the blocked one. Check the whole tray and the board together; a color match alone does not guarantee usable space.
 
-## Try A Move Check
+## Try Two Move Checks {#try-a-move-check}
+
+**1. Check the size slot.**
 
 In this example, a cell holds a small blue ring and a large red ring. Its medium slot is empty. You have a small red ring. Can it go into that cell just because another ring there is red?
 
-{{< move-check >}}
+{{< move-check label="Check answer 1" >}}
 **No.** The small slot is already occupied by the blue ring. A matching color does not make an occupied size slot available.
 
 A medium red ring would fit the empty medium slot, but it would not create Color Burst in this cell: the small ring would still be blue. Before your next placement, check the available size first, then the color match. This example is a rule check, not a suggested move on your current board.
+{{< /move-check >}}
+
+**2. Check what stays after a clear.**
+
+A row has a small blue ring in its left cell, a large blue ring in the middle, and a medium blue ring on the right. The left cell also holds a large red ring. When this blue line clears, does the red ring disappear too? Assume no other line clear or Color Burst happens.
+
+{{< move-check label="Check answer 2" >}}
+**The large red ring stays.** A color line removes the matching-color rings, not every ring in those cells. The three blue rings clear even though their sizes differ.
+
+The left cell's small slot is now open, but its large slot is still occupied by red. Check the slots that actually became free before choosing your next ring; a cleared line does not mean three completely empty cells.
 {{< /move-check >}}
 
 ## More Ways To Learn
