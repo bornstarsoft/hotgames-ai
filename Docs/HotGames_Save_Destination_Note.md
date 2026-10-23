@@ -29,5 +29,14 @@ The message and actions use two rows with existing guide styles. There are no ne
 ## Deployment
 
 - Pre-release ordinary-domain check: previous guide theme suite passed on https://hotgames.ai/ (Chrome: 114 assertions / 32 layouts). This resolves the previous guide-theme mismatch for this observed session, not every prior homepage check or every edge.
-- Final commit, Cloudflare check and normal-domain acceptance: pending. Push success alone is not treated as deployment evidence.
+- Source commit 6deccdb4625257ed4d1e06159ff85e3a5cd7370c pushed normally to GitHub main.
+- Final Cloudflare check 120564342706: Deployed successfully (2026-10-24 02:43:17 KST). Initial Building check 120564094087 was superseded; the commit checks page confirms success and source SHA.
+- Deployment: e3f36815-8001-4b02-b817-3ca266e79420, https://e3f36815.hotgames-ai.pages.dev/.
+- Deployed QA PASS: Chrome on the unique deployment and WebKit on https://hotgames-ai.pages.dev/ each pass destination 123 assertions / 32 layouts.
+- Prior normal-domain homepage search suite also passes in Chrome (100/24); paired exercises observed on all three guides. Earlier rollout observations are historical, not current universal failures.
+- Ordinary-domain acceptance NOT PASS at 02:45-02:46 KST: WebKit initially showed no destination on any guide. Chrome briefly showed it on all three details but not /games/. Final normal-URL inspections in both engines showed the previous markup on all four. Delivery is inconsistent; no complete custom-domain rollout claim.
+- Read-only normal DaySudoku headers: HTTP 200, cf-cache-status HIT, Age 723, Last-Modified Fri, 23 Oct 2026 17:33:46 GMT; Cache-Control public, max-age=0, must-revalidate. This documents an observed older cached response, not all edges or the complete rule cause.
 - No purge, cache rule/header change, bypass query or force push.
+- Task servers and browser profiles stopped; existing watch server untouched. Browser artifacts moved outside the repository. Final documentation rebuild must remain byte-identical to the verified application output.
+
+Next single check: verify save -> Saved games -> Back on all four normal-domain guides without cache manipulation before declaring full visitor rollout.
