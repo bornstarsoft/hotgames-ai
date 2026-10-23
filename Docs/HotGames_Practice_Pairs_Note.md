@@ -50,4 +50,13 @@ Reviewed public guide pages in an isolated browser on 2026-10-23 after the web l
 
 ## Deployment
 
-Pending normal GitHub push and Pages / ordinary-domain verification. The earlier root response mismatch is separate and remains recorded in Docs/HotGames_Search_Input_Note.md. No purge, cache rule/header changes or bypass planned.
+- Source f7565024a6d1ea4dfc43f20abf87c9f0181b399f pushed normally to GitHub main.
+- GitHub Cloudflare check 120434996155: Deployed successfully.
+- Deployment bd147a7a-71a6-4a6c-9a84-c53ae21a0ff9: https://bd147a7a.hotgames-ai.pages.dev/.
+- Post-deploy PASS: Chrome unique deployment and WebKit https://hotgames-ai.pages.dev/ each pass practice 201 assertions / 48 layout cases.
+- Ordinary-domain acceptance NOT PASS at 22:19 KST: both engines see only one exercise at each of /games/blockzzle/, /games/ringzzle/ and /games/daysudoku/. Consequently the second-answer checks cannot run there. The ordinary /games/ listing shows zero new link labels in Chrome and three in WebKit, so responses are inconsistent.
+- Root search check still shows the previous 34px clear target and blur-on-Escape in both engines. This earlier response mismatch remains recorded in Docs/HotGames_Search_Input_Note.md.
+- No global live-domain rollout claim. No purge, cache-rule/header change, bypass query/header, force push or remote migration was performed.
+- Isolated QA server and both task browser profiles closed; existing watch server untouched.
+
+Next single task: verify ordinary-domain /games/ and all three detail pages consistently expose both exercises, without cache manipulation. Physical-device and screen-reader checks remain manual follow-ups.
