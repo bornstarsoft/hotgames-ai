@@ -30,11 +30,17 @@ Only layouts/index.html changes application behavior. No new dependencies, exter
 
 ## Deployment
 
-Pending normal GitHub push and Cloudflare Pages verification. No force push, remote migration, purge or cache-rule/header changes.
+- Source commit: f9874b4be47f672c25f5a7bee01ddd236e1e112b, pushed normally to origin/main.
+- GitHub Cloudflare check 120427746135: Deployed successfully.
+- Deployment: 50d2bf12-9829-4e19-8ae4-527727c8b4ab, https://50d2bf12.hotgames-ai.pages.dev/.
+- Post-deploy search suite PASS: Chrome on unique deployment and WebKit on https://hotgames-ai.pages.dev/ each pass 100 assertions / 24 layout cases.
+- Ordinary-domain acceptance NOT PASS at 22:03 KST: normal https://hotgames.ai/ navigation in both engines serves the old 34px clear target, updates query during composition and blurs on Escape. It does not yet demonstrate the new deployed behavior. No global production-domain consistency claim.
+- No force push, remote migration, purge, cache-rule/header changes or cache-bypass query was used. This remaining response mismatch is recorded rather than changed, following the owner's exclusion of cache work.
+- Isolated server and browser profiles stopped; existing watch server untouched.
 
 ## Reference
 
 - [MDN: compositionend](https://developer.mozilla.org/en-US/docs/Web/API/Element/compositionend_event)
 - [MDN: KeyboardEvent.isComposing](https://developer.mozilla.org/en-US/docs/Web/API/KeyboardEvent/isComposing)
 
-Next manual check: on physical iOS and Android keyboards, start and cancel a composed query in Saved/Recently opened, clear it, then type a game name without refocusing. Confirm expected candidate handling and unchanged personal lists.
+Next single check: verify normal production root serves the deployed search behavior, without cache manipulation. After that, on physical iOS and Android keyboards, start and cancel a composed query in Saved/Recently opened, clear it, then type a game name without refocusing. Confirm expected candidate handling and unchanged personal lists.
