@@ -5,7 +5,7 @@
   {{ end }}
   <article class="game-guide" data-guide-url="{{ .Permalink }}">
     <header class="guide-intro">
-      <a class="back-link" href="/games/"><i class="fa-solid fa-arrow-left" aria-hidden="true"></i> Puzzle guides</a>
+      <a class="back-link" href="/games/" data-guide-back><i class="fa-solid fa-arrow-left" aria-hidden="true"></i> <span data-guide-back-label>Puzzle guides</span></a>
       <h1>{{ .Title }}</h1>
       {{ with $game.puzzle_type }}<p>{{ . }} &middot; Free browser play &middot; No sign-up</p>{{ end }}
       {{ with $game.link }}
@@ -33,7 +33,7 @@
     <nav class="guide-band game-guide-actions" aria-label="{{ $game.name }} next steps">
       <a class="guide-play" href="{{ . }}" target="_blank" rel="noopener">{{ $game.cta }} <i class="fa-solid fa-arrow-up-right-from-square" aria-hidden="true"></i></a>
       {{ partial "guide-save.html" $game }}
-      <a class="guide-detail" href="/?view=saved"><i class="fa-regular fa-heart" aria-hidden="true"></i> Saved games</a>
+      <a class="guide-detail" href="/?view=saved" data-guide-back><i class="fa-regular fa-heart" aria-hidden="true"></i> <span data-guide-back-label>Saved games</span></a>
     </nav>
     {{ end }}
   </article>

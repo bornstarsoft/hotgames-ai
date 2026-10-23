@@ -152,6 +152,30 @@
       syncSaved();
 
       const guide = document.querySelector('[data-guide-url]');
+      if (guide && document.referrer) {
+        try {
+          const source = new URL(document.referrer);
+          // Only the same-origin catalog can supply a return destination.
+          if (source.origin === location.origin && source.pathname === '/' && !source.username && !source.password) {
+            const target = new URL('/', location.origin);
+            for (const key of ['view', 'cat', 'q']) {
+              const value = source.searchParams.get(key);
+              if (value) target.searchParams.set(key, value);
+            }
+            const view = target.searchParams.get('view');
+            if (!['saved', 'recent'].includes(view)) target.searchParams.delete('view');
+            const label = view === 'saved' ? 'Back to saved games'
+              : view === 'recent' ? 'Back to recently opened'
+                : target.search ? 'Back to game results' : 'Back to all games';
+            guide.querySelectorAll('[data-guide-back]').forEach(link => {
+              link.href = target.pathname + target.search;
+              link.querySelector('[data-guide-back-label]').textContent = label;
+              link.querySelector('i').className = 'fa-solid fa-arrow-left';
+            });
+          }
+        } catch (_) {}
+      }
+
       for (const id of ['a-simple-starting-strategy', 'when-you-get-stuck', 'try-a-move-check']) {
         const heading = guide?.querySelector(`h2[id="${id}"]`);
         if (!heading) continue;
