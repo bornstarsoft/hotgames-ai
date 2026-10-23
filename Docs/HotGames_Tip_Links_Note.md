@@ -50,8 +50,24 @@ existing URLs are untouched. Guide CSS source and all retained hashes are unchan
 
 ## Release
 
-Pending normal GitHub push, Cloudflare deployment and ordinary-domain verification.
-No purge, cache rule/header change or bypass request is authorized.
+- Source commit: edec604b29113e75084b6bfd2bf327463e152cdf, normal GitHub main push.
+- Cloudflare GitHub check 120416060438: Deployed successfully.
+- Deployment: 20ef96bd-90bf-4bd3-b6a6-82642cc261e8,
+  https://20ef96bd.hotgames-ai.pages.dev/.
+- Deployed QA PASS: Chrome unique deployment and WebKit production Pages each
+  274 assertions / 24 layouts for the new functionality.
+- Ordinary-domain guide acceptance PASS (21:35-21:36 KST): both engines directly
+  loaded all three /games/<game>/ guides at 390px with no bypass. Each exposed
+  three buttons, all copied URLs matched the public canonical section links,
+  and the fallback link navigated to a visible heading with no horizontal overflow.
+  Clipboard was stubbed in QA; physical device permission/paste remains NOT_RUN.
+- Existing third-party beacons were deliberately suppressed in QA, producing
+  expected SRI console failures. Transient existing CDN font errors occurred in
+  an early local run; inspected screenshots and successful reruns rendered icons.
+- No purge, cache rule/header change or bypass request performed. This guide
+  verification does not resolve the previous release's root-home consistency note.
+- Temporary server 1317 and both task browser profiles stopped; existing 1316
+  untouched. Generated output/dependencies not tracked or staged.
 
 ## Next Manual Check
 
