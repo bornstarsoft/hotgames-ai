@@ -31,19 +31,38 @@
   <script>
     (() => {
       const button = document.getElementById('guideTheme');
+      let temporaryTheme = null;
       function setTheme(theme) {
         const light = theme === 'light';
         document.documentElement.dataset.theme = light ? 'light' : 'dark';
         button.setAttribute('aria-label', light ? 'Use dark theme' : 'Use light theme');
         button.querySelector('i').className = light ? 'fa-solid fa-moon' : 'fa-solid fa-sun';
       }
-      try { setTheme(localStorage.getItem('theme')); } catch (_) { setTheme('dark'); }
+      function syncTheme() {
+        if (temporaryTheme !== null) {
+          setTheme(temporaryTheme);
+          return;
+        }
+        try { setTheme(localStorage.getItem('theme')); }
+        catch (_) { setTheme(document.documentElement.dataset.theme); }
+      }
+      syncTheme();
       button.addEventListener('click', () => {
         const theme = document.documentElement.dataset.theme === 'light' ? 'dark' : 'light';
         setTheme(theme);
-        try { localStorage.setItem('theme', theme); } catch (_) {}
+        try {
+          localStorage.setItem('theme', theme);
+          temporaryTheme = null;
+        } catch (_) { temporaryTheme = theme; }
       });
-      window.addEventListener('storage', (event) => { if (event.key === 'theme') setTheme(event.newValue); });
+      window.addEventListener('storage', (event) => {
+        if (event.key !== null && event.key !== 'theme') return;
+        try { if (event.storageArea !== localStorage) return; } catch (_) { return; }
+        // An explicit preference change or reset supersedes this page's temporary choice.
+        temporaryTheme = null;
+        syncTheme();
+      });
+      window.addEventListener('pageshow', event => { if (event.persisted) syncTheme(); });
 
       {{ $playTargets := dict }}
       {{ range .Site.Params.new_games.list }}
