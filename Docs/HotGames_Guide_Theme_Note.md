@@ -35,4 +35,12 @@ This confirms an observed older cached response, not a failed GitHub push. It do
 
 ## Deployment
 
-Pending normal GitHub push and verification of the new deployment. Earlier domain acceptance remains separate from Pages build success; see Docs/HotGames_Practice_Pairs_Note.md and Docs/HotGames_Search_Input_Note.md.
+- Source f135b592cf08bcb27e853e840efef25d71f0e3c7 pushed normally to GitHub main.
+- GitHub Cloudflare check 120441439757: Deployed successfully.
+- Deployment edc506ca-8a9a-4f30-b535-9643e41e982b: https://edc506ca.hotgames-ai.pages.dev/.
+- Post-deploy PASS: Chrome unique deployment and WebKit https://hotgames-ai.pages.dev/ each pass the theme suite (114 assertions / 32 layouts).
+- Ordinary-domain acceptance NOT PASS at 22:33 KST: both engines show previous theme behavior on /games/ and all three detail pages. Simulated restored-page preference changes remain unapplied, and a sessionStorage theme event incorrectly changes appearance. Each detail page still has one exercise rather than the previously deployed pair.
+- No general live-domain rollout claim; earlier acceptance remains separate from Pages build success. See Docs/HotGames_Practice_Pairs_Note.md and Docs/HotGames_Search_Input_Note.md.
+- No purge, cache-rule/header change, bypass or force push. Isolated server and both browser sessions stopped; existing watch server untouched.
+
+Next single check: verify normal-domain guide theme behavior matches Pages, without cache manipulation, before treating the release as fully visible to visitors.
