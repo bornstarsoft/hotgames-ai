@@ -24,7 +24,8 @@
     </footer>
   </main>
   <div class="guide-save-status" id="guideSaveToast" hidden>
-    <span id="guideSaveStatus" role="status" aria-live="polite" aria-atomic="true"></span>
+    <p id="guideSaveStatus" role="status" aria-live="polite" aria-atomic="true"></p>
+    <span id="guideSavedDestination" hidden><a class="back-link" href="/?view=saved">Saved games <i class="fa-solid fa-arrow-right" aria-hidden="true"></i></a></span>
     <button id="guideSaveUndo" type="button" hidden><i class="fa-solid fa-rotate-left" aria-hidden="true"></i> Undo</button>
     <button id="guideSaveDismiss" type="button" aria-label="Dismiss notification" title="Dismiss notification" hidden><i class="fa-solid fa-xmark" aria-hidden="true"></i></button>
   </div>
@@ -79,9 +80,11 @@
       const saveToast = document.getElementById('guideSaveToast');
       const saveUndo = document.getElementById('guideSaveUndo');
       const saveDismiss = document.getElementById('guideSaveDismiss');
+      const savedDestination = document.getElementById('guideSavedDestination');
       let statusTimer;
       let undoSave;
       let saveOrigin;
+      let savedNoticeId;
 
       function readSaved() {
         try {
@@ -96,6 +99,7 @@
 
       function syncSaved() {
         const saved = readSaved();
+        if (saved && savedNoticeId && !saved.has(savedNoticeId)) dismissSave();
         saveButtons.forEach(control => {
           const active = saved?.has(control.dataset.saveGame) || false;
           const label = `${active ? 'Remove' : 'Save'} ${control.dataset.gameName}`;
@@ -107,22 +111,32 @@
         });
       }
 
-      function announceSave(message, undo) {
+      function announceSave(message, undo, savedId) {
         clearTimeout(statusTimer);
         undoSave = undo;
+        savedNoticeId = savedId;
         saveUndo.hidden = !undo;
-        saveDismiss.hidden = !undo;
+        savedDestination.hidden = !savedId;
+        saveDismiss.hidden = !undo && !savedId;
         saveToast.hidden = false;
         saveStatus.textContent = message;
-        if (!undo) statusTimer = setTimeout(() => { saveToast.hidden = true; }, 4500);
+        if (!undo && !savedId) statusTimer = setTimeout(() => { saveToast.hidden = true; }, 4500);
+      }
+
+      function dismissSave(restoreFocus = false) {
+        clearTimeout(statusTimer);
+        undoSave = undefined;
+        savedNoticeId = undefined;
+        if (restoreFocus || saveToast.contains(document.activeElement)) saveOrigin?.focus({ preventScroll: true });
+        saveToast.hidden = true;
       }
 
       saveUndo.addEventListener('click', () => { if (undoSave) undoSave(); });
-      saveDismiss.addEventListener('click', () => {
-        clearTimeout(statusTimer);
-        undoSave = undefined;
-        saveOrigin?.focus({ preventScroll: true });
-        saveToast.hidden = true;
+      saveDismiss.addEventListener('click', () => dismissSave(true));
+      saveToast.addEventListener('keydown', event => {
+        if (event.key !== 'Escape') return;
+        event.preventDefault();
+        dismissSave(true);
       });
 
       saveButtons.forEach(control => control.addEventListener('click', () => {
@@ -160,11 +174,12 @@
           }
           syncSaved();
           control.focus({ preventScroll: true });
-          announceSave(`${control.dataset.gameName} restored.`);
+          announceSave(`${control.dataset.gameName} restored.`, undefined, id);
         }
-        announceSave(`${control.dataset.gameName} ${removing ? 'removed from saved games' : 'saved'}.`, removing ? restoreGame : undefined);
+        announceSave(`${control.dataset.gameName} ${removing ? 'removed from saved games' : 'saved'}.`, removing ? restoreGame : undefined, removing ? undefined : id);
       }));
       window.addEventListener('storage', event => {
+        try { if (event.storageArea !== localStorage) return; } catch (_) { return; }
         if (event.key === null || event.key === 'likedGames') syncSaved();
       });
       window.addEventListener('pageshow', syncSaved);
