@@ -151,6 +151,61 @@
       window.addEventListener('pageshow', syncSaved);
       syncSaved();
 
+      const guide = document.querySelector('[data-guide-url]');
+      for (const id of ['a-simple-starting-strategy', 'when-you-get-stuck', 'try-a-move-check']) {
+        const heading = guide?.querySelector(`h2[id="${id}"]`);
+        if (!heading) continue;
+        const title = heading.textContent;
+        const label = document.createElement('span');
+        label.textContent = title;
+        const copy = document.createElement('button');
+        copy.type = 'button';
+        copy.className = 'guide-save';
+        copy.dataset.copyTip = id;
+        copy.title = `Copy link to ${title}`;
+        copy.setAttribute('aria-label', copy.title);
+        const icon = document.createElement('i');
+        icon.className = 'fa-solid fa-link';
+        icon.setAttribute('aria-hidden', 'true');
+        copy.appendChild(icon);
+        heading.classList.add('game-guide-actions');
+        heading.replaceChildren(label, copy);
+        const status = document.createElement('p');
+        status.id = `tip-status-${id}`;
+        status.setAttribute('role', 'status');
+        status.setAttribute('aria-live', 'polite');
+        status.hidden = true;
+        heading.after(status);
+        copy.setAttribute('aria-describedby', status.id);
+        let copying = false;
+        let timer;
+        copy.addEventListener('click', async () => {
+          if (copying) return;
+          copying = true;
+          copy.setAttribute('aria-busy', 'true');
+          clearTimeout(timer);
+          // Use the public canonical URL, never preview hosts, queries or local lists.
+          const url = new URL(guide.dataset.guideUrl);
+          url.search = '';
+          url.hash = id;
+          try {
+            await navigator.clipboard.writeText(url.href);
+            status.textContent = 'Tip link copied.';
+            status.hidden = false;
+            timer = setTimeout(() => { status.hidden = true; }, 4500);
+          } catch (_) {
+            const link = document.createElement('a');
+            link.href = url.href;
+            link.textContent = 'Open tip link';
+            status.replaceChildren('Copy unavailable. ', link);
+            status.hidden = false;
+          } finally {
+            copying = false;
+            copy.removeAttribute('aria-busy');
+          }
+        });
+      }
+
       // Keep guide launches in the same browser-local history as homepage launches.
       function rememberOpen(event) {
         if (event.button !== 0 && event.button !== 1) return;

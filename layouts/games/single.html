@@ -3,7 +3,7 @@
   {{ range .Site.Params.new_games.list }}
     {{ if eq .details $.RelPermalink }}{{ $game = . }}{{ end }}
   {{ end }}
-  <article class="game-guide">
+  <article class="game-guide" data-guide-url="{{ .Permalink }}">
     <header class="guide-intro">
       <a class="back-link" href="/games/"><i class="fa-solid fa-arrow-left" aria-hidden="true"></i> Puzzle guides</a>
       <h1>{{ .Title }}</h1>
