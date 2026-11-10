@@ -39,7 +39,7 @@ Do not treat the first possible cell as the only possible cell. Finish checking 
 
 ## Try Two Move Checks {#try-a-move-check}
 
-**1. Find the missing number.**
+### 1. Find the missing digit {#move-check-1}
 
 An example row contains 1, 2, 3, 4, 6, 7, 8 and 9, with one empty cell. That cell's column and 3x3 box contain no 5. Which number completes the row?
 
@@ -49,7 +49,7 @@ An example row contains 1, 2, 3, 4, 6, 7, 8 and 9, with one empty cell. That cel
 Now consider a different row missing both 5 and 8. If both numbers fit a chosen cell's column and box, the row alone cannot decide which belongs there. Check another cell or unit for more information instead of treating a possible number as a certain one. These are practice examples, not answers to today's DaySudoku puzzle.
 {{< /move-check >}}
 
-**2. Find the only place for a number.**
+### 2. Find the only spot {#move-check-2}
 
 A different example row is missing 2, 5 and 8. Its three empty cells are A, B and C. After checking each cell's column and box, these are all the remaining possibilities:
 

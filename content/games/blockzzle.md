@@ -40,7 +40,7 @@ Before committing to a placement that clears a row or column, consider the space
 
 ## Try Two Move Checks {#try-a-move-check}
 
-**1. Check the fit.**
+### 1. Check the fit {#move-check-1}
 
 Imagine a horizontal piece that covers two neighboring squares. Gap A has two empty squares separated by an occupied square. Gap B has two empty squares next to each other. Which gap can hold that piece in its current orientation?
 
@@ -50,7 +50,7 @@ Imagine a horizontal piece that covers two neighboring squares. Gap A has two em
 This is a hypothetical placement check, not a current game board. Before your next placement, compare the shape of the usable space with the piece, rather than just counting empty squares. Fitting a piece does not by itself make that placement the strongest choice.
 {{< /move-check >}}
 
-**2. Keep a space available.**
+### 2. Leave a 2x2 gap {#move-check-2}
 
 Imagine you have a single-square piece and a two-by-two square piece. There is only one empty two-by-two area, plus a separate single-square gap. Placing the single-square piece would not clear a line in this example. Where can it go without blocking the larger piece?
 

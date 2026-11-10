@@ -210,8 +210,8 @@
         } catch (_) {}
       }
 
-      for (const id of ['a-simple-starting-strategy', 'when-you-get-stuck', 'try-a-move-check']) {
-        const heading = guide?.querySelector(`h2[id="${id}"]`);
+      for (const id of ['a-simple-starting-strategy', 'when-you-get-stuck', 'try-a-move-check', 'move-check-1', 'move-check-2']) {
+        const heading = guide?.querySelector(`:is(h2, h3)[id="${id}"]`);
         if (!heading) continue;
         const title = heading.textContent;
         const label = document.createElement('span');

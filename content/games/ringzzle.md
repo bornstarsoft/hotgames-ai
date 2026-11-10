@@ -40,7 +40,7 @@ One blocked piece does not end the run while another piece can still be placed. 
 
 ## Try Two Move Checks {#try-a-move-check}
 
-**1. Check the size slot.**
+### 1. Check the size slot {#move-check-1}
 
 In this example, a cell holds a small blue ring and a large red ring. Its medium slot is empty. You have a small red ring. Can it go into that cell just because another ring there is red?
 
@@ -50,7 +50,7 @@ In this example, a cell holds a small blue ring and a large red ring. Its medium
 A medium red ring would fit the empty medium slot, but it would not create Color Burst in this cell: the small ring would still be blue. Before your next placement, check the available size first, then the color match. This example is a rule check, not a suggested move on your current board.
 {{< /move-check >}}
 
-**2. Check what stays after a clear.**
+### 2. See which rings stay {#move-check-2}
 
 A row has a small blue ring in its left cell, a large blue ring in the middle, and a medium blue ring on the right. The left cell also holds a large red ring. When this blue line clears, does the red ring disappear too? Assume no other line clear or Color Burst happens.
 

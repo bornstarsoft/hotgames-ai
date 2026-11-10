@@ -9,6 +9,8 @@ async (page) => {
   const analytics = /google-analytics|googletagmanager|cloudflareinsights/;
   const suppress = route => route.fulfill({ body: '', contentType: 'application/javascript' });
   const tips = ['a-simple-starting-strategy', 'when-you-get-stuck', 'try-a-move-check'];
+  const exercises = ['move-check-1', 'move-check-2'];
+  const targets = [...tips, ...exercises];
   const games = ['blockzzle', 'ringzzle', 'daysudoku'];
   let plainContext;
   let layouts = 0;
@@ -26,12 +28,12 @@ async (page) => {
           writeText: async text => { window.tipCopies.push(text); }
         } });
       });
-      check(await page.locator('[data-copy-tip]').count() === 3, game + ' only three useful tip controls');
+      check(await page.locator('[data-copy-tip]').count() === targets.length, game + ' three tip links and two exact practice links');
       for (const width of [320, 390, 768, 1440]) {
         await page.setViewportSize({ width, height: 844 });
         for (const theme of ['light', 'dark']) {
           await page.evaluate(theme => document.documentElement.dataset.theme = theme, theme);
-          for (const tip of tips) {
+          for (const tip of targets) {
             const button = page.locator('[data-copy-tip="' + tip + '"]');
             await button.focus();
             await page.keyboard.press('Enter');
@@ -50,6 +52,7 @@ async (page) => {
       check(await page.evaluate(() => localStorage.getItem('likedGames')) === '["blockzzle","ringzzle","daysudoku"]', game + ' saves unchanged');
       check(await page.evaluate(() => localStorage.getItem('recentGames')) === '["ringzzle"]', game + ' history unchanged');
       check(new URL(page.url()).hash === '#who-it-is-for', game + ' copying does not navigate');
+      check(await page.locator('.move-check[open]').count() === 0, game + ' copying leaves answers closed');
 
       await page.evaluate(() => Object.defineProperty(navigator, 'clipboard', { configurable: true, value: undefined }));
       const first = page.locator('[data-copy-tip]').first();
@@ -93,9 +96,30 @@ async (page) => {
       await plain.goto(root + '/games/' + game + '/#when-you-get-stuck');
       check(await plain.locator('[data-copy-tip]').count() === 0, game + ' no dead no-JS controls');
       for (const tip of tips) check(await plain.locator('h2[id="' + tip + '"]').count() === 1, game + '/' + tip + ' existing fragment retained');
+      const contents = plain.locator('.guide-contents');
+      for (const id of exercises) {
+        if (!await contents.evaluate(el => el.open)) await contents.locator('summary').click();
+        const heading = plain.locator('h3[id="' + id + '"]');
+        check(await heading.count() === 1, game + '/' + id + ' unique heading');
+        await plain.locator('.guide-contents a[href="#' + id + '"]').click();
+        check(new URL(plain.url()).hash === '#' + id, game + '/' + id + ' no-JS contents jump');
+        check(await plain.locator('.move-check[open]').count() === 0, game + '/' + id + ' jump keeps answers closed');
+        await plain.goto('about:blank');
+        await plain.goto(root + '/games/' + game + '/#' + id);
+        check(await heading.evaluate(el => {
+          const rect = el.getBoundingClientRect();
+          return rect.top >= -1 && rect.bottom <= innerHeight && document.documentElement.scrollWidth <= innerWidth;
+        }), game + '/' + id + ' direct fragment visible on mobile without JS');
+        check(await plain.locator('.move-check[open]').count() === 0, game + '/' + id + ' direct link keeps answers closed');
+      }
     }
     await page.goto(root + '/games/');
     check(await page.locator('[data-copy-tip]').count() === 0, 'directory not cluttered');
+    const savedQuestion = page.locator('details').filter({ hasText: 'Does saving a game save my puzzle board?' });
+    check(await savedQuestion.locator('p').isHidden(), 'saved-progress answer is collapsed');
+    await savedQuestion.locator('summary').click();
+    check((await savedQuestion.locator('p').textContent()).includes('does not save your puzzle board'), 'saved-progress answer distinguishes game state');
+    check(await savedQuestion.locator('a').getAttribute('href') === '/?view=saved', 'saved-progress answer links to existing list');
     await page.goto(root + '/');
     check(await page.locator('[data-copy-tip]').count() === 0, 'main unchanged');
     check(await page.locator('.source-section .game-card').count() === 24, 'catalog unchanged');
