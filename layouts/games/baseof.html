@@ -264,6 +264,49 @@
         });
       }
 
+      {{ if .IsSection }}
+      {{ $recentPuzzles := dict }}
+      {{ range .Site.Params.new_games.list }}
+        {{ if and .puzzle_type .details }}
+          {{ $recentPuzzles = merge $recentPuzzles (dict .id (dict "name" .name "href" (printf "%s#move-check-1" .details))) }}
+        {{ end }}
+      {{ end }}
+      const recentPuzzles = new Map(Object.entries({{ $recentPuzzles | jsonify | safeJS }}));
+      const recentPuzzle = document.getElementById('recentPuzzle');
+      const recentPuzzleLink = document.getElementById('recentPuzzleLink');
+      function syncRecentPuzzle() {
+        let puzzle;
+        try {
+          const ids = JSON.parse(localStorage.getItem('recentGames') || '[]');
+          if (Array.isArray(ids)) {
+            for (const id of ids) {
+              if (typeof id !== 'string') continue;
+              puzzle = recentPuzzles.get(savedAliases.get(id) || id);
+              if (puzzle) break;
+            }
+          }
+        } catch (_) {}
+        if (puzzle) {
+          recentPuzzleLink.href = puzzle.href;
+          recentPuzzleLink.textContent = `Practice ${puzzle.name}`;
+        } else {
+          if (document.activeElement === recentPuzzleLink) {
+            document.querySelector('.guide-jumps a[href="#puzzles"]').focus({ preventScroll: true });
+          }
+          recentPuzzleLink.removeAttribute('href');
+          recentPuzzleLink.textContent = '';
+        }
+        recentPuzzle.hidden = !puzzle;
+      }
+      window.addEventListener('storage', event => {
+        if (event.key !== null && event.key !== 'recentGames') return;
+        try { if (event.storageArea !== localStorage) return; } catch (_) { return; }
+        syncRecentPuzzle();
+      });
+      window.addEventListener('pageshow', syncRecentPuzzle);
+      syncRecentPuzzle();
+      {{ end }}
+
       // Keep guide launches in the same browser-local history as homepage launches.
       function rememberOpen(event) {
         if (event.button !== 0 && event.button !== 1) return;
@@ -278,6 +321,7 @@
         try {
           localStorage.setItem('recentGames', JSON.stringify([id, ...new Set(recent)].slice(0, 6)));
         } catch (_) {}
+        {{ if .IsSection }}syncRecentPuzzle();{{ end }}
       }
       document.addEventListener('click', rememberOpen);
       document.addEventListener('auxclick', rememberOpen);
