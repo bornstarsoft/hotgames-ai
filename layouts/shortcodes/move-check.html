@@ -21,6 +21,20 @@
   {{ with $variation }}
     <a class="guide-detail" data-workshop-variation href="{{ . }}">{{ $variationLabel }} <i class="fa-solid fa-arrow-right" aria-hidden="true"></i></a>
   {{ end }}
+  {{ if $workshop }}
+    {{ with .Get "playGame" }}
+      {{ $games := where $.Page.Site.Params.new_games.list "id" . }}
+      {{ if ne (len $games) 1 }}
+        {{ errorf "Unknown Workshop Play game %q in %s" . $.Page.RelPermalink }}
+      {{ else }}
+        {{ $game := index $games 0 }}
+        {{ if not (and $game.puzzle_type $game.link $game.cta) }}
+          {{ errorf "Workshop Play game %q has no puzzle launch details in %s" . $.Page.RelPermalink }}
+        {{ end }}
+        <a class="guide-play" href="{{ $game.link }}" target="_blank" rel="noopener">{{ $game.cta }} <i class="fa-solid fa-arrow-up-right-from-square" aria-hidden="true"></i></a>
+      {{ end }}
+    {{ end }}
+  {{ end }}
   {{ with $next }}
     <a class="guide-detail" data-next-practice href="{{ . }}">{{ $nextLabel }} <i class="fa-solid fa-arrow-right" aria-hidden="true"></i></a>
   {{ end }}

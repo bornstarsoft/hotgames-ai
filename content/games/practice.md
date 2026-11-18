@@ -137,7 +137,7 @@ Place a horizontal two-square piece first, then a 2x2 square. The board starts w
 
 Both moves use part of the original gap. After any full lines clear, which move still leaves room for the square?
 
-{{< move-check label="Check the two-move answer" hintLabel="Two-move hint" hint="Check the column below C1. If it clears, look for two consecutive empty squares in a column next to it." next="/games/blockzzle/#move-check-2" nextLabel="Practice another Blockzzle placement" >}}
+{{< move-check label="Check the two-move answer" hintLabel="Two-move hint" hint="Check the column below C1. If it clears, look for two consecutive empty squares in a column next to it." playGame="blockzzle" next="/games/blockzzle/#move-check-2" nextLabel="More placement practice" >}}
 **Move B.** It fills the last gap in column C, so the whole column clears. B2 and B3 were already empty. With C2 and C3 now open, those four squares form a new 2x2 gap. Move A clears nothing and blocks the original gap.
 {{< /move-check >}}
 
@@ -159,7 +159,7 @@ You have a medium blue ring and want to follow it with a small green ring in A1.
 
 You can place the medium blue ring at C2 or C3. Both placements clear a blue line. Which one opens the small slot in A1?
 
-{{< move-check label="Check the line answer" hintLabel="Line-clear hint" hint="Start at A1 and trace the blue rings. Does A1 belong to the line completed by each move?" next="/games/ringzzle/#move-check-2" nextLabel="Practice another Ringzzle line clear" >}}
+{{< move-check label="Check the line answer" hintLabel="Line-clear hint" hint="Start at A1 and trace the blue rings. Does A1 belong to the line completed by each move?" playGame="ringzzle" next="/games/ringzzle/#move-check-2" nextLabel="More ring line practice" >}}
 **Place the medium blue ring at C3.** The diagonal through A1, B2 and C3 clears. The small blue ring in A1 disappears, but the large red ring stays, so the small green ring fits. C2 completes row 2 instead and leaves both rings in A1 untouched.
 {{< /move-check >}}
 
@@ -182,6 +182,6 @@ Column 5 of this example is missing 2, 4, 6, 8 and 9. After checking the rows an
 
 No cell starts with just one candidate. Which placement follows from this column alone?
 
-{{< move-check label="Check the pair answer" hintLabel="Pair hint" hint="Try swapping 2 and 6 between rows 1 and 2. In either order, can either digit go anywhere else in this column?" next="/games/daysudoku/#move-check-2" nextLabel="Try another DaySudoku deduction" >}}
+{{< move-check label="Check the pair answer" hintLabel="Pair hint" hint="Try swapping 2 and 6 between rows 1 and 2. In either order, can either digit go anywhere else in this column?" playGame="daysudoku" next="/games/daysudoku/#move-check-2" nextLabel="More Sudoku practice" >}}
 **Row 4 must be 4.** Rows 1 and 2 must use 2 and 6 in some order. Neither digit can appear again in column 5, so row 4 can only take 4. The pair still does not tell you which of rows 1 and 2 holds the 2.
 {{< /move-check >}}

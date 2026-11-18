@@ -19,6 +19,7 @@ async page => {
   const twoMove = 'blockzzle-plan-two-moves';
   const diagonal = 'ringzzle-diagonal-clear';
   const candidatePair = 'daysudoku-candidate-pair';
+  const playURLs = ['https://blockzzle.com/play/', 'https://ringzzle.com/play/', 'https://daysudoku.com/'];
   const pairAnswerText = 'Row 4 must be 4.';
   let passed = 0;
   let layouts = 0;
@@ -102,7 +103,9 @@ async page => {
     const candidates = await grid(2);
     check(candidates[1].join() === 'Possible,No,Possible,Possible'
       && [candidates[0], candidates[2]].every(row => row.slice(0, 3).every(cell => cell === 'No')), 'DaySudoku diagram matches the row and both box candidates');
-    check(await page.locator('main [data-save-game], main .guide-play, main [data-retry-practice]').count() === 0, 'workshop is editorial, not a new game');
+    check(await page.locator('main [data-save-game], main [data-retry-practice]').count() === 0, 'workshop is editorial, not a new game');
+    check(await page.locator('main .guide-play').count() === 3
+      && await page.locator('main .guide-play:visible').count() === 0, 'three Play links are hidden until their advanced answers open');
     const contents = page.locator('.guide-contents');
     const index = contents.getByRole('navigation', { name: 'Workshop exercises' });
     check(await index.isHidden() && await contents.locator('summary').textContent() === 'Browse exercises', 'compact exercise index starts closed');
@@ -403,6 +406,38 @@ async page => {
       && localStorage.getItem('recentGames') === '["ringzzle"]'
       && localStorage.getItem('hotgamesLastPractice') === '{"game":"daysudoku","question":2}'), 'workshop does not alter game history or guide bookmark');
 
+    let recent = ['ringzzle'];
+    for (const [i, [id, name]] of examples.entries()) {
+      const answer = page.locator('.move-check').nth(examples.length + variations.length + i);
+      const play = answer.locator('.guide-play');
+      const url = playURLs[i];
+      check(await play.isHidden() && await play.getAttribute('href') === url && await play.getAttribute('target') === '_blank'
+        && (await play.getAttribute('rel')).split(' ').includes('noopener'), name + ' exact Play target is safe and stays inside its closed answer');
+      await answer.locator('summary').press('Enter');
+      check(await answer.getByRole('link', { name: 'Play ' + name, exact: true }).isVisible(), name + ' Play appears after reveal');
+      const fixture = route => route.fulfill({ body: '<title>QA destination</title>', contentType: 'text/html' });
+      await context.route(url, fixture);
+      const beforePlay = page.url();
+      try {
+        const [popup] = await Promise.all([page.waitForEvent('popup'), play.press('Enter')]);
+        try {
+          await popup.waitForLoadState('domcontentloaded');
+          check(popup.url() === url && await popup.evaluate(() => window.opener === null), name + ' Play opens the correct game in a separate tab');
+        } finally {
+          await popup.close();
+        }
+      } finally {
+        await context.unroute(url, fixture);
+      }
+      recent = [id, ...recent.filter(game => game !== id)];
+      check(await page.evaluate(() => localStorage.getItem('recentGames')) === JSON.stringify(recent)
+        && await page.locator('#workshopResumeLink').getAttribute('href') === '#' + advanced[i]
+        && page.url() === beforePlay, name + ' play uses existing recent history and preserves the workshop tab');
+      await answer.locator('summary').press('Enter');
+    }
+    check(await page.evaluate(() => localStorage.getItem('likedGames') === '["blockzzle"]'
+      && localStorage.getItem('hotgamesLastPractice') === '{"game":"daysudoku","question":2}'), 'launching does not alter saved games or guide progress');
+
     plain = await context.browser().newContext({ javaScriptEnabled: false, viewport: { width: 320, height: 844 } });
     const noJS = await plain.newPage();
     for (const [i, [id, name, anchor]] of examples.entries()) {
@@ -459,6 +494,7 @@ async page => {
     check(await plainAnswer.locator('strong').isHidden(), 'two-move answer stays hidden without scripts');
     await plainAnswer.locator('summary').click();
     check(await plainAnswer.locator('strong').isVisible() && await plainAnswer.locator('strong').textContent() === 'Move B.', 'two-move answer works without scripts');
+    check(await plainAnswer.getByRole('link', { name: 'Play Blockzzle' }).getAttribute('href') === playURLs[0], 'Blockzzle Play remains native');
     await plainAnswer.locator('[data-next-practice]').click();
     await noJS.waitForURL(root + '/games/blockzzle/#move-check-2');
     check(await noJS.locator('#move-check-2').isVisible(), 'native guide link reaches the exact exercise');
@@ -468,6 +504,7 @@ async page => {
     check(await plainLineAnswer.locator('strong').isHidden(), 'diagonal answer stays hidden without scripts');
     await plainLineAnswer.locator('summary').click();
     check(await plainLineAnswer.locator('strong').isVisible() && await plainLineAnswer.locator('strong').textContent() === 'Place the medium blue ring at C3.', 'diagonal answer works without scripts');
+    check(await plainLineAnswer.getByRole('link', { name: 'Play Ringzzle' }).getAttribute('href') === playURLs[1], 'Ringzzle Play remains native');
     await plainLineAnswer.locator('[data-next-practice]').click();
     await noJS.waitForURL(root + '/games/ringzzle/#move-check-2');
     check(await noJS.locator('#move-check-2').isVisible(), 'native guide link reaches the Ringzzle line exercise');
@@ -477,6 +514,7 @@ async page => {
     check(await plainPairAnswer.locator('strong').isHidden(), 'pair answer stays hidden without scripts');
     await plainPairAnswer.locator('summary').click();
     check(await plainPairAnswer.locator('strong').isVisible() && await plainPairAnswer.locator('strong').textContent() === pairAnswerText, 'pair answer works without scripts');
+    check(await plainPairAnswer.getByRole('link', { name: 'Play DaySudoku' }).getAttribute('href') === playURLs[2], 'DaySudoku Play remains native');
     await plainPairAnswer.locator('[data-next-practice]').click();
     await noJS.waitForURL(root + '/games/daysudoku/#move-check-2');
     check(await noJS.locator('#move-check-2').isVisible(), 'native guide link reaches the DaySudoku deduction');
