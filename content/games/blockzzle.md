@@ -54,7 +54,7 @@ This is a hypothetical placement check, not a current game board. Before your ne
 
 Imagine you have a single-square piece and a two-by-two square piece. There is only one empty two-by-two area, plus a separate single-square gap. Placing the single-square piece would not clear a line in this example. Where can it go without blocking the larger piece?
 
-{{< move-check label="Check answer 2" next="/games/ringzzle/#move-check-1" nextLabel="Try a Ringzzle move check" hintLabel="Hint for question 2" hint="Mark the four squares the larger piece needs. For each possible first move, ask whether all four would still be empty." >}}
+{{< move-check label="Check answer 2" next="/games/ringzzle/#move-check-1" nextLabel="Try a Ringzzle move check" retry=true hintLabel="Hint for question 2" hint="Mark the four squares the larger piece needs. For each possible first move, ask whether all four would still be empty." >}}
 **In the separate single-square gap.** This leaves the only two-by-two area intact. Filling any square inside that area would stop the larger piece from fitting there.
 
 This is a hypothetical space-planning exercise, not a prediction of your next pieces. If a placement clears a line, check the board again: the available space has changed. The useful habit is to compare room for both pieces before committing to the first one.

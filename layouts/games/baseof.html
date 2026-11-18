@@ -264,6 +264,21 @@
         });
       }
 
+      {{ if .IsPage }}
+      const retry = guide?.querySelector('[data-retry-practice]');
+      const firstQuestion = guide?.querySelector('#move-check-1');
+      if (retry && firstQuestion) {
+        retry.hidden = false;
+        firstQuestion.tabIndex = -1;
+        retry.addEventListener('click', () => {
+          guide.querySelectorAll('.move-hint[open], .move-check[open]').forEach(details => { details.open = false; });
+          history.replaceState(history.state, '', '#move-check-1');
+          firstQuestion.focus({ preventScroll: true });
+          firstQuestion.scrollIntoView({ block: 'center' });
+        });
+      }
+      {{ end }}
+
       {{ if .IsSection }}
       {{ $recentPuzzles := dict }}
       {{ range .Site.Params.new_games.list }}

@@ -59,7 +59,7 @@ A different example row is missing 2, 5 and 8. Its three empty cells are A, B an
 
 Every cell has two possibilities. Is there still a placement you can be certain about?
 
-{{< move-check label="Check answer 2" next="/games/blockzzle/#move-check-1" nextLabel="Try a Blockzzle move check" hintLabel="Hint for question 2" hint="Count how many cells list each missing digit. Look for a digit that appears in fewer candidate lists than the others." >}}
+{{< move-check label="Check answer 2" next="/games/blockzzle/#move-check-1" nextLabel="Try a Blockzzle move check" retry=true hintLabel="Hint for question 2" hint="Count how many cells list each missing digit. Look for a digit that appears in fewer candidate lists than the others." >}}
 **A must be 2.** The row needs a 2, and neither B nor C can contain it. Only A can take that number, even though A initially had two possibilities.
 
 The row alone still cannot decide which of B and C is 5 or 8. Check their columns and boxes again after making the certain placement. This is an invented candidate example, not an answer to today's puzzle.

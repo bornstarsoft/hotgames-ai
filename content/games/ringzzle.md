@@ -54,7 +54,7 @@ A medium red ring would fit the empty medium slot, but it would not create Color
 
 A row has a small blue ring in its left cell, a large blue ring in the middle, and a medium blue ring on the right. The left cell also holds a large red ring. When this blue line clears, does the red ring disappear too? Assume no other line clear or Color Burst happens.
 
-{{< move-check label="Check answer 2" next="/games/daysudoku/#move-check-1" nextLabel="Try a DaySudoku move check" hintLabel="Hint for question 2" hint="Trace the color that completes the line, one cell at a time. Check each ring against that color rather than treating the whole cell as a match." >}}
+{{< move-check label="Check answer 2" next="/games/daysudoku/#move-check-1" nextLabel="Try a DaySudoku move check" retry=true hintLabel="Hint for question 2" hint="Trace the color that completes the line, one cell at a time. Check each ring against that color rather than treating the whole cell as a match." >}}
 **The large red ring stays.** A color line removes the matching-color rings, not every ring in those cells. The three blue rings clear even though their sizes differ.
 
 The left cell's small slot is now open, but its large slot is still occupied by red. Check the slots that actually became free before choosing your next ring; a cleared line does not mean three completely empty cells.

@@ -33,9 +33,11 @@ async (page) => {
       await page.waitForLoadState('load');
       const exercises = page.locator('.move-check');
       const hints = page.locator('.move-hint');
+      const retry = page.getByRole('button', { name: 'Retry both questions' });
       check(new URL(page.url()).hash === '#try-a-move-check', id + ' native fragment target');
       check(await page.locator('#try-a-move-check').count() === 1 && await exercises.count() === 2, id + ' stable anchor and two exercises');
       check(await hints.count() === 2, id + ' one hint per question');
+      check(await retry.isHidden(), id + ' retry is hidden until final answer opens');
       for (const [index, answer] of expected.entries()) {
         const exercise = exercises.nth(index);
         const summary = exercise.locator('summary');
@@ -57,7 +59,7 @@ async (page) => {
         check(await next.isHidden(), label + ' no extra link until answer opens');
         check(await next.getAttribute('href') === (index === 0
           ? '#move-check-2' : '/games/' + nextGame[id] + '/#move-check-1'), label + ' exact next practice target');
-        check(await exercise.locator('input,button,form,script').count() === 0, label + ' no score or data submission');
+        check(await exercise.locator('input,button:not([data-retry-practice]),form,script').count() === 0, label + ' no score or data submission');
         const url = page.url();
         await summary.click();
         check(await exercise.evaluate(el => el.open), label + ' pointer opens explanation');
@@ -89,6 +91,12 @@ async (page) => {
               const r = el.getBoundingClientRect();
               return r.height >= 44 && r.width >= 44 && r.left >= 0 && r.right <= innerWidth;
             }), label + '/' + width + '/' + theme + ' next link fits');
+            if (index === 1) check(await retry.evaluate((button, nextLink) => {
+              const r = button.getBoundingClientRect();
+              const n = nextLink.getBoundingClientRect();
+              return r.height >= 44 && r.width >= 44 && r.left >= 0 && r.right <= innerWidth
+                && (r.left >= n.right || r.top >= n.bottom);
+            }, await next.elementHandle()), label + '/' + width + '/' + theme + ' retry target fits separately');
             layouts++;
           }
         }
@@ -97,6 +105,18 @@ async (page) => {
       }
       const toc = page.locator('.guide-contents');
       await toc.locator('summary').click();
+      await page.locator('.guide-contents a[href="#move-check-2"]').click();
+      for (const item of await page.locator('.move-hint, .move-check').all()) await item.locator('summary').click();
+      check(await page.locator('.move-hint[open], .move-check[open]').count() === 4, id + ' retry setup opens all disclosures');
+      const beforeRetry = await page.evaluate(() => history.length);
+      await retry.press('Enter');
+      check(await page.locator('.move-hint[open], .move-check[open]').count() === 0, id + ' retry closes both answers and hints');
+      check(await toc.evaluate(el => el.open), id + ' retry leaves guide contents open');
+      check(await page.locator('#move-check-1').evaluate(el => {
+        const r = el.getBoundingClientRect();
+        return el === document.activeElement && r.top >= 0 && r.bottom <= innerHeight;
+      }), id + ' retry focuses the visible first question');
+      check(new URL(page.url()).hash === '#move-check-1' && await page.evaluate(() => history.length) === beforeRetry, id + ' retry updates fragment without adding history');
       await toc.locator('a[href="#try-a-move-check"]').click();
       check(new URL(page.url()).hash === '#try-a-move-check', id + ' automatic contents link');
       check(await page.locator('.puzzle-image').evaluateAll(images => images.every(el => el.complete && el.naturalWidth > 0)), id + ' existing illustration loads');
@@ -128,6 +148,7 @@ async (page) => {
         check(await hint.locator('p').isVisible() && await details.evaluate(el => !el.open), id + '/' + index + ' no-JS hint works without spoilers');
         await details.locator('summary').click();
         check(await details.evaluate(el => el.open) && await details.locator('strong').first().textContent() === answer, id + '/' + index + ' no-JS answer works');
+        if (index === 1) check(await details.locator('[data-retry-practice]').isHidden(), id + ' no-JS hides unavailable retry');
         await details.locator('[data-next-practice]').click();
         check(new URL(plain.url()).hash === (index === 0 ? '#move-check-2' : '#move-check-1'), id + '/' + index + ' no-JS practice link works');
       }
