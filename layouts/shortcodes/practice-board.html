@@ -1,0 +1,18 @@
+{{- $board := .Inner | transform.Unmarshal -}}
+<table class="practice-board">
+  <caption>{{ .Get "caption" }}</caption>
+  <thead>
+    <tr>
+      <th scope="col">Row</th>
+      {{ range $board.columns }}<th scope="col">{{ . }}</th>{{ end }}
+    </tr>
+  </thead>
+  <tbody>
+    {{ range $board.rows }}
+    <tr>
+      <th scope="row">{{ .label }}</th>
+      {{ range .cells }}<td data-cell="{{ . }}"{{ if in ($board.emphasis | default (slice)) . }} class="board-emphasis"{{ end }}>{{ . }}</td>{{ end }}
+    </tr>
+    {{ end }}
+  </tbody>
+</table>

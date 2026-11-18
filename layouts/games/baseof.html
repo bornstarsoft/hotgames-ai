@@ -4,6 +4,10 @@
   {{ partial "head.html" . }}
   {{ $styles := partialCached "guide-styles.html" . }}
   <link rel="stylesheet" href="{{ $styles.RelPermalink }}">
+  {{ if .Params.practiceBoards }}
+  {{ $boards := resources.Get "css/practice-boards.css" | minify | fingerprint }}
+  <link rel="stylesheet" href="{{ $boards.RelPermalink }}">
+  {{ end }}
 </head>
 <body class="puzzle-directory">
   <a class="skip-link" href="#main-content">Skip to puzzles</a>

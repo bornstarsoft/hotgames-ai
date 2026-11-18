@@ -31,6 +31,21 @@ async page => {
     check(await page.getByRole('heading', { level: 1, name: 'Puzzle Workshop' }).count() === 1, 'workshop title');
     check(await page.locator('link[rel=canonical]').getAttribute('href') === 'https://hotgames.ai/games/practice/', 'canonical workshop URL');
     check(await page.locator('.move-hint').count() === 3 && await page.locator('.move-check').count() === 3, 'three standalone examples');
+    const boards = page.locator('.practice-board');
+    check(await boards.count() === 3, 'one board per example');
+    const boardStyle = page.locator('link[rel="stylesheet"][href*="/css/practice-boards.min."]');
+    check(await boardStyle.count() === 1 && await boardStyle.evaluate(el => !!el.sheet?.cssRules.length), 'scoped board stylesheet loaded');
+    const grid = index => boards.nth(index).locator('tbody tr').evaluateAll(rows => rows.map(row => Array.from(row.cells).slice(1).map(cell => cell.textContent)));
+    const blocks = await grid(0);
+    check(blocks[1].join() === 'Filled,Empty,Empty,Filled'
+      && blocks.map(r => r[1]).join() === 'Filled,Empty,Filled,Filled'
+      && blocks.some((r, i) => i !== 1 && r[2] === 'Empty'), 'Blockzzle diagram has the two row gaps and one matching column gap');
+    const rings = await grid(1);
+    check(rings[0].join() === 'Red S,A: empty,Red L' && rings[1][0] === 'B: red S + L'
+      && rings[2][1] === 'Target: red L', 'Ringzzle diagram locates both placements and the distant slot');
+    const candidates = await grid(2);
+    check(candidates[1].join() === 'Possible,No,Possible,Possible'
+      && [candidates[0], candidates[2]].every(row => row.slice(0, 3).every(cell => cell === 'No')), 'DaySudoku diagram matches the row and both box candidates');
     check(await page.locator('main [data-save-game], main .guide-play, main [data-retry-practice]').count() === 0, 'workshop is editorial, not a new game');
     const contents = page.locator('.guide-contents');
     await contents.locator('summary').click();
@@ -38,6 +53,10 @@ async page => {
       const hint = page.locator('.move-hint').nth(i);
       const details = page.locator('.move-check').nth(i);
       const target = '/games/' + id + '/#move-check-1';
+      const board = boards.nth(i);
+      check(await board.locator('caption').textContent().then(text => text.startsWith(name)), name + ' board has its own accessible caption');
+      check(await board.locator('thead th[scope="col"]').count() === (id === 'ringzzle' ? 4 : 5)
+        && await board.locator('tbody th[scope="row"]').count() === (id === 'blockzzle' ? 4 : 3), name + ' board labels rows and columns');
       await contents.locator('a[href="#' + anchor + '"]').click();
       check(new URL(page.url()).hash === '#' + anchor && await page.locator('#' + anchor).isVisible(), name + ' contents link reaches unique exercise');
       check(await hint.locator('p').isHidden() && await details.locator('strong').isHidden(), name + ' hint and answer initially hidden');
@@ -58,6 +77,10 @@ async page => {
             return r.width >= 44 && r.height >= 44 && r.left >= 0 && r.right <= innerWidth
               && document.documentElement.scrollWidth <= innerWidth;
           }), name + ' link and answer fit at ' + width + '/' + theme);
+          check(await board.evaluate(el => {
+            const r = el.getBoundingClientRect();
+            return r.left >= 0 && r.right <= innerWidth && Array.from(el.querySelectorAll('th, td')).every(cell => cell.scrollWidth <= cell.clientWidth);
+          }), name + ' board fits at ' + width + '/' + theme);
           layouts++;
         }
       }
@@ -71,6 +94,7 @@ async page => {
     const noJS = await plain.newPage();
     for (const [i, [id, name, anchor]] of examples.entries()) {
       await noJS.goto(root + '/games/practice/#' + anchor);
+      check(await noJS.locator('.practice-board').nth(i).isVisible(), name + ' board is usable without scripts');
       const hint = noJS.locator('.move-hint').nth(i);
       const answer = noJS.locator('.move-check').nth(i);
       await hint.locator('summary').click();

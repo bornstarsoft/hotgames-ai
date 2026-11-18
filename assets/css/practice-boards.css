@@ -1,0 +1,32 @@
+.practice-board {
+  width: max-content;
+  max-width: 100%;
+  border-collapse: collapse;
+  margin: 20px 0;
+  font-size: 0.8125rem;
+}
+
+.practice-board caption {
+  padding: 0 0 6px;
+  color: var(--muted);
+  text-align: left;
+  font-weight: 650;
+}
+
+.practice-board th,
+.practice-board td {
+  padding: 7px 6px;
+  border: 1px solid var(--border);
+  text-align: center;
+  overflow-wrap: normal;
+}
+
+.practice-board th,
+.practice-board [data-cell="Filled"] {
+  background: var(--surface);
+}
+
+.practice-board .board-emphasis {
+  color: var(--accent);
+  font-weight: 700;
+}
