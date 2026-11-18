@@ -43,7 +43,7 @@ Do not treat the first possible cell as the only possible cell. Finish checking 
 
 An example row contains 1, 2, 3, 4, 6, 7, 8 and 9, with one empty cell. That cell's column and 3x3 box contain no 5. Which number completes the row?
 
-{{< move-check label="Check answer 1" next="#move-check-2" hintLabel="Hint for question 1" hint="Cross off every digit that already appears in the row, then check the remaining candidate against the column and box." >}}
+{{< move-check question=1 label="Check answer 1" next="#move-check-2" hintLabel="Hint for question 1" hint="Cross off every digit that already appears in the row, then check the remaining candidate against the column and box." >}}
 **5.** It is the only missing number in the row, and the column and box checks do not rule it out.
 
 Now consider a different row missing both 5 and 8. If both numbers fit a chosen cell's column and box, the row alone cannot decide which belongs there. Check another cell or unit for more information instead of treating a possible number as a certain one. These are practice examples, not answers to today's DaySudoku puzzle.
@@ -59,7 +59,7 @@ A different example row is missing 2, 5 and 8. Its three empty cells are A, B an
 
 Every cell has two possibilities. Is there still a placement you can be certain about?
 
-{{< move-check label="Check answer 2" next="/games/blockzzle/#move-check-1" nextLabel="Try a Blockzzle move check" retry=true hintLabel="Hint for question 2" hint="Count how many cells list each missing digit. Look for a digit that appears in fewer candidate lists than the others." >}}
+{{< move-check question=2 label="Check answer 2" next="/games/blockzzle/#move-check-1" nextLabel="Try a Blockzzle move check" retry=true hintLabel="Hint for question 2" hint="Count how many cells list each missing digit. Look for a digit that appears in fewer candidate lists than the others." >}}
 **A must be 2.** The row needs a 2, and neither B nor C can contain it. Only A can take that number, even though A initially had two possibilities.
 
 The row alone still cannot decide which of B and C is 5 or 8. Check their columns and boxes again after making the certain placement. This is an invented candidate example, not an answer to today's puzzle.

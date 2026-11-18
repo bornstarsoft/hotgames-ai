@@ -264,7 +264,23 @@
         });
       }
 
+      const practiceKey = 'hotgamesLastPractice';
+      const practiceFragments = new Map([[1, 'move-check-1'], [2, 'move-check-2']]);
+
       {{ if .IsPage }}
+      const practiceGame = guide?.dataset.practiceGame;
+      function rememberPractice(question) {
+        const fragment = practiceFragments.get(question);
+        if (!practiceGame || !fragment || !guide.querySelector('#' + fragment)) return;
+        try { localStorage.setItem(practiceKey, JSON.stringify({ game: practiceGame, question })); } catch (_) {}
+      }
+      guide?.querySelectorAll('[data-practice-question] > summary').forEach(summary => {
+        summary.addEventListener('click', () => {
+          const disclosure = summary.parentElement;
+          // Only a reader opening a hint or answer advances the bookmark.
+          if (!disclosure.open) rememberPractice(Number(disclosure.dataset.practiceQuestion));
+        });
+      });
       const retry = guide?.querySelector('[data-retry-practice]');
       const firstQuestion = guide?.querySelector('#move-check-1');
       if (retry && firstQuestion) {
@@ -272,6 +288,7 @@
         firstQuestion.tabIndex = -1;
         retry.addEventListener('click', () => {
           guide.querySelectorAll('.move-hint[open], .move-check[open]').forEach(details => { details.open = false; });
+          rememberPractice(1);
           history.replaceState(history.state, '', '#move-check-1');
           firstQuestion.focus({ preventScroll: true });
           firstQuestion.scrollIntoView({ block: 'center' });
@@ -283,38 +300,53 @@
       {{ $recentPuzzles := dict }}
       {{ range .Site.Params.new_games.list }}
         {{ if and .puzzle_type .details }}
-          {{ $recentPuzzles = merge $recentPuzzles (dict .id (dict "name" .name "href" (printf "%s#move-check-1" .details))) }}
+          {{ $recentPuzzles = merge $recentPuzzles (dict .id (dict "name" .name "href" .details)) }}
         {{ end }}
       {{ end }}
       const recentPuzzles = new Map(Object.entries({{ $recentPuzzles | jsonify | safeJS }}));
       const recentPuzzle = document.getElementById('recentPuzzle');
+      const recentPuzzleLabel = document.getElementById('recentPuzzleLabel');
       const recentPuzzleLink = document.getElementById('recentPuzzleLink');
       function syncRecentPuzzle() {
         let puzzle;
+        let question = 0;
         try {
-          const ids = JSON.parse(localStorage.getItem('recentGames') || '[]');
-          if (Array.isArray(ids)) {
-            for (const id of ids) {
-              if (typeof id !== 'string') continue;
-              puzzle = recentPuzzles.get(savedAliases.get(id) || id);
-              if (puzzle) break;
-            }
+          const stored = JSON.parse(localStorage.getItem(practiceKey));
+          if (practiceFragments.has(stored?.question)) {
+            puzzle = recentPuzzles.get(stored.game);
+            if (puzzle) question = stored.question;
           }
         } catch (_) {}
+        if (!puzzle) {
+          try {
+            const ids = JSON.parse(localStorage.getItem('recentGames') || '[]');
+            if (Array.isArray(ids)) {
+              for (const id of ids) {
+                if (typeof id !== 'string') continue;
+                puzzle = recentPuzzles.get(savedAliases.get(id) || id);
+                if (puzzle) break;
+              }
+            }
+          } catch (_) {}
+        }
         if (puzzle) {
-          recentPuzzleLink.href = puzzle.href;
-          recentPuzzleLink.textContent = `Practice ${puzzle.name}`;
+          recentPuzzleLabel.textContent = question ? 'Continue:' : 'Recently opened:';
+          recentPuzzleLink.href = puzzle.href + '#' + practiceFragments.get(question || 1);
+          recentPuzzleLink.textContent = question ? `${puzzle.name} · Question ${question}` : `Practice ${puzzle.name}`;
+          if (question) recentPuzzleLink.setAttribute('aria-label', `Continue ${puzzle.name}, question ${question}`);
+          else recentPuzzleLink.removeAttribute('aria-label');
         } else {
           if (document.activeElement === recentPuzzleLink) {
             document.querySelector('.guide-jumps a[href="#puzzles"]').focus({ preventScroll: true });
           }
           recentPuzzleLink.removeAttribute('href');
+          recentPuzzleLink.removeAttribute('aria-label');
           recentPuzzleLink.textContent = '';
         }
         recentPuzzle.hidden = !puzzle;
       }
       window.addEventListener('storage', event => {
-        if (event.key !== null && event.key !== 'recentGames') return;
+        if (event.key !== null && event.key !== 'recentGames' && event.key !== practiceKey) return;
         try { if (event.storageArea !== localStorage) return; } catch (_) { return; }
         syncRecentPuzzle();
       });

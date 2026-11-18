@@ -1,11 +1,12 @@
 {{ $hintLabel := .Get "hintLabel" | default "Show hint" }}
+{{ $question := .Get "question" }}
 {{ with .Get "hint" }}
-<details class="move-hint">
+<details class="move-hint"{{ with $question }} data-practice-question="{{ . }}"{{ end }}>
   <summary class="guide-detail">{{ $hintLabel }} <i class="fa-solid fa-chevron-down" aria-hidden="true"></i></summary>
   <p>{{ . }}</p>
 </details>
 {{ end }}
-<details class="move-check">
+<details class="move-check"{{ with $question }} data-practice-question="{{ . }}"{{ end }}>
   <summary class="guide-detail">{{ .Get "label" | default "Check your answer" }} <i class="fa-solid fa-chevron-down" aria-hidden="true"></i></summary>
   {{ .Inner | markdownify }}
   {{ $nextLabel := .Get "nextLabel" | default "Try question 2" }}
