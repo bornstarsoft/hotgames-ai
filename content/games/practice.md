@@ -35,7 +35,7 @@ Row 2 is missing exactly two adjacent squares. One of those squares is also the 
 
 Both moves are legal. Which clears both the row and the column in a single placement?
 
-{{< move-check label="Check the Blockzzle answer" hintLabel="Blockzzle hint" hint="Check the completed row and column separately. Does either gap remain empty after the placement?" next="/games/blockzzle/#move-check-1" nextLabel="More Blockzzle practice" >}}
+{{< move-check label="Check the Blockzzle answer" hintLabel="Blockzzle hint" hint="Check the completed row and column separately. Does either gap remain empty after the placement?" variation="#blockzzle-after-clear" variationLabel="Try the Blockzzle variation" next="/games/blockzzle/#move-check-1" nextLabel="More Blockzzle practice" >}}
 **Use the two-square block.** It fills both row gaps, and one of its squares also fills the column's last gap. The single-square block completes the column, but the row still has an empty square at the moment the column clears.
 {{< /move-check >}}
 
@@ -57,7 +57,7 @@ A medium red ring has two possible placements. In spot A it completes a red row.
 
 Elsewhere, outside that row, a large red ring occupies the slot you want to free. Assuming no other clears, which placement frees that slot?
 
-{{< move-check label="Check the Ringzzle answer" hintLabel="Ringzzle hint" hint="Compare the area affected by a color line with the area affected by a Color Burst." next="/games/ringzzle/#move-check-1" nextLabel="More Ringzzle practice" >}}
+{{< move-check label="Check the Ringzzle answer" hintLabel="Ringzzle hint" hint="Compare the area affected by a color line with the area affected by a Color Burst." variation="#ringzzle-blue-slot" variationLabel="Try the Ringzzle variation" next="/games/ringzzle/#move-check-1" nextLabel="More Ringzzle practice" >}}
 **Choose spot B.** Color Burst clears red rings across the board, including the distant large red ring. The red row in spot A would only clear its matching rings.
 {{< /move-check >}}
 
@@ -79,7 +79,7 @@ In the top-middle 3x3 box, a 7 can go in only two cells: row 2, column 4 or row 
 
 Can you remove 7 from row 2, column 8 without deciding which of the two box cells is correct?
 
-{{< move-check label="Check the DaySudoku answer" hintLabel="DaySudoku hint" hint="Look for what the two possibilities share. Does choosing either one force the 7 into the same row?" next="/games/daysudoku/#move-check-1" nextLabel="More DaySudoku practice" >}}
+{{< move-check label="Check the DaySudoku answer" hintLabel="DaySudoku hint" hint="Look for what the two possibilities share. Does choosing either one force the 7 into the same row?" variation="#daysudoku-different-rows" variationLabel="Try the DaySudoku variation" next="/games/daysudoku/#move-check-1" nextLabel="More DaySudoku practice" >}}
 **Yes.** The box must contain a 7 and both possible cells are in row 2. Either placement puts that row's 7 inside the box. So 7 cannot appear again in row 2, column 8, even though you do not yet know the exact cell.
 {{< /move-check >}}
 

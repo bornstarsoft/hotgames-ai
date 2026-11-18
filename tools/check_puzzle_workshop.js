@@ -73,13 +73,19 @@ async page => {
       check(await page.locator('.move-check[open]').count() === 1, name + ' other answers remain closed');
       const more = details.getByRole('link', { name: 'More ' + name + ' practice' });
       check(await more.getAttribute('href') === target, name + ' links to matching guide question');
+      const [relatedAnchor] = variations[i];
+      const related = details.getByRole('link', { name: 'Try the ' + name + ' variation' });
+      check(await related.getAttribute('href') === '#' + relatedAnchor, name + ' answer links to its own variation');
       for (const width of [320, 390, 768, 1440]) {
         await page.setViewportSize({ width, height: 844 });
         for (const theme of ['light', 'dark']) {
           await page.evaluate(theme => document.documentElement.dataset.theme = theme, theme);
           check(await details.evaluate(el => {
-            const r = el.querySelector('a').getBoundingClientRect();
-            return r.width >= 44 && r.height >= 44 && r.left >= 0 && r.right <= innerWidth
+            const bounds = Array.from(el.querySelectorAll('a')).map(link => link.getBoundingClientRect());
+            const [first, second] = bounds;
+            return bounds.length === 2
+              && bounds.every(r => r.width >= 44 && r.height >= 44 && r.left >= 0 && r.right <= innerWidth)
+              && (second.left >= first.right || second.top >= first.bottom)
               && document.documentElement.scrollWidth <= innerWidth;
           }), name + ' link and answer fit at ' + width + '/' + theme);
           check(await board.evaluate(el => {
@@ -89,6 +95,11 @@ async page => {
           layouts++;
         }
       }
+      await related.press('Enter');
+      check(new URL(page.url()).hash === '#' + relatedAnchor && await page.locator('#' + relatedAnchor).isVisible(), name + ' keyboard reaches matched variation');
+      check(await page.locator('.move-check').nth(examples.length + i).locator('strong').isHidden(), name + ' variation answer stays hidden');
+      await page.goBack();
+      check(new URL(page.url()).hash === '#' + anchor, name + ' Back returns to the original question');
       await details.locator('summary').click();
     }
     await page.getByRole('link', { name: 'Try a variation', exact: true }).last().press('Enter');
@@ -170,7 +181,12 @@ async page => {
       await hint.locator('summary').click();
       check(await hint.locator('p').isVisible() && await answer.locator('strong').isHidden(), name + ' native hint works without scripts');
       await answer.locator('summary').click();
-      await answer.locator('a').click();
+      const [relatedAnchor] = variations[i];
+      await answer.locator('[data-workshop-variation]').click();
+      check(new URL(noJS.url()).hash === '#' + relatedAnchor && await noJS.locator('#' + relatedAnchor).isVisible(), name + ' native variation jump works without scripts');
+      await noJS.locator('.game-guide-content a[href="#' + anchor + '"]').click();
+      check(new URL(noJS.url()).hash === '#' + anchor, name + ' native return link reaches the original board');
+      await answer.locator('[data-next-practice]').click();
       await noJS.waitForURL(root + '/games/' + id + '/#move-check-1');
       check(await noJS.locator('#move-check-1').isVisible(), name + ' native next link reaches its guide without scripts');
       const returnToBoard = noJS.getByRole('link', { name: /^Puzzle Workshop:/ });
