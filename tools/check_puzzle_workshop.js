@@ -40,12 +40,12 @@ async page => {
       const target = '/games/' + id + '/#move-check-1';
       await contents.locator('a[href="#' + anchor + '"]').click();
       check(new URL(page.url()).hash === '#' + anchor && await page.locator('#' + anchor).isVisible(), name + ' contents link reaches unique exercise');
-      check(await hint.locator('p').isHidden() && await details.locator('p').isHidden(), name + ' hint and answer initially hidden');
+      check(await hint.locator('p').isHidden() && await details.locator('strong').isHidden(), name + ' hint and answer initially hidden');
       await hint.getByText(name + ' hint', { exact: true }).press('Enter');
       check(await hint.locator('p').isVisible() && await page.locator('.move-check[open]').count() === 0, name + ' hint does not spoil any answer');
       await hint.locator('summary').press('Space');
       await details.locator('summary').click();
-      check(await details.locator('strong').textContent() === answer, name + ' answer visible on request');
+      check(await details.locator('strong').isVisible() && await details.locator('strong').textContent() === answer, name + ' answer visible on request');
       check(await page.locator('.move-check[open]').count() === 1, name + ' other answers remain closed');
       const more = details.getByRole('link', { name: 'More ' + name + ' practice' });
       check(await more.getAttribute('href') === target, name + ' links to matching guide question');
@@ -74,7 +74,7 @@ async page => {
       const hint = noJS.locator('.move-hint').nth(i);
       const answer = noJS.locator('.move-check').nth(i);
       await hint.locator('summary').click();
-      check(await hint.locator('p').isVisible() && await answer.locator('p').isHidden(), name + ' native hint works without scripts');
+      check(await hint.locator('p').isVisible() && await answer.locator('strong').isHidden(), name + ' native hint works without scripts');
       await answer.locator('summary').click();
       await answer.locator('a').click();
       await noJS.waitForURL(root + '/games/' + id + '/#move-check-1');
