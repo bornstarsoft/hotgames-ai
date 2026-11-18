@@ -44,7 +44,7 @@ One blocked piece does not end the run while another piece can still be placed. 
 
 In this example, a cell holds a small blue ring and a large red ring. Its medium slot is empty. You have a small red ring. Can it go into that cell just because another ring there is red?
 
-{{< move-check label="Check answer 1" >}}
+{{< move-check label="Check answer 1" next="#move-check-2" >}}
 **No.** The small slot is already occupied by the blue ring. A matching color does not make an occupied size slot available.
 
 A medium red ring would fit the empty medium slot, but it would not create Color Burst in this cell: the small ring would still be blue. Before your next placement, check the available size first, then the color match. This example is a rule check, not a suggested move on your current board.
@@ -54,7 +54,7 @@ A medium red ring would fit the empty medium slot, but it would not create Color
 
 A row has a small blue ring in its left cell, a large blue ring in the middle, and a medium blue ring on the right. The left cell also holds a large red ring. When this blue line clears, does the red ring disappear too? Assume no other line clear or Color Burst happens.
 
-{{< move-check label="Check answer 2" >}}
+{{< move-check label="Check answer 2" next="/games/daysudoku/#move-check-1" nextLabel="Try a DaySudoku move check" >}}
 **The large red ring stays.** A color line removes the matching-color rings, not every ring in those cells. The three blue rings clear even though their sizes differ.
 
 The left cell's small slot is now open, but its large slot is still occupied by red. Check the slots that actually became free before choosing your next ring; a cleared line does not mean three completely empty cells.

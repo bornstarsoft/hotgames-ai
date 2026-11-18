@@ -1,4 +1,8 @@
 <details class="move-check">
   <summary class="guide-detail">{{ .Get "label" | default "Check your answer" }} <i class="fa-solid fa-chevron-down" aria-hidden="true"></i></summary>
   {{ .Inner | markdownify }}
+  {{ $nextLabel := .Get "nextLabel" | default "Try question 2" }}
+  {{ with .Get "next" }}
+    <a class="guide-detail" data-next-practice href="{{ . }}">{{ $nextLabel }} <i class="fa-solid fa-arrow-right" aria-hidden="true"></i></a>
+  {{ end }}
 </details>
