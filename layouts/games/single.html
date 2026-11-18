@@ -26,7 +26,7 @@
     <details class="guide-contents">
       {{ with .Params.workshopExercises }}
       <summary>Browse exercises</summary>
-      <nav class="comparison-grid workshop-index" aria-label="Workshop exercises">
+      <nav class="comparison-grid workshop-index" id="workshop-exercises" aria-label="Workshop exercises" tabindex="-1">
         {{ range . }}
         {{ $labelID := printf "workshop-group-%s" (.game | urlize) }}
         <div class="comparison-column" role="group" aria-labelledby="{{ $labelID }}">
@@ -52,6 +52,12 @@
     </figure>
     {{ end }}
     <div class="game-guide-content">{{ .Content }}</div>
+    {{ with .Params.workshopExercises }}
+    <nav class="guide-jumps" aria-label="Workshop next steps">
+      <a href="#workshop-exercises">Choose another exercise</a>
+      <a href="/games/#puzzles">Browse puzzle games</a>
+    </nav>
+    {{ end }}
     {{ with $game.link }}
     <nav class="guide-band game-guide-actions" aria-label="{{ $game.name }} next steps">
       <a class="guide-play" href="{{ . }}" target="_blank" rel="noopener">{{ $game.cta }} <i class="fa-solid fa-arrow-up-right-from-square" aria-hidden="true"></i></a>

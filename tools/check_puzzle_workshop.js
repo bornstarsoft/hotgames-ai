@@ -438,6 +438,44 @@ async page => {
     check(await page.evaluate(() => localStorage.getItem('likedGames') === '["blockzzle"]'
       && localStorage.getItem('hotgamesLastPractice') === '{"game":"daysudoku","question":2}'), 'launching does not alter saved games or guide progress');
 
+    const nextSteps = page.getByRole('navigation', { name: 'Workshop next steps' });
+    const chooseAgain = nextSteps.getByRole('link', { name: 'Choose another exercise' });
+    check(await chooseAgain.getAttribute('href') === '#workshop-exercises'
+      && await nextSteps.getByRole('link', { name: 'Browse puzzle games' }).getAttribute('href') === '/games/#puzzles',
+      'Workshop end presents only native continuation paths');
+    for (const width of [320, 390, 768, 1440]) {
+      await page.setViewportSize({ width, height: 844 });
+      for (const theme of ['light', 'dark']) {
+        await page.evaluate(theme => document.documentElement.dataset.theme = theme, theme);
+        check(await nextSteps.getByRole('link').evaluateAll(links => {
+          const [first, second] = links.map(link => link.getBoundingClientRect());
+          return links.length === 2
+            && [first, second].every(r => r.height >= 44 && r.width >= 44 && r.left >= 0 && r.right <= innerWidth)
+            && (second.left >= first.right || second.top >= first.bottom)
+            && document.documentElement.scrollWidth <= innerWidth;
+        }), 'end links fit at ' + width + '/' + theme);
+        layouts++;
+      }
+    }
+    await contents.locator('summary').press('Enter');
+    check(await index.isHidden(), 'index is closed before returning from the end');
+    const savedExercise = await page.locator('#workshopResumeLink').getAttribute('href');
+    await chooseAgain.press('Enter');
+    await page.waitForURL(url => url.hash === '#workshop-exercises');
+    check(await index.isVisible() && await index.evaluate(el => el === document.activeElement
+      && el.getBoundingClientRect().top >= 0 && el.getBoundingClientRect().top < innerHeight)
+      && await contents.locator('summary').evaluate(el => el.getBoundingClientRect().top >= 0),
+      'return link opens the index, scrolls it into view and moves keyboard focus');
+    await index.getByRole('link', { name: 'Free a distant slot' }).press('Enter');
+    await page.waitForURL(url => url.hash === '#ringzzle-distant-slot');
+    check(await page.locator('#ringzzle-distant-slot').isVisible()
+      && await page.locator('.move-check[open], .move-hint[open]').count() === 0
+      && await page.locator('#workshopResumeLink').getAttribute('href') === savedExercise,
+      'choosing a different game does not reveal answers or overwrite the bookmark');
+    await page.goBack();
+    await page.waitForURL(url => url.hash === '#workshop-exercises');
+    check(await index.isVisible(), 'browser Back returns to the open exercise list');
+
     plain = await context.browser().newContext({ javaScriptEnabled: false, viewport: { width: 320, height: 844 } });
     const noJS = await plain.newPage();
     for (const [i, [id, name, anchor]] of examples.entries()) {
@@ -518,6 +556,15 @@ async page => {
     await plainPairAnswer.locator('[data-next-practice]').click();
     await noJS.waitForURL(root + '/games/daysudoku/#move-check-2');
     check(await noJS.locator('#move-check-2').isVisible(), 'native guide link reaches the DaySudoku deduction');
+    await noJS.goto(root + workshopPath + '#' + candidatePair);
+    const plainNextSteps = noJS.getByRole('navigation', { name: 'Workshop next steps' });
+    check(await plainIndex.isHidden(), 'index starts closed without scripts');
+    await plainNextSteps.getByRole('link', { name: 'Choose another exercise' }).click();
+    await noJS.waitForURL(root + workshopPath + '#workshop-exercises');
+    check(await plainIndex.isVisible() && await plainIndex.getByRole('link').count() === 9, 'native return opens the complete index without scripts');
+    await plainNextSteps.getByRole('link', { name: 'Browse puzzle games' }).click();
+    await noJS.waitForURL(root + '/games/#puzzles');
+    check(await noJS.getByRole('heading', { name: 'Choose a puzzle' }).isVisible(), 'native directory link reaches the puzzle choices');
     await page.goto(root + '/');
     check(await page.locator('a[href="/games/practice/"]').count() === 0, 'homepage unchanged');
     check(errors.length === 0, 'no application runtime errors');
