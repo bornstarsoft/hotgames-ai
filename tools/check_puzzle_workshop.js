@@ -18,6 +18,8 @@ async page => {
   ];
   const twoMove = 'blockzzle-plan-two-moves';
   const diagonal = 'ringzzle-diagonal-clear';
+  const candidatePair = 'daysudoku-candidate-pair';
+  const pairAnswerText = 'Row 4 must be 4.';
   let passed = 0;
   let layouts = 0;
   let plain;
@@ -83,9 +85,10 @@ async page => {
     check(await page.locator('link[rel=canonical]').getAttribute('href') === 'https://hotgames.ai/games/practice/', 'canonical workshop URL');
     const twoMoveIndex = examples.length + variations.length;
     const diagonalIndex = twoMoveIndex + 1;
-    check(await page.locator('.move-hint').count() === diagonalIndex + 1 && await page.locator('.move-check').count() === diagonalIndex + 1, 'original examples, variations and advanced exercises');
+    const pairIndex = diagonalIndex + 1;
+    check(await page.locator('.move-hint').count() === pairIndex + 1 && await page.locator('.move-check').count() === pairIndex + 1, 'original examples, variations and advanced exercises');
     const boards = page.locator('.practice-board');
-    check(await boards.count() === 5, 'only the original and advanced exercises need boards');
+    check(await boards.count() === 6, 'only the original and advanced exercises need boards');
     const boardStyle = page.locator('link[rel="stylesheet"][href*="/css/practice-boards.min."]');
     check(await boardStyle.count() === 1 && await boardStyle.evaluate(el => !!el.sheet?.cssRules.length), 'scoped board stylesheet loaded');
     const grid = index => boards.nth(index).locator('tbody tr').evaluateAll(rows => rows.map(row => Array.from(row.cells).slice(1).map(cell => cell.textContent)));
@@ -250,7 +253,35 @@ async page => {
     await checkBoardLayout(diagonalBoard, lineHint.locator('summary').or(lineAnswer.locator('summary')).or(moreLinePractice), 'diagonal');
     await lineAnswer.locator('summary').press('Space');
     await lineHint.locator('summary').press('Space');
-    const shareAnchors = [...examples.map(([, , anchor]) => anchor), ...variations.map(([anchor]) => anchor), twoMove, diagonal];
+
+    const pairLink = page.getByRole('link', { name: 'use a DaySudoku pair' });
+    check(await pairLink.getAttribute('href') === '#' + candidatePair, 'repeat visitors can jump to the candidate pair');
+    await pairLink.press('Enter');
+    check(new URL(page.url()).hash === '#' + candidatePair && await page.locator('#' + candidatePair).isVisible(), 'keyboard reaches the candidate pair');
+    const pairBoard = boards.nth(5);
+    check(await pairBoard.locator('caption').textContent() === 'Column 5 candidates'
+      && (await pairBoard.locator('tbody th[scope="row"]').allTextContents()).join() === '1,2,4,7,9', 'pair table identifies the column and empty rows');
+    const choices = (await grid(5)).map(([cell]) => cell.split(', ').map(Number));
+    const digits = [2, 4, 6, 8, 9];
+    check(choices.every(row => row.length >= 2 && row.every(digit => digits.includes(digit)))
+      && digits.every(digit => choices.filter(row => row.includes(digit)).length >= 2), 'no naked or hidden single precedes the pair deduction');
+    const arrangements = choices.reduce((valid, row) => valid.flatMap(used =>
+      row.filter(digit => !used.includes(digit)).map(digit => [...used, digit])), [[]]);
+    const possibilities = choices.map((_, i) => [...new Set(arrangements.map(arrangement => arrangement[i]))].sort().join());
+    check(arrangements.length === 4 && possibilities.join('|') === '2,6|2,6|4|8,9|8,9', 'only row 4 is fixed across all column assignments');
+    const pairHint = page.locator('.move-hint').nth(pairIndex);
+    const pairAnswer = page.locator('.move-check').nth(pairIndex);
+    check(await pairHint.locator('p').isHidden() && await pairAnswer.locator('strong').isHidden(), 'pair hint and answer start closed');
+    await pairHint.locator('summary').press('Enter');
+    check(await pairHint.locator('p').isVisible() && await pairAnswer.locator('strong').isHidden(), 'pair hint keeps answer closed');
+    await pairAnswer.locator('summary').press('Enter');
+    check(await pairAnswer.locator('strong').isVisible() && await pairAnswer.locator('strong').textContent() === pairAnswerText, 'pair answer matches the column deduction');
+    const moreDeduction = pairAnswer.locator('[data-next-practice]');
+    check(await moreDeduction.getAttribute('href') === '/games/daysudoku/#move-check-2', 'answer leads to related DaySudoku practice');
+    await checkBoardLayout(pairBoard, pairHint.locator('summary').or(pairAnswer.locator('summary')).or(moreDeduction), 'candidate pair');
+    await pairAnswer.locator('summary').press('Space');
+    await pairHint.locator('summary').press('Space');
+    const shareAnchors = [...examples.map(([, , anchor]) => anchor), ...variations.map(([anchor]) => anchor), twoMove, diagonal, candidatePair];
     check(await page.locator('[data-copy-tip]').count() === shareAnchors.length, 'only exercise headings get share controls');
     await page.setViewportSize({ width: 320, height: 844 });
     await page.evaluate(() => {
@@ -346,6 +377,15 @@ async page => {
     await plainLineAnswer.locator('[data-next-practice]').click();
     await noJS.waitForURL(root + '/games/ringzzle/#move-check-2');
     check(await noJS.locator('#move-check-2').isVisible(), 'native guide link reaches the Ringzzle line exercise');
+    await noJS.goto(root + '/games/practice/#' + candidatePair);
+    check(await noJS.locator('#' + candidatePair).isVisible() && await noJS.locator('.practice-board').nth(5).isVisible(), 'pair bookmark and table work without scripts');
+    const plainPairAnswer = noJS.locator('.move-check').nth(pairIndex);
+    check(await plainPairAnswer.locator('strong').isHidden(), 'pair answer stays hidden without scripts');
+    await plainPairAnswer.locator('summary').click();
+    check(await plainPairAnswer.locator('strong').isVisible() && await plainPairAnswer.locator('strong').textContent() === pairAnswerText, 'pair answer works without scripts');
+    await plainPairAnswer.locator('[data-next-practice]').click();
+    await noJS.waitForURL(root + '/games/daysudoku/#move-check-2');
+    check(await noJS.locator('#move-check-2').isVisible(), 'native guide link reaches the DaySudoku deduction');
     await page.goto(root + '/');
     check(await page.locator('a[href="/games/practice/"]').count() === 0, 'homepage unchanged');
     check(errors.length === 0, 'no application runtime errors');

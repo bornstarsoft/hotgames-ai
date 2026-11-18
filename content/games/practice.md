@@ -13,11 +13,12 @@ workshopShareSections:
   - daysudoku-different-rows
   - blockzzle-plan-two-moves
   - ringzzle-diagonal-clear
+  - daysudoku-candidate-pair
 ---
 
 Three practice situations for your next puzzle break: complete two lines with one block, free a distant ring slot, and rule out a Sudoku candidate. These are invented examples, not positions from your current game.
 
-Already tried the examples? [Try a variation](#try-a-variation), [plan two Blockzzle moves](#blockzzle-plan-two-moves), or [find a Ringzzle diagonal](#ringzzle-diagonal-clear).
+Already tried the examples? [Try a variation](#try-a-variation), [plan two Blockzzle moves](#blockzzle-plan-two-moves), [find a Ringzzle diagonal](#ringzzle-diagonal-clear), or [use a DaySudoku pair](#daysudoku-candidate-pair).
 
 ## Blockzzle: Complete two lines {#blockzzle-crossing-lines}
 
@@ -156,4 +157,27 @@ You can place the medium blue ring at C2 or C3. Both placements clear a blue lin
 
 {{< move-check label="Check the line answer" hintLabel="Line-clear hint" hint="Start at A1 and trace the blue rings. Does A1 belong to the line completed by each move?" next="/games/ringzzle/#move-check-2" nextLabel="Practice another Ringzzle line clear" >}}
 **Place the medium blue ring at C3.** The diagonal through A1, B2 and C3 clears. The small blue ring in A1 disappears, but the large red ring stays, so the small green ring fits. C2 completes row 2 instead and leaves both rings in A1 untouched.
+{{< /move-check >}}
+
+## DaySudoku: Use a candidate pair {#daysudoku-candidate-pair}
+
+Column 5 of this example is missing 2, 4, 6, 8 and 9. After checking the rows and boxes, these are all the candidates for its five empty cells.
+
+{{< practice-board caption="Column 5 candidates" >}}
+{
+  "columns": ["Candidates"],
+  "rows": [
+    {"label": "1", "cells": ["2, 6"]},
+    {"label": "2", "cells": ["2, 6"]},
+    {"label": "4", "cells": ["2, 4, 6"]},
+    {"label": "7", "cells": ["4, 8, 9"]},
+    {"label": "9", "cells": ["4, 8, 9"]}
+  ]
+}
+{{< /practice-board >}}
+
+No cell starts with just one candidate. Which placement follows from this column alone?
+
+{{< move-check label="Check the pair answer" hintLabel="Pair hint" hint="Try swapping 2 and 6 between rows 1 and 2. In either order, can either digit go anywhere else in this column?" next="/games/daysudoku/#move-check-2" nextLabel="Try another DaySudoku deduction" >}}
+**Row 4 must be 4.** Rows 1 and 2 must use 2 and 6 in some order. Neither digit can appear again in column 5, so row 4 can only take 4. The pair still does not tell you which of rows 1 and 2 holds the 2.
 {{< /move-check >}}
