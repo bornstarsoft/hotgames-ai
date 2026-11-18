@@ -13,7 +13,8 @@ HUGO_RESOURCEDIR="$build_dir/resources" hugo \
 
 # Hugo can omit future-dated content without a warning; protect existing routes.
 for page in index.html games/index.html games/page/1/index.html \
-  games/blockzzle/index.html games/ringzzle/index.html games/daysudoku/index.html; do
+  games/blockzzle/index.html games/ringzzle/index.html games/daysudoku/index.html \
+  games/practice/index.html; do
   if [ ! -s "$build_dir/site/$page" ]; then
     printf 'FAIL: required route output is missing: %s\n' "$page" >&2
     exit 1

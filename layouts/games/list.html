@@ -46,6 +46,9 @@
     <section id="starting-tips" class="guide-band starting-tips" aria-labelledby="starting-tips-title">
       <h2 id="starting-tips-title">Plan your next move</h2>
       <p class="guide-lead">A small idea to try in your next puzzle.</p>
+      {{ with .GetPage "practice" }}
+      <a class="back-link" href="{{ .RelPermalink }}">Puzzle Workshop <i class="fa-solid fa-arrow-right" aria-hidden="true"></i></a>
+      {{ end }}
       <div class="comparison-grid">
         {{ range .RegularPages }}
         {{ if .Params.startingTip }}
