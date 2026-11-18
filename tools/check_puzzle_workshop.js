@@ -23,8 +23,11 @@ async page => {
   const compareAnswerText = 'Place the block at A1.';
   const trayPuzzle = 'ringzzle-open-medium-slot';
   const trayAnswerText = 'Place the blue ring at C2, then the yellow ring at B2.';
+  const hiddenPair = 'daysudoku-hidden-pair';
+  const hiddenAnswerText = 'Cross off 4 in row 1 and 7 in row 3.';
   const advanced = [twoMove, diagonal, candidatePair];
-  const shareAnchors = [...examples.map(([, , anchor]) => anchor), ...variations.map(([anchor]) => anchor), ...advanced, compareClears, trayPuzzle];
+  const followUps = [compareClears, trayPuzzle, hiddenPair];
+  const shareAnchors = [...examples.map(([, , anchor]) => anchor), ...variations.map(([anchor]) => anchor), ...advanced, ...followUps];
   const playURLs = ['https://blockzzle.com/play/', 'https://ringzzle.com/play/', 'https://daysudoku.com/'];
   const pairAnswerText = 'Row 4 must be 4.';
   let passed = 0;
@@ -95,10 +98,11 @@ async page => {
     const pairIndex = diagonalIndex + 1;
     const compareIndex = pairIndex + 1;
     const trayIndex = compareIndex + 1;
+    const hiddenIndex = trayIndex + 1;
     check(await page.locator('.move-hint').count() === shareAnchors.length
       && await page.locator('.move-check').count() === shareAnchors.length, 'original examples, variations and advanced exercises');
     const boards = page.locator('.practice-board');
-    check(await boards.count() === 8, 'only the original and advanced exercises need boards');
+    check(await boards.count() === 9, 'only the original and advanced exercises need boards');
     const boardStyle = page.locator('link[rel="stylesheet"][href*="/css/practice-boards.min."]');
     check(await boardStyle.count() === 1 && await boardStyle.evaluate(el => !!el.sheet?.cssRules.length), 'scoped board stylesheet loaded');
     const grid = index => boards.nth(index).locator('tbody tr').evaluateAll(rows => rows.map(row => Array.from(row.cells).slice(1).map(cell => cell.textContent)));
@@ -123,9 +127,7 @@ async page => {
     for (const [i, [, name, anchor]] of examples.entries()) {
       const group = index.getByRole('group', { name, exact: true });
       const hrefs = await group.getByRole('link').evaluateAll(links => links.map(link => link.getAttribute('href')));
-      const expected = [anchor, variations[i][0], advanced[i]];
-      if (i === 0) expected.push(compareClears);
-      if (i === 1) expected.push(trayPuzzle);
+      const expected = [anchor, variations[i][0], advanced[i], followUps[i]];
       check(hrefs.join() === expected.map(id => '#' + id).join(), name + ' index orders the basic problem, variation and follow-ups');
     }
     for (const width of [320, 390, 768, 1440]) {
@@ -320,10 +322,11 @@ async page => {
     const digits = [2, 4, 6, 8, 9];
     check(choices.every(row => row.length >= 2 && row.every(digit => digits.includes(digit)))
       && digits.every(digit => choices.filter(row => row.includes(digit)).length >= 2), 'no naked or hidden single precedes the pair deduction');
-    const arrangements = choices.reduce((valid, row) => valid.flatMap(used =>
+    const columnAssignments = rows => rows.reduce((valid, row) => valid.flatMap(used =>
       row.filter(digit => !used.includes(digit)).map(digit => [...used, digit])), [[]]);
-    const possibilities = choices.map((_, i) => [...new Set(arrangements.map(arrangement => arrangement[i]))].sort().join());
-    check(arrangements.length === 4 && possibilities.join('|') === '2,6|2,6|4|8,9|8,9', 'only row 4 is fixed across all column assignments');
+    const possibilities = (rows, arrangements) => rows.map((_, i) => [...new Set(arrangements.map(arrangement => arrangement[i]))].sort().join());
+    const arrangements = columnAssignments(choices);
+    check(arrangements.length === 4 && possibilities(choices, arrangements).join('|') === '2,6|2,6|4|8,9|8,9', 'only row 4 is fixed across all column assignments');
     const pairHint = page.locator('.move-hint').nth(pairIndex);
     const pairAnswer = page.locator('.move-check').nth(pairIndex);
     check(await pairHint.locator('p').isHidden() && await pairAnswer.locator('strong').isHidden(), 'pair hint and answer start closed');
@@ -399,6 +402,31 @@ async page => {
     await checkBoardLayout(trayBoard, trayHint.locator('summary').or(trayAnswer.locator('summary')).or(moreTrayPractice), 'tray choices');
     await trayAnswer.locator('summary').press('Space');
     await trayHint.locator('summary').press('Space');
+
+    const hiddenLink = index.getByRole('group', { name: 'DaySudoku' }).getByRole('link', { name: 'Spot a hidden pair' });
+    await hiddenLink.press('Enter');
+    check(new URL(page.url()).hash === '#' + hiddenPair && await page.locator('#' + hiddenPair).isVisible(), 'keyboard reaches the hidden pair');
+    const hiddenBoard = boards.nth(8);
+    check(await hiddenBoard.locator('caption').textContent() === 'Column 4 candidates'
+      && (await hiddenBoard.locator('tbody th[scope="row"]').allTextContents()).join() === '1,3,4,6,8', 'hidden-pair table labels the correct column and rows');
+    const hiddenChoices = (await grid(8)).map(([cell]) => cell.split(', ').map(Number));
+    check(hiddenChoices[0].join() === '1,3,4' && hiddenChoices[1].join() === '1,3,7'
+      && hiddenChoices.slice(2).every(row => !row.includes(1) && !row.includes(3)), 'pair values are confined to the two cells with an extra candidate');
+    const hiddenArrangements = columnAssignments(hiddenChoices);
+    check(hiddenArrangements.length === 6 && possibilities(hiddenChoices, hiddenArrangements).join('|') === '1,3|1,3|4,7|4,7,9|7,9',
+      'only the two extra candidates are impossible, and no placement is forced');
+    const hiddenHint = page.locator('.move-hint').nth(hiddenIndex);
+    const hiddenAnswer = page.locator('.move-check').nth(hiddenIndex);
+    check(await hiddenHint.locator('p').isHidden() && await hiddenAnswer.locator('strong').isHidden(), 'hidden-pair question starts without spoilers');
+    await hiddenHint.locator('summary').press('Enter');
+    check(await hiddenHint.locator('p').isVisible() && await hiddenAnswer.locator('strong').isHidden(), 'hidden-pair hint keeps the answer closed');
+    await hiddenAnswer.locator('summary').press('Enter');
+    check(await hiddenAnswer.locator('strong').isVisible() && await hiddenAnswer.locator('strong').textContent() === hiddenAnswerText, 'answer matches both exclusions');
+    const moreHiddenPractice = hiddenAnswer.locator('[data-next-practice]');
+    check(await moreHiddenPractice.getAttribute('href') === '/games/daysudoku/#move-check-2', 'hidden pair leads to related DaySudoku practice');
+    await checkBoardLayout(hiddenBoard, hiddenHint.locator('summary').or(hiddenAnswer.locator('summary')).or(moreHiddenPractice), 'hidden pair');
+    await hiddenAnswer.locator('summary').press('Space');
+    await hiddenHint.locator('summary').press('Space');
 
     check(await page.locator('[data-workshop-retry]').count() === shareAnchors.length, 'each exercise has one retry control');
     const otherHint = page.locator('.move-hint').last();
@@ -649,6 +677,12 @@ async page => {
     check(await noJS.locator('.practice-board').nth(7).isVisible() && await plainTray.locator('strong').isHidden(), 'native index reaches the tray board without spoilers');
     await plainTray.locator('summary').click();
     check(await plainTray.locator('strong').isVisible() && await plainTray.locator('strong').textContent() === trayAnswerText, 'tray answer works without scripts');
+    await plainIndex.getByRole('link', { name: 'Spot a hidden pair' }).click();
+    await noJS.waitForURL(root + workshopPath + '#' + hiddenPair);
+    const plainHiddenPair = noJS.locator('.move-check').nth(hiddenIndex);
+    check(await noJS.locator('.practice-board').nth(8).isVisible() && await plainHiddenPair.locator('strong').isHidden(), 'native index reaches the hidden-pair table without spoilers');
+    await plainHiddenPair.locator('summary').click();
+    check(await plainHiddenPair.locator('strong').isVisible() && await plainHiddenPair.locator('strong').textContent() === hiddenAnswerText, 'hidden-pair answer works without scripts');
     await plainNextSteps.getByRole('link', { name: 'Browse puzzle games' }).click();
     await noJS.waitForURL(root + '/games/#puzzles');
     check(await noJS.getByRole('heading', { name: 'Choose a puzzle' }).isVisible(), 'native directory link reaches the puzzle choices');

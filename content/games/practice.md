@@ -22,6 +22,7 @@ workshopExercises:
       - {id: daysudoku-box-to-row, label: Narrow a candidate}
       - {id: daysudoku-different-rows, label: Check both rows}
       - {id: daysudoku-candidate-pair, label: Use a candidate pair}
+      - {id: daysudoku-hidden-pair, label: Spot a hidden pair}
 ---
 
 Short practice puzzles for Blockzzle, Ringzzle, and DaySudoku. These are invented examples, not positions from your current game.
@@ -229,4 +230,27 @@ Place the small blue ring at A3 to clear column A, or at C2 to clear row 2. Whic
 
 {{< move-check label="Check the tray answer" hintLabel="Tray hint" hint="Both lines clear blue rings. Find the blue ring that takes up a medium slot, and check which line removes it." next="/games/ringzzle/#move-check-2" nextLabel="More ring line practice" >}}
 **Place the blue ring at C2, then the yellow ring at B2.** Row 2 clears the medium blue ring at B2. That is the only medium slot that opens. Column A clears blue rings too, but none of those blue rings are medium, so the yellow ring would still be blocked.
+{{< /move-check >}}
+
+## DaySudoku: Spot a hidden pair {#daysudoku-hidden-pair}
+
+Column 4 is missing 1, 3, 4, 7 and 9. After checking the rows and 3x3 boxes, these are the remaining candidates in its five empty cells.
+
+{{< practice-board caption="Column 4 candidates" >}}
+{
+  "columns": ["Candidates"],
+  "rows": [
+    {"label": "1", "cells": ["1, 3, 4"]},
+    {"label": "3", "cells": ["1, 3, 7"]},
+    {"label": "4", "cells": ["4, 7"]},
+    {"label": "6", "cells": ["4, 7, 9"]},
+    {"label": "8", "cells": ["7, 9"]}
+  ]
+}
+{{< /practice-board >}}
+
+Which two candidates can you cross off without filling a cell?
+
+{{< move-check label="Check the hidden-pair answer" hintLabel="Hidden-pair hint" hint="Find every possible place for 1 and every possible place for 3. Can either digit go outside rows 1 and 3?" next="/games/daysudoku/#move-check-2" nextLabel="More Sudoku deductions" >}}
+**Cross off 4 in row 1 and 7 in row 3.** Rows 1 and 3 must contain 1 and 3 in some order because no other row in this column can take those digits. That rules out the extra candidate in each cell, but it does not tell you which row takes 1.
 {{< /move-check >}}

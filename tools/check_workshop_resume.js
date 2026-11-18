@@ -9,7 +9,7 @@ async launcher => {
     'blockzzle-crossing-lines', 'ringzzle-distant-slot', 'daysudoku-box-to-row',
     'blockzzle-after-clear', 'ringzzle-blue-slot', 'daysudoku-different-rows',
     'blockzzle-plan-two-moves', 'ringzzle-diagonal-clear', 'daysudoku-candidate-pair',
-    'blockzzle-compare-clears', 'ringzzle-open-medium-slot'
+    'blockzzle-compare-clears', 'ringzzle-open-medium-slot', 'daysudoku-hidden-pair'
   ];
   const context = await browser.newContext({ viewport: { width: 390, height: 844 } });
   const suppress = route => route.abort('blockedbyclient');
@@ -56,7 +56,7 @@ async launcher => {
       await hint(page, i).press('Enter');
       check(await stored() === id && await link.getAttribute('href') === '#' + id, id + ' stores and links to exactly one exercise');
       check(await link.textContent() === await page.locator('#' + id).textContent(), id + ' displays its own title');
-      if (id === 'blockzzle-compare-clears' || id === 'ringzzle-open-medium-slot') {
+      if (i >= exercises.length - 3) {
         await directory.waitForFunction(href => document.getElementById('workshopDirectoryResumeLink').getAttribute('href') === href,
           directoryHref(id));
         check(await directoryLink(directory).textContent() === await link.textContent(), id + ' is available with the right title in directory resume');
