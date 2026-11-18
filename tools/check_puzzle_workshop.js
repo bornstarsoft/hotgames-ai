@@ -9,6 +9,8 @@ async page => {
     ['ringzzle', 'Ringzzle', 'ringzzle-distant-slot', 'Choose spot B.'],
     ['daysudoku', 'DaySudoku', 'daysudoku-box-to-row', 'Yes.']
   ];
+  const workshopPath = '/games/practice/';
+  const shortcutLabel = 'Puzzle Workshop shortcuts';
   const variations = [
     ['blockzzle-after-clear', 'blockzzle-crossing-lines', 'Yes, the same gap is open again.'],
     ['ringzzle-blue-slot', 'ringzzle-distant-slot', 'No, the small slot is still occupied.'],
@@ -46,8 +48,35 @@ async page => {
       localStorage.setItem('recentGames', '["ringzzle"]');
       localStorage.setItem('hotgamesLastPractice', '{"game":"daysudoku","question":2}');
     });
-    const entrance = page.getByRole('link', { name: 'Puzzle Workshop' });
-    check(await entrance.count() === 1 && await entrance.getAttribute('href') === '/games/practice/', 'one crawlable directory entrance');
+    const shortcuts = page.getByRole('navigation', { name: shortcutLabel });
+    const entrance = shortcuts.getByRole('link', { name: 'Puzzle Workshop', exact: true });
+    check(await entrance.count() === 1 && await entrance.getAttribute('href') === workshopPath, 'one crawlable directory entrance');
+    check(await shortcuts.getByRole('link').count() === examples.length + 1, 'one direct entry per game alongside the Workshop index');
+    for (const width of [320, 390, 768, 1440]) {
+      await page.setViewportSize({ width, height: 844 });
+      for (const theme of ['light', 'dark']) {
+        await page.evaluate(theme => document.documentElement.dataset.theme = theme, theme);
+        check(await shortcuts.getByRole('link').evaluateAll(links => {
+          const rects = links.map(link => link.getBoundingClientRect());
+          return document.documentElement.scrollWidth <= innerWidth
+            && new Set(rects.map(r => r.top)).size <= 2 && rects.every((r, i) =>
+            r.height >= 44 && r.width >= 44 && r.left >= 0 && r.right <= innerWidth
+            && rects.slice(i + 1).every(other => r.right <= other.left || r.bottom <= other.top));
+        }), 'directory shortcuts wrap at ' + width + '/' + theme);
+        layouts++;
+      }
+    }
+    await page.setViewportSize({ width: 390, height: 844 });
+    for (const [, name, anchor] of examples) {
+      const link = shortcuts.getByRole('link', { name: name + ' practice', exact: true });
+      check(await link.getAttribute('href') === workshopPath + '#' + anchor, name + ' shortcut uses an exact native URL');
+      await link.press('Enter');
+      await page.waitForURL(root + workshopPath + '#' + anchor);
+      check(await page.locator('#' + anchor).isVisible()
+        && await page.locator('.move-check[open], .move-hint[open]').count() === 0, name + ' shortcut reaches its original exercise without spoilers');
+      await page.goBack();
+      await page.waitForURL(root + '/games/');
+    }
     await entrance.press('Enter');
     await page.waitForURL(root + '/games/practice/');
     check(await page.getByRole('heading', { level: 1, name: 'Puzzle Workshop' }).count() === 1, 'workshop title');
@@ -264,8 +293,10 @@ async page => {
     plain = await context.browser().newContext({ javaScriptEnabled: false, viewport: { width: 320, height: 844 } });
     const noJS = await plain.newPage();
     for (const [i, [id, name, anchor]] of examples.entries()) {
-      await noJS.goto(root + '/games/practice/#' + anchor);
-      check(await noJS.locator('.practice-board').nth(i).isVisible(), name + ' board is usable without scripts');
+      await noJS.goto(root + '/games/');
+      await noJS.getByRole('navigation', { name: shortcutLabel }).getByRole('link', { name: name + ' practice', exact: true }).click();
+      await noJS.waitForURL(root + workshopPath + '#' + anchor);
+      check(await noJS.locator('#' + anchor).isVisible() && await noJS.locator('.practice-board').nth(i).isVisible(), name + ' directory entry and board are usable without scripts');
       const hint = noJS.locator('.move-hint').nth(i);
       const answer = noJS.locator('.move-check').nth(i);
       await hint.locator('summary').click();

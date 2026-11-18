@@ -47,7 +47,20 @@
       <h2 id="starting-tips-title">Plan your next move</h2>
       <p class="guide-lead">A small idea to try in your next puzzle.</p>
       {{ with .GetPage "practice" }}
-      <a class="back-link" href="{{ .RelPermalink }}">Puzzle Workshop <i class="fa-solid fa-arrow-right" aria-hidden="true"></i></a>
+      {{ $workshop := . }}
+      {{ $exercises := slice
+        (dict "anchor" "blockzzle-crossing-lines" "name" "Blockzzle")
+        (dict "anchor" "ringzzle-distant-slot" "name" "Ringzzle")
+        (dict "anchor" "daysudoku-box-to-row" "name" "DaySudoku") }}
+      <nav class="guide-jumps" aria-label="Puzzle Workshop shortcuts">
+        <a href="{{ $workshop.RelPermalink }}">Puzzle Workshop</a>
+        {{ range $exercises }}
+          {{ if not (in $workshop.Fragments.Identifiers .anchor) }}
+            {{ errorf "Workshop shortcut target missing: %s#%s" $workshop.RelPermalink .anchor }}
+          {{ end }}
+          <a href="{{ $workshop.RelPermalink }}#{{ .anchor }}" aria-label="{{ .name }} practice">{{ .name }}</a>
+        {{ end }}
+      </nav>
       {{ end }}
       <div class="comparison-grid">
         {{ range .RegularPages }}
