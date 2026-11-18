@@ -9,17 +9,21 @@
 <details class="move-check"{{ with $question }} data-practice-question="{{ . }}"{{ end }}>
   <summary class="guide-detail">{{ .Get "label" | default "Check your answer" }} <i class="fa-solid fa-chevron-down" aria-hidden="true"></i></summary>
   {{ .Inner | markdownify }}
+  {{ $next := .Get "next" | default "" }}
   {{ $nextLabel := .Get "nextLabel" | default "Try question 2" }}
   {{ $variation := .Get "variation" }}
   {{ $variationLabel := .Get "variationLabel" | default "Try a variation" }}
-  {{ with $variation }}
+  {{ $groupLinks := or $variation (and .Page.Params.workshopExercises (hasPrefix $next "#")) }}
+  {{ if $groupLinks }}
   <div class="guide-jumps">
+  {{ end }}
+  {{ with $variation }}
     <a class="guide-detail" data-workshop-variation href="{{ . }}">{{ $variationLabel }} <i class="fa-solid fa-arrow-right" aria-hidden="true"></i></a>
   {{ end }}
-  {{ with .Get "next" }}
+  {{ with $next }}
     <a class="guide-detail" data-next-practice href="{{ . }}">{{ $nextLabel }} <i class="fa-solid fa-arrow-right" aria-hidden="true"></i></a>
   {{ end }}
-  {{ if $variation }}</div>{{ end }}
+  {{ if $groupLinks }}</div>{{ end }}
   {{ if .Get "retry" }}
     <button class="guide-save" type="button" data-retry-practice aria-label="Retry both questions" title="Retry both questions" hidden><i class="fa-solid fa-rotate-left" aria-hidden="true"></i></button>
   {{ end }}

@@ -183,6 +183,9 @@ async page => {
       const position = examples.length + index;
       const hint = page.locator('.move-hint').nth(position);
       const details = page.locator('.move-check').nth(position);
+      const next = details.locator('[data-next-practice]');
+      const nextId = advanced[index];
+      const nextPosition = examples.length + variations.length + index;
       const originalBoard = page.locator('.game-guide-content a[href="#' + boardAnchor + '"]');
       await contents.locator('a[href="#' + anchor + '"]').click();
       check(new URL(page.url()).hash === '#' + anchor, anchor + ' has a native heading link');
@@ -190,19 +193,33 @@ async page => {
       check(new URL(page.url()).hash === '#' + boardAnchor, anchor + ' links to the correct board');
       await contents.locator('a[href="#' + anchor + '"]').click();
       await hint.locator('summary').press('Enter');
-      check(await hint.locator('p').isVisible() && await details.locator('strong').isHidden(), anchor + ' hint keeps answer closed');
+      check(await hint.locator('p').isVisible() && await details.locator('strong').isHidden()
+        && await next.isHidden(), anchor + ' hint keeps answer and next link closed');
       await details.locator('summary').press('Space');
       check(await details.locator('strong').isVisible() && await details.locator('strong').textContent() === answer, anchor + ' answer appears on demand');
       check(await page.locator('.move-check[open]').count() === 1, anchor + ' other answers remain closed');
+      check(await next.getAttribute('href') === '#' + nextId
+        && await next.textContent().then(text => text.trim().startsWith('Next: '))
+        && await next.evaluate(el => el.parentElement.classList.contains('guide-jumps')), anchor + ' offers a separate link to its matching advanced exercise');
       for (const width of [320, 390, 768, 1440]) {
         await page.setViewportSize({ width, height: 844 });
-        check(await details.locator('summary').evaluate(el => {
-          const r = el.getBoundingClientRect();
-          return r.width >= 44 && r.height >= 44 && r.right <= innerWidth
+        check(await details.locator('summary').or(next).evaluateAll(els => {
+          const [summary, link] = els.map(el => el.getBoundingClientRect());
+          return [summary, link].every(r => r.width >= 44 && r.height >= 44 && r.left >= 0 && r.right <= innerWidth)
+            && link.top >= summary.bottom
             && document.documentElement.scrollWidth <= innerWidth;
-        }), anchor + ' controls and text fit at ' + width + 'px');
+        }), anchor + ' controls and next link fit at ' + width + 'px');
         layouts++;
       }
+      const resumeHref = await page.locator('#workshopResumeLink').getAttribute('href');
+      await next.press('Enter');
+      await page.waitForURL(root + workshopPath + '#' + nextId);
+      check(await page.locator('#' + nextId).isVisible()
+        && await page.locator('.move-check').nth(nextPosition).locator('strong').isHidden()
+        && await page.locator('.move-hint').nth(nextPosition).locator('p').isHidden(), anchor + ' next link reaches the follow-up without spoilers');
+      check(resumeHref === '#' + anchor && await page.locator('#workshopResumeLink').getAttribute('href') === resumeHref, 'following the link does not replace the last opened exercise');
+      await page.goBack();
+      check(new URL(page.url()).hash === '#' + anchor && await details.locator('strong').isVisible(), anchor + ' Back returns to the variation answer');
       await details.locator('summary').press('Space');
       await hint.locator('summary').press('Space');
     }
@@ -380,6 +397,13 @@ async page => {
       check(await answer.locator('strong').isHidden(), anchor + ' no-JS answer starts closed');
       await answer.locator('summary').click();
       check(await answer.locator('strong').isVisible() && await answer.locator('strong').textContent() === text, anchor + ' answer works without scripts');
+      await answer.locator('[data-next-practice]').click();
+      const nextId = advanced[index];
+      await noJS.waitForURL(root + workshopPath + '#' + nextId);
+      check(await noJS.locator('#' + nextId).isVisible()
+        && await noJS.locator('.move-check').nth(examples.length + variations.length + index).locator('strong').isHidden(), anchor + ' native next link keeps its destination answer closed');
+      await noJS.goBack();
+      check(new URL(noJS.url()).hash === '#' + anchor, anchor + ' native Back returns to the variation');
       await answer.locator('summary').click();
     }
     await noJS.goto(root + '/games/practice/');
