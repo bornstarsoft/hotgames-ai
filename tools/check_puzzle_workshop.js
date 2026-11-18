@@ -9,6 +9,11 @@ async page => {
     ['ringzzle', 'Ringzzle', 'ringzzle-distant-slot', 'Choose spot B.'],
     ['daysudoku', 'DaySudoku', 'daysudoku-box-to-row', 'Yes.']
   ];
+  const variations = [
+    ['blockzzle-after-clear', 'blockzzle-crossing-lines', 'Yes, the same gap is open again.'],
+    ['ringzzle-blue-slot', 'ringzzle-distant-slot', 'No, the small slot is still occupied.'],
+    ['daysudoku-different-rows', 'daysudoku-box-to-row', 'No, the two positions are in different rows.']
+  ];
   let passed = 0;
   let layouts = 0;
   let plain;
@@ -30,9 +35,9 @@ async page => {
     await page.waitForURL(root + '/games/practice/');
     check(await page.getByRole('heading', { level: 1, name: 'Puzzle Workshop' }).count() === 1, 'workshop title');
     check(await page.locator('link[rel=canonical]').getAttribute('href') === 'https://hotgames.ai/games/practice/', 'canonical workshop URL');
-    check(await page.locator('.move-hint').count() === 3 && await page.locator('.move-check').count() === 3, 'three standalone examples');
+    check(await page.locator('.move-hint').count() === 6 && await page.locator('.move-check').count() === 6, 'three original examples and three variations');
     const boards = page.locator('.practice-board');
-    check(await boards.count() === 3, 'one board per example');
+    check(await boards.count() === 3, 'the variations reuse the three original boards');
     const boardStyle = page.locator('link[rel="stylesheet"][href*="/css/practice-boards.min."]');
     check(await boardStyle.count() === 1 && await boardStyle.evaluate(el => !!el.sheet?.cssRules.length), 'scoped board stylesheet loaded');
     const grid = index => boards.nth(index).locator('tbody tr').evaluateAll(rows => rows.map(row => Array.from(row.cells).slice(1).map(cell => cell.textContent)));
@@ -86,6 +91,35 @@ async page => {
       }
       await details.locator('summary').click();
     }
+    await page.getByRole('link', { name: 'Try a variation', exact: true }).last().press('Enter');
+    check(new URL(page.url()).hash === '#try-a-variation', 'repeat visitors have a direct variation jump');
+    for (const [index, [anchor, boardAnchor, answer]] of variations.entries()) {
+      const position = examples.length + index;
+      const hint = page.locator('.move-hint').nth(position);
+      const details = page.locator('.move-check').nth(position);
+      const originalBoard = page.locator('#' + anchor + ' + p a[href="#' + boardAnchor + '"]');
+      await contents.locator('a[href="#' + anchor + '"]').click();
+      check(new URL(page.url()).hash === '#' + anchor, anchor + ' has a native heading link');
+      await originalBoard.click();
+      check(new URL(page.url()).hash === '#' + boardAnchor, anchor + ' links to the correct board');
+      await contents.locator('a[href="#' + anchor + '"]').click();
+      await hint.locator('summary').press('Enter');
+      check(await hint.locator('p').isVisible() && await details.locator('strong').isHidden(), anchor + ' hint keeps answer closed');
+      await details.locator('summary').press('Space');
+      check(await details.locator('strong').isVisible() && await details.locator('strong').textContent() === answer, anchor + ' answer appears on demand');
+      check(await page.locator('.move-check[open]').count() === 1, anchor + ' other answers remain closed');
+      for (const width of [320, 390, 768, 1440]) {
+        await page.setViewportSize({ width, height: 844 });
+        check(await details.locator('summary').evaluate(el => {
+          const r = el.getBoundingClientRect();
+          return r.width >= 44 && r.height >= 44 && r.right <= innerWidth
+            && document.documentElement.scrollWidth <= innerWidth;
+        }), anchor + ' controls and text fit at ' + width + 'px');
+        layouts++;
+      }
+      await details.locator('summary').press('Space');
+      await hint.locator('summary').press('Space');
+    }
     check(await page.evaluate(() => localStorage.getItem('likedGames') === '["blockzzle"]'
       && localStorage.getItem('recentGames') === '["ringzzle"]'
       && localStorage.getItem('hotgamesLastPractice') === '{"game":"daysudoku","question":2}'), 'workshop does not alter game history or guide bookmark');
@@ -103,6 +137,14 @@ async page => {
       await answer.locator('a').click();
       await noJS.waitForURL(root + '/games/' + id + '/#move-check-1');
       check(await noJS.locator('#move-check-1').isVisible(), name + ' native next link reaches its guide without scripts');
+    }
+    for (const [index, [anchor, , text]] of variations.entries()) {
+      await noJS.goto(root + '/games/practice/#' + anchor);
+      const answer = noJS.locator('.move-check').nth(examples.length + index);
+      check(await answer.locator('strong').isHidden(), anchor + ' no-JS answer starts closed');
+      await answer.locator('summary').click();
+      check(await answer.locator('strong').isVisible() && await answer.locator('strong').textContent() === text, anchor + ' answer works without scripts');
+      await answer.locator('summary').click();
     }
     await page.goto(root + '/');
     check(await page.locator('a[href="/games/practice/"]').count() === 0, 'homepage unchanged');

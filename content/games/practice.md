@@ -1,12 +1,14 @@
 ---
 title: "Puzzle Workshop"
-description: "Try three short puzzle scenarios inspired by Blockzzle, Ringzzle, and DaySudoku, with optional hints and step-by-step answers."
+description: "Practice Blockzzle, Ringzzle, and DaySudoku with three illustrated scenarios and three follow-up variations, each with a hint and answer."
 date: 2026-11-18T21:49:00+09:00
 url: "/games/practice/"
 practiceBoards: true
 ---
 
 Three practice situations for your next puzzle break: complete two lines with one block, free a distant ring slot, and rule out a Sudoku candidate. These are invented examples, not positions from your current game.
+
+Already tried the examples? [Try a variation](#try-a-variation) to see how one change can affect the next move.
 
 ## Blockzzle: Complete two lines {#blockzzle-crossing-lines}
 
@@ -72,4 +74,30 @@ Can you remove 7 from row 2, column 8 without deciding which of the two box cell
 
 {{< move-check label="Check the DaySudoku answer" hintLabel="DaySudoku hint" hint="Look for what the two possibilities share. Does choosing either one force the 7 into the same row?" next="/games/daysudoku/#move-check-1" nextLabel="More DaySudoku practice" >}}
 **Yes.** The box must contain a 7 and both possible cells are in row 2. Either placement puts that row's 7 inside the box. So 7 cannot appear again in row 2, column 8, even though you do not yet know the exact cell.
+{{< /move-check >}}
+
+## Try a variation {#try-a-variation}
+
+### Blockzzle: Look again after a clear {#blockzzle-after-clear}
+
+Return to the [Blockzzle board](#blockzzle-crossing-lines). This time, put the single-square block at B2 first. Column B clears. The two-square block is still available, and no other line has cleared. Can you now place it across B2 and C2 to complete row 2?
+
+{{< move-check label="Check the placement answer" hintLabel="Placement hint" hint="Check whether the piece you just placed is still on the board after its column clears." >}}
+**Yes, the same gap is open again.** The column clear leaves B2 empty and C2 was already empty. A horizontal two-square block can then fill both cells and complete row 2. The two moves clear the two lines separately.
+{{< /move-check >}}
+
+### Ringzzle: Check the remaining size {#ringzzle-blue-slot}
+
+On the [Ringzzle board](#ringzzle-distant-slot), imagine the target cell holds a small blue ring as well as its large red ring. You place the medium red ring at B and trigger the red Color Burst. Assuming no other clear, can the target cell now accept another small ring?
+
+{{< move-check label="Check the slot answer" hintLabel="Slot hint" hint="Check which color clears, then look at the specific size slot needed by the next ring." >}}
+**No, the small slot is still occupied.** The red Color Burst frees the large slot but does not remove the small blue ring. A free large slot cannot take a small ring.
+{{< /move-check >}}
+
+### DaySudoku: Check both rows {#daysudoku-different-rows}
+
+Change the [DaySudoku example](#daysudoku-box-to-row): the box's only two places for 7 are now row 2, column 4 and row 3, column 6. Row 2, column 8 still lists 7. Is this information alone enough to cross off 7 there?
+
+{{< move-check label="Check the candidate answer" hintLabel="Candidate hint" hint="Try each possible place for the box's 7. Do both choices still put a 7 in row 2?" >}}
+**No, the two positions are in different rows.** If the box's 7 goes in row 3, column 6, that placement does not rule out row 2, column 8. Another constraint might eliminate it, but the box does not force that conclusion.
 {{< /move-check >}}
