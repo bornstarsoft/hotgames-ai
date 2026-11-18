@@ -12,6 +12,8 @@
   <style>
     .game-guide-content .game-guide-actions { flex-wrap: nowrap; }
     .game-guide-content .game-guide-actions > span { min-width: 0; }
+    .workshop-resume:not([hidden]) { display: flex; align-items: center; gap: 12px; margin-top: 12px; }
+    .workshop-resume p { min-width: 0; }
   </style>
   {{ end }}
 </head>
@@ -279,6 +281,56 @@
           }
         });
       }
+
+      {{ if $workshopShare }}
+      const workshopKey = 'hotgamesLastWorkshopExercise';
+      const workshopResume = document.getElementById('workshopResume');
+      const workshopLink = document.getElementById('workshopResumeLink');
+      const workshopClear = document.getElementById('workshopResumeClear');
+      const workshopExercises = new Map();
+      function syncWorkshopResume() {
+        let id;
+        try { id = localStorage.getItem(workshopKey); } catch (_) {}
+        const title = workshopExercises.get(id);
+        if (title) {
+          workshopLink.href = '#' + id;
+          workshopLink.textContent = title;
+        } else {
+          if (workshopResume.contains(document.activeElement)) {
+            guide.querySelector('.guide-contents summary')?.focus({ preventScroll: true });
+          }
+          workshopLink.removeAttribute('href');
+          workshopLink.textContent = '';
+        }
+        workshopResume.hidden = !title;
+      }
+      let exerciseId;
+      for (const node of guide.querySelector('.game-guide-content').querySelectorAll('h2, h3, .move-hint > summary, .move-check > summary')) {
+        if (node.matches('h2, h3')) {
+          exerciseId = node.querySelector('[data-copy-tip]')?.dataset.copyTip;
+          if (exerciseId) workshopExercises.set(exerciseId, node.textContent);
+          continue;
+        }
+        const id = exerciseId;
+        if (!id) continue;
+        node.addEventListener('click', () => {
+          if (node.parentElement.open) return;
+          try { localStorage.setItem(workshopKey, id); } catch (_) {}
+          syncWorkshopResume();
+        });
+      }
+      workshopClear.addEventListener('click', () => {
+        try { localStorage.removeItem(workshopKey); } catch (_) {}
+        syncWorkshopResume();
+      });
+      window.addEventListener('storage', event => {
+        if (event.key !== null && event.key !== workshopKey) return;
+        try { if (event.storageArea !== localStorage) return; } catch (_) {}
+        syncWorkshopResume();
+      });
+      window.addEventListener('pageshow', syncWorkshopResume);
+      syncWorkshopResume();
+      {{ end }}
 
       const practiceKey = 'hotgamesLastPractice';
       const practiceFragments = new Map([[1, 'move-check-1'], [2, 'move-check-2']]);

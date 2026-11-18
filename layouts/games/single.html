@@ -8,6 +8,12 @@
       <a class="back-link" href="/games/" data-guide-back><i class="fa-solid fa-arrow-left" aria-hidden="true"></i> <span data-guide-back-label>Puzzle guides</span></a>
       <h1>{{ .Title }}</h1>
       {{ with $game.puzzle_type }}<p>{{ . }} &middot; Free browser play &middot; No sign-up</p>{{ end }}
+      {{ with .Params.workshopShareSections }}
+      <div class="workshop-resume" id="workshopResume" hidden>
+        <p class="guide-lead">Last exercise: <a class="guide-detail" id="workshopResumeLink"></a></p>
+        <button class="guide-save" id="workshopResumeClear" type="button" aria-label="Forget last exercise" title="Forget last exercise"><i class="fa-solid fa-xmark" aria-hidden="true"></i></button>
+      </div>
+      {{ end }}
       {{ with $game.link }}
       <div class="game-guide-actions">
         <a class="guide-play" href="{{ . }}" target="_blank" rel="noopener">{{ $game.cta }} <i class="fa-solid fa-arrow-up-right-from-square" aria-hidden="true"></i></a>
