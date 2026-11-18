@@ -326,11 +326,26 @@
         }
         const id = exerciseId;
         if (!id) continue;
+        const disclosure = node.parentElement;
         node.addEventListener('click', () => {
-          if (node.parentElement.open) return;
+          if (disclosure.open) return;
           try { localStorage.setItem(workshopKey, id); } catch (_) {}
           syncWorkshopResume();
         });
+        const retryExercise = disclosure.querySelector('[data-workshop-retry]');
+        if (retryExercise) {
+          const heading = document.getElementById(id);
+          const hint = disclosure.previousElementSibling;
+          retryExercise.setAttribute('aria-label', 'Retry ' + workshopExercises.get(id));
+          retryExercise.hidden = false;
+          retryExercise.addEventListener('click', () => {
+            if (hint?.classList.contains('move-hint')) hint.open = false;
+            disclosure.open = false;
+            heading.tabIndex = -1;
+            heading.focus({ preventScroll: true });
+            heading.scrollIntoView({ block: 'center' });
+          });
+        }
       }
       workshopClear.addEventListener('click', () => {
         try { localStorage.removeItem(workshopKey); } catch (_) {}

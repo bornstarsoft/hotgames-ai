@@ -323,6 +323,47 @@ async page => {
     await pairAnswer.locator('summary').press('Space');
     await pairHint.locator('summary').press('Space');
     const shareAnchors = [...examples.map(([, , anchor]) => anchor), ...variations.map(([anchor]) => anchor), twoMove, diagonal, candidatePair];
+    check(await page.locator('[data-workshop-retry]').count() === shareAnchors.length, 'each exercise has one retry control');
+    const otherHint = page.locator('.move-hint').last();
+    const otherAnswer = page.locator('.move-check').last();
+    await otherHint.locator('summary').press('Enter');
+    await otherAnswer.locator('summary').press('Enter');
+    for (const [i, id] of shareAnchors.entries()) {
+      const heading = page.locator('#' + id);
+      const headingText = await heading.textContent();
+      const hint = page.locator('.move-hint').nth(i);
+      const answer = page.locator('.move-check').nth(i);
+      const retry = answer.locator('[data-workshop-retry]');
+      check(await retry.isHidden(), id + ' retry starts inside the closed answer');
+      await hint.locator('summary').press('Enter');
+      await answer.locator('summary').press('Enter');
+      check(await retry.isVisible() && await retry.getAttribute('aria-label') === 'Retry ' + headingText
+        && await hint.locator('p').isVisible(), id + ' retry identifies the exercise and is available after reveal');
+      for (const [width, theme] of [[320, 'light'], [1440, 'dark']]) {
+        await page.setViewportSize({ width, height: 844 });
+        await page.evaluate(theme => document.documentElement.dataset.theme = theme, theme);
+        check(await answer.locator('.guide-jumps').evaluate(el => {
+          const bounds = Array.from(el.children, node => node.getBoundingClientRect());
+          return bounds.every((r, i) => r.width >= 44 && r.height >= 44 && r.left >= 0 && r.right <= innerWidth
+            && bounds.slice(i + 1).every(other => other.left >= r.right || other.top >= r.bottom))
+            && document.documentElement.scrollWidth <= innerWidth;
+        }), id + ' retry and links fit at ' + width + '/' + theme);
+        layouts++;
+      }
+      const beforeRetry = [page.url(), await page.evaluate(() => history.length)];
+      const visit = await page.locator('#workshopResumeLink').getAttribute('href');
+      await retry.press('Enter');
+      check(await hint.locator('p').isHidden() && await answer.locator('strong').isHidden() && await retry.isHidden(), id + ' retry closes its own disclosures');
+      check(await heading.evaluate(el => el === document.activeElement && el.getBoundingClientRect().top >= 0
+        && el.getBoundingClientRect().bottom <= innerHeight), id + ' retry focuses and scrolls to the question');
+      check(visit === '#' + id && await page.locator('#workshopResumeLink').getAttribute('href') === visit
+        && page.url() === beforeRetry[0] && await page.evaluate(() => history.length) === beforeRetry[1], id + ' retry preserves the bookmark and browser history');
+      if (i === 0) {
+        check(await otherHint.locator('p').isVisible() && await otherAnswer.locator('strong').isVisible(), 'retry does not close another exercise');
+        await otherHint.locator('summary').press('Enter');
+        await otherAnswer.locator('summary').press('Enter');
+      }
+    }
     check(await page.locator('[data-copy-tip]').count() === shareAnchors.length, 'only exercise headings get share controls');
     await page.setViewportSize({ width: 320, height: 844 });
     await page.evaluate(() => {
@@ -374,6 +415,7 @@ async page => {
       await hint.locator('summary').click();
       check(await hint.locator('p').isVisible() && await answer.locator('strong').isHidden(), name + ' native hint works without scripts');
       await answer.locator('summary').click();
+      check(await answer.locator('[data-workshop-retry]').isHidden(), name + ' native answer does not show a nonfunctional retry');
       const [relatedAnchor] = variations[i];
       await answer.locator('[data-workshop-variation]').click();
       check(new URL(noJS.url()).hash === '#' + relatedAnchor && await noJS.locator('#' + relatedAnchor).isVisible(), name + ' native variation jump works without scripts');

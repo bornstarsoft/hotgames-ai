@@ -13,8 +13,9 @@
   {{ $nextLabel := .Get "nextLabel" | default "Try question 2" }}
   {{ $variation := .Get "variation" }}
   {{ $variationLabel := .Get "variationLabel" | default "Try a variation" }}
-  {{ $groupLinks := or $variation (and .Page.Params.workshopExercises (hasPrefix $next "#")) }}
-  {{ if $groupLinks }}
+  {{ $workshop := .Page.Params.workshopExercises }}
+  {{ $groupActions := or $variation $workshop }}
+  {{ if $groupActions }}
   <div class="guide-jumps">
   {{ end }}
   {{ with $variation }}
@@ -23,7 +24,10 @@
   {{ with $next }}
     <a class="guide-detail" data-next-practice href="{{ . }}">{{ $nextLabel }} <i class="fa-solid fa-arrow-right" aria-hidden="true"></i></a>
   {{ end }}
-  {{ if $groupLinks }}</div>{{ end }}
+  {{ if $workshop }}
+    <button class="guide-save" type="button" data-workshop-retry aria-label="Retry this exercise" title="Retry this exercise" hidden><i class="fa-solid fa-rotate-left" aria-hidden="true"></i></button>
+  {{ end }}
+  {{ if $groupActions }}</div>{{ end }}
   {{ if .Get "retry" }}
     <button class="guide-save" type="button" data-retry-practice aria-label="Retry both questions" title="Retry both questions" hidden><i class="fa-solid fa-rotate-left" aria-hidden="true"></i></button>
   {{ end }}
