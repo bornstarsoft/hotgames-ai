@@ -1,6 +1,6 @@
 ---
 title: "Puzzle Workshop"
-description: "Practice Blockzzle, Ringzzle, and DaySudoku with three illustrated scenarios and three follow-up variations, each with a hint and answer."
+description: "Practice Blockzzle, Ringzzle, and DaySudoku with illustrated boards, follow-up variations, and a two-move block puzzle."
 date: 2026-11-18T21:49:00+09:00
 url: "/games/practice/"
 practiceBoards: true
@@ -11,11 +11,12 @@ workshopShareSections:
   - blockzzle-after-clear
   - ringzzle-blue-slot
   - daysudoku-different-rows
+  - blockzzle-plan-two-moves
 ---
 
 Three practice situations for your next puzzle break: complete two lines with one block, free a distant ring slot, and rule out a Sudoku candidate. These are invented examples, not positions from your current game.
 
-Already tried the examples? [Try a variation](#try-a-variation) to see how one change can affect the next move.
+Already tried the examples? [Try a variation](#try-a-variation) or [plan two Blockzzle moves](#blockzzle-plan-two-moves).
 
 ## Blockzzle: Complete two lines {#blockzzle-crossing-lines}
 
@@ -107,4 +108,29 @@ Change the [DaySudoku example](#daysudoku-box-to-row): the box's only two places
 
 {{< move-check label="Check the candidate answer" hintLabel="Candidate hint" hint="Try each possible place for the box's 7. Do both choices still put a 7 in row 2?" >}}
 **No, the two positions are in different rows.** If the box's 7 goes in row 3, column 6, that placement does not rule out row 2, column 8. Another constraint might eliminate it, but the box does not force that conclusion.
+{{< /move-check >}}
+
+## Blockzzle: Plan two moves {#blockzzle-plan-two-moves}
+
+Place a horizontal two-square piece first, then a 2x2 square. The board starts with just one 2x2 gap, at A1, B1, A2 and B2.
+
+{{< practice-board caption="Blockzzle board before the first move" >}}
+{
+  "columns": ["A", "B", "C", "D"],
+  "rows": [
+    {"label": "1", "cells": ["Empty", "Empty", "Empty", "Filled"]},
+    {"label": "2", "cells": ["Empty", "Empty", "Filled", "Filled"]},
+    {"label": "3", "cells": ["Filled", "Empty", "Filled", "Filled"]},
+    {"label": "4", "cells": ["Filled", "Filled", "Filled", "Empty"]}
+  ]
+}
+{{< /practice-board >}}
+
+- **Move A:** Cover A1 and B1.
+- **Move B:** Cover B1 and C1.
+
+Both moves use part of the original gap. After any full lines clear, which move still leaves room for the square?
+
+{{< move-check label="Check the two-move answer" hintLabel="Two-move hint" hint="Check the column below C1. If it clears, look for two consecutive empty squares in a column next to it." next="/games/blockzzle/#move-check-2" nextLabel="Practice another Blockzzle placement" >}}
+**Move B.** It fills the last gap in column C, so the whole column clears. B2 and B3 were already empty. With C2 and C3 now open, those four squares form a new 2x2 gap. Move A clears nothing and blocks the original gap.
 {{< /move-check >}}

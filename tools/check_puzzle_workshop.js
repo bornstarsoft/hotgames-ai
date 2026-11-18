@@ -14,6 +14,7 @@ async page => {
     ['ringzzle-blue-slot', 'ringzzle-distant-slot', 'No, the small slot is still occupied.'],
     ['daysudoku-different-rows', 'daysudoku-box-to-row', 'No, the two positions are in different rows.']
   ];
+  const twoMove = 'blockzzle-plan-two-moves';
   let passed = 0;
   let layouts = 0;
   let plain;
@@ -35,9 +36,10 @@ async page => {
     await page.waitForURL(root + '/games/practice/');
     check(await page.getByRole('heading', { level: 1, name: 'Puzzle Workshop' }).count() === 1, 'workshop title');
     check(await page.locator('link[rel=canonical]').getAttribute('href') === 'https://hotgames.ai/games/practice/', 'canonical workshop URL');
-    check(await page.locator('.move-hint').count() === 6 && await page.locator('.move-check').count() === 6, 'three original examples and three variations');
+    const twoMoveIndex = examples.length + variations.length;
+    check(await page.locator('.move-hint').count() === twoMoveIndex + 1 && await page.locator('.move-check').count() === twoMoveIndex + 1, 'original examples, variations and the two-move exercise');
     const boards = page.locator('.practice-board');
-    check(await boards.count() === 3, 'the variations reuse the three original boards');
+    check(await boards.count() === 4, 'only the three originals and two-move exercise need boards');
     const boardStyle = page.locator('link[rel="stylesheet"][href*="/css/practice-boards.min."]');
     check(await boardStyle.count() === 1 && await boardStyle.evaluate(el => !!el.sheet?.cssRules.length), 'scoped board stylesheet loaded');
     const grid = index => boards.nth(index).locator('tbody tr').evaluateAll(rows => rows.map(row => Array.from(row.cells).slice(1).map(cell => cell.textContent)));
@@ -131,7 +133,55 @@ async page => {
       await details.locator('summary').press('Space');
       await hint.locator('summary').press('Space');
     }
-    const shareAnchors = [...examples.map(([, , anchor]) => anchor), ...variations.map(([anchor]) => anchor)];
+    const twoMoveLink = page.getByRole('link', { name: 'plan two Blockzzle moves' });
+    check(await twoMoveLink.getAttribute('href') === '#' + twoMove, 'repeat visitors can jump to the two-move exercise');
+    await twoMoveLink.press('Enter');
+    check(new URL(page.url()).hash === '#' + twoMove && await page.locator('#' + twoMove).isVisible(), 'keyboard reaches the two-move exercise');
+    const newBoard = boards.last();
+    check(await newBoard.locator('caption').textContent() === 'Blockzzle board before the first move', 'two-move board has a caption');
+    const start = (await grid(3)).map(row => row.map(cell => cell === 'Filled'));
+    const gaps = board => board.flatMap((row, r) => row.flatMap((cell, c) =>
+      r < 3 && c < 3 && !cell && !row[c + 1] && !board[r + 1][c] && !board[r + 1][c + 1]
+        ? ['ABCD'[c] + (r + 1)] : []));
+    const place = col => {
+      const board = start.map(row => row.slice());
+      check(!board[0][col] && !board[0][col + 1], 'two-square move is legal at column ' + col);
+      board[0][col] = board[0][col + 1] = true;
+      const rows = board.map(row => row.every(Boolean));
+      const columns = board[0].map((_, c) => board.every(row => row[c]));
+      return { rows, columns, after: board.map((row, r) => row.map((cell, c) => cell && !rows[r] && !columns[c])) };
+    };
+    check(gaps(start).join() === 'A1', 'only A1 through B2 can take the starting square');
+    const moveA = place(0);
+    const moveB = place(1);
+    check(!moveA.rows.some(Boolean) && !moveA.columns.some(Boolean) && gaps(moveA.after).length === 0, 'move A clears nothing and leaves no square');
+    check(!moveB.rows.some(Boolean) && moveB.columns.join() === 'false,false,true,false' && gaps(moveB.after).join() === 'B2', 'move B clears only C and makes the new B2 through C3 gap');
+    const newHint = page.locator('.move-hint').nth(twoMoveIndex);
+    const newAnswer = page.locator('.move-check').nth(twoMoveIndex);
+    check(await newHint.locator('p').isHidden() && await newAnswer.locator('strong').isHidden(), 'two-move problem starts without spoilers');
+    await newHint.locator('summary').press('Enter');
+    check(await newHint.locator('p').isVisible() && await newAnswer.locator('strong').isHidden(), 'two-move hint does not reveal the answer');
+    await newAnswer.locator('summary').press('Enter');
+    check(await newAnswer.locator('strong').textContent() === 'Move B.' && await newAnswer.locator('strong').isVisible(), 'two-move answer matches the board');
+    const morePlacement = newAnswer.locator('[data-next-practice]');
+    check(await morePlacement.getAttribute('href') === '/games/blockzzle/#move-check-2', 'answer leads to related Blockzzle practice');
+    for (const width of [320, 390, 768, 1440]) {
+      await page.setViewportSize({ width, height: 844 });
+      for (const theme of ['light', 'dark']) {
+        await page.evaluate(theme => document.documentElement.dataset.theme = theme, theme);
+        const targets = page.locator('summary').filter({ hasText: /Two-move hint|Check the two-move answer/ }).or(morePlacement);
+        check(await newBoard.evaluate(el => el.getBoundingClientRect().right <= innerWidth)
+          && await targets.evaluateAll(els => els.length === 3 && els.every(el => {
+            const r = el.getBoundingClientRect();
+            return r.left >= 0 && r.right <= innerWidth && r.width >= 44 && r.height >= 44;
+          }))
+          && await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth), 'new board and controls fit at ' + width + '/' + theme);
+        layouts++;
+      }
+    }
+    await newAnswer.locator('summary').press('Space');
+    await newHint.locator('summary').press('Space');
+    const shareAnchors = [...examples.map(([, , anchor]) => anchor), ...variations.map(([anchor]) => anchor), twoMove];
     check(await page.locator('[data-copy-tip]').count() === shareAnchors.length, 'only exercise headings get share controls');
     await page.setViewportSize({ width: 320, height: 844 });
     await page.evaluate(() => {
@@ -206,6 +256,16 @@ async page => {
       check(await answer.locator('strong').isVisible() && await answer.locator('strong').textContent() === text, anchor + ' answer works without scripts');
       await answer.locator('summary').click();
     }
+    await noJS.goto(root + '/games/practice/');
+    await noJS.getByRole('link', { name: 'plan two Blockzzle moves' }).click();
+    check(new URL(noJS.url()).hash === '#' + twoMove && await noJS.locator('.practice-board').last().isVisible(), 'native link and new board work without scripts');
+    const plainAnswer = noJS.locator('.move-check').nth(twoMoveIndex);
+    check(await plainAnswer.locator('strong').isHidden(), 'two-move answer stays hidden without scripts');
+    await plainAnswer.locator('summary').click();
+    check(await plainAnswer.locator('strong').isVisible() && await plainAnswer.locator('strong').textContent() === 'Move B.', 'two-move answer works without scripts');
+    await plainAnswer.locator('[data-next-practice]').click();
+    await noJS.waitForURL(root + '/games/blockzzle/#move-check-2');
+    check(await noJS.locator('#move-check-2').isVisible(), 'native guide link reaches the exact exercise');
     await page.goto(root + '/');
     check(await page.locator('a[href="/games/practice/"]').count() === 0, 'homepage unchanged');
     check(errors.length === 0, 'no application runtime errors');
