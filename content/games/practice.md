@@ -4,6 +4,13 @@ description: "Practice Blockzzle, Ringzzle, and DaySudoku with three illustrated
 date: 2026-11-18T21:49:00+09:00
 url: "/games/practice/"
 practiceBoards: true
+workshopShareSections:
+  - blockzzle-crossing-lines
+  - ringzzle-distant-slot
+  - daysudoku-box-to-row
+  - blockzzle-after-clear
+  - ringzzle-blue-slot
+  - daysudoku-different-rows
 ---
 
 Three practice situations for your next puzzle break: complete two lines with one block, free a distant ring slot, and rule out a Sudoku candidate. These are invented examples, not positions from your current game.

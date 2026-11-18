@@ -8,6 +8,12 @@
   {{ $boards := resources.Get "css/practice-boards.css" | minify | fingerprint }}
   <link rel="stylesheet" href="{{ $boards.RelPermalink }}">
   {{ end }}
+  {{ if .Params.workshopShareSections }}
+  <style>
+    .game-guide-content .game-guide-actions { flex-wrap: nowrap; }
+    .game-guide-content .game-guide-actions > span { min-width: 0; }
+  </style>
+  {{ end }}
 </head>
 <body class="puzzle-directory">
   <a class="skip-link" href="#main-content">Skip to puzzles</a>
@@ -214,7 +220,13 @@
         } catch (_) {}
       }
 
-      for (const id of ['a-simple-starting-strategy', 'when-you-get-stuck', 'try-a-move-check', 'move-check-1', 'move-check-2']) {
+      {{ $workshopShare := .Params.workshopShareSections }}
+      {{ range $workshopShare }}
+        {{ if not (in $.Fragments.Identifiers .) }}
+          {{ errorf "Workshop share target %q missing in %s" . $.RelPermalink }}
+        {{ end }}
+      {{ end }}
+      for (const id of {{ with $workshopShare }}{{ . | jsonify | safeJS }}{{ else }}['a-simple-starting-strategy', 'when-you-get-stuck', 'try-a-move-check', 'move-check-1', 'move-check-2']{{ end }}) {
         const heading = guide?.querySelector(`:is(h2, h3)[id="${id}"]`);
         if (!heading) continue;
         const title = heading.textContent;
@@ -252,13 +264,13 @@
           url.hash = id;
           try {
             await navigator.clipboard.writeText(url.href);
-            status.textContent = 'Tip link copied.';
+            status.textContent = {{ if $workshopShare }}'Practice link copied.'{{ else }}'Tip link copied.'{{ end }};
             status.hidden = false;
             timer = setTimeout(() => { status.hidden = true; }, 4500);
           } catch (_) {
             const link = document.createElement('a');
             link.href = url.href;
-            link.textContent = 'Open tip link';
+            link.textContent = {{ if $workshopShare }}'Open practice link'{{ else }}'Open tip link'{{ end }};
             status.replaceChildren('Copy unavailable. ', link);
             status.hidden = false;
           } finally {

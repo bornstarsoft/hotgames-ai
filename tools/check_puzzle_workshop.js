@@ -97,7 +97,7 @@ async page => {
       const position = examples.length + index;
       const hint = page.locator('.move-hint').nth(position);
       const details = page.locator('.move-check').nth(position);
-      const originalBoard = page.locator('#' + anchor + ' + p a[href="#' + boardAnchor + '"]');
+      const originalBoard = page.locator('.game-guide-content a[href="#' + boardAnchor + '"]');
       await contents.locator('a[href="#' + anchor + '"]').click();
       check(new URL(page.url()).hash === '#' + anchor, anchor + ' has a native heading link');
       await originalBoard.click();
@@ -120,6 +120,42 @@ async page => {
       await details.locator('summary').press('Space');
       await hint.locator('summary').press('Space');
     }
+    const shareAnchors = [...examples.map(([, , anchor]) => anchor), ...variations.map(([anchor]) => anchor)];
+    check(await page.locator('[data-copy-tip]').count() === shareAnchors.length, 'only exercise headings get share controls');
+    await page.setViewportSize({ width: 320, height: 844 });
+    await page.evaluate(() => {
+      history.replaceState(history.state, '', '?q=private&view=saved#try-a-variation');
+      Object.defineProperty(navigator, 'clipboard', {
+        configurable: true,
+        value: { writeText: async text => { window.workshopCopiedLink = text; } }
+      });
+    });
+    const beforeCopy = page.url();
+    for (const anchor of shareAnchors) {
+      const button = page.locator('[data-copy-tip="' + anchor + '"]');
+      const status = page.locator('#tip-status-' + anchor);
+      await button.press('Enter');
+      await status.waitFor({ state: 'visible' });
+      check(await page.evaluate(() => window.workshopCopiedLink) === 'https://hotgames.ai/games/practice/#' + anchor, anchor + ' copied URL is public, exact and free of query data');
+      check(await status.textContent() === 'Practice link copied.', anchor + ' copy feedback');
+      check(await button.evaluate(el => {
+        const r = el.getBoundingClientRect();
+        const label = el.parentElement.querySelector('span').getBoundingClientRect();
+        return r.width >= 44 && r.height >= 44 && r.left >= 0 && r.right <= innerWidth
+          && r.left >= label.right && r.bottom > label.top && r.top < label.bottom
+          && document.documentElement.scrollWidth <= innerWidth;
+      }), anchor + ' separate share target fits at 320px');
+    }
+    check(page.url() === beforeCopy && await page.locator('.move-hint[open], .move-check[open]').count() === 0, 'copying does not navigate or reveal solutions');
+    await page.evaluate(() => Object.defineProperty(navigator, 'clipboard', {
+      configurable: true,
+      value: { writeText: async () => { throw new DOMException('Denied', 'NotAllowedError'); } }
+    }));
+    await page.locator('[data-copy-tip="' + shareAnchors[0] + '"]').click();
+    const fallback = page.locator('#tip-status-' + shareAnchors[0]).getByRole('link', { name: 'Open practice link' });
+    await fallback.waitFor({ state: 'visible' });
+    check(await fallback.getAttribute('href') === 'https://hotgames.ai/games/practice/#' + shareAnchors[0], 'clipboard denial exposes the exact native link');
+
     check(await page.evaluate(() => localStorage.getItem('likedGames') === '["blockzzle"]'
       && localStorage.getItem('recentGames') === '["ringzzle"]'
       && localStorage.getItem('hotgamesLastPractice') === '{"game":"daysudoku","question":2}'), 'workshop does not alter game history or guide bookmark');
@@ -147,6 +183,7 @@ async page => {
     }
     for (const [index, [anchor, , text]] of variations.entries()) {
       await noJS.goto(root + '/games/practice/#' + anchor);
+      check(await noJS.locator('#' + anchor).isVisible() && await noJS.locator('[data-copy-tip]').count() === 0, anchor + ' bookmark works without JavaScript controls');
       const answer = noJS.locator('.move-check').nth(examples.length + index);
       check(await answer.locator('strong').isHidden(), anchor + ' no-JS answer starts closed');
       await answer.locator('summary').click();
