@@ -137,6 +137,13 @@ async page => {
       await answer.locator('a').click();
       await noJS.waitForURL(root + '/games/' + id + '/#move-check-1');
       check(await noJS.locator('#move-check-1').isVisible(), name + ' native next link reaches its guide without scripts');
+      const returnToBoard = noJS.getByRole('link', { name: /^Puzzle Workshop:/ });
+      check(await returnToBoard.count() === 1
+        && await returnToBoard.getAttribute('href') === '/games/practice/#' + anchor, name + ' guide links directly to its own board');
+      await returnToBoard.press('Enter');
+      await noJS.waitForURL(root + '/games/practice/#' + anchor);
+      check(await noJS.locator('#' + anchor).isVisible() && await noJS.locator('.practice-board').nth(i).isVisible(), name + ' native return reaches matching exercise');
+      check(await noJS.locator('.move-hint[open], .move-check[open]').count() === 0, name + ' return does not reveal any hint or answer');
     }
     for (const [index, [anchor, , text]] of variations.entries()) {
       await noJS.goto(root + '/games/practice/#' + anchor);

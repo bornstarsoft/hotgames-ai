@@ -60,6 +60,8 @@ Imagine you have a single-square piece and a two-by-two square piece. There is o
 This is a hypothetical space-planning exercise, not a prediction of your next pieces. If a placement clears a line, check the board again: the available space has changed. The useful habit is to compare room for both pieces before committing to the first one.
 {{< /move-check >}}
 
+[Puzzle Workshop: Clear two lines](/games/practice/#blockzzle-crossing-lines)
+
 ## Leaderboard
 
 Blockzzle supports an anonymous leaderboard, so players can compare scores without creating an account or sharing an email address.

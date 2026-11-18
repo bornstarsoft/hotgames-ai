@@ -65,6 +65,8 @@ Every cell has two possibilities. Is there still a placement you can be certain 
 The row alone still cannot decide which of B and C is 5 or 8. Check their columns and boxes again after making the certain placement. This is an invented candidate example, not an answer to today's puzzle.
 {{< /move-check >}}
 
+[Puzzle Workshop: Rule out a digit](/games/practice/#daysudoku-box-to-row)
+
 ## More Ways To Learn
 
 - [Find your next Sudoku move](https://daysudoku.com/sudoku-tips/): compare simple row, column, and box checks with worked examples.

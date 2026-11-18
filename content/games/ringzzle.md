@@ -60,6 +60,8 @@ A row has a small blue ring in its left cell, a large blue ring in the middle, a
 The left cell's small slot is now open, but its large slot is still occupied by red. Check the slots that actually became free before choosing your next ring; a cleared line does not mean three completely empty cells.
 {{< /move-check >}}
 
+[Puzzle Workshop: Free a ring slot](/games/practice/#ringzzle-distant-slot)
+
 ## More Ways To Learn
 
 - [Keep space open for your next ring](https://ringzzle.com/guides/keep-space-open/): see how ring sizes and the whole tray affect the space left for your next move.
