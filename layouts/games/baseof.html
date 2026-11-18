@@ -8,12 +8,18 @@
   {{ $boards := resources.Get "css/practice-boards.css" | minify | fingerprint }}
   <link rel="stylesheet" href="{{ $boards.RelPermalink }}">
   {{ end }}
-  {{ if .Params.workshopShareSections }}
+  {{ if .Params.workshopExercises }}
   <style>
     .game-guide-content .game-guide-actions { flex-wrap: nowrap; }
     .game-guide-content .game-guide-actions > span { min-width: 0; }
     .workshop-resume:not([hidden]) { display: flex; align-items: center; gap: 12px; margin-top: 12px; }
     .workshop-resume p { min-width: 0; }
+    .workshop-index { padding: 8px 0; }
+    .guide-contents .workshop-index ul { padding: 0; list-style: none; }
+    @media (max-width: 680px) {
+      .workshop-index .comparison-column { padding: 8px 0; }
+      .workshop-index .comparison-column:last-child { border-bottom: 0; }
+    }
   </style>
   {{ end }}
 </head>
@@ -222,10 +228,16 @@
         } catch (_) {}
       }
 
-      {{ $workshopShare := .Params.workshopShareSections }}
-      {{ range $workshopShare }}
-        {{ if not (in $.Fragments.Identifiers .) }}
-          {{ errorf "Workshop share target %q missing in %s" . $.RelPermalink }}
+      {{ $workshopShare := slice }}
+      {{ range .Params.workshopExercises }}
+        {{ range .exercises }}
+          {{ if not (in $.Fragments.Identifiers .id) }}
+            {{ errorf "Workshop target %q missing in %s" .id $.RelPermalink }}
+          {{ end }}
+          {{ if in $workshopShare .id }}
+            {{ errorf "Duplicate Workshop target %q in %s" .id $.RelPermalink }}
+          {{ end }}
+          {{ $workshopShare = $workshopShare | append .id }}
         {{ end }}
       {{ end }}
       for (const id of {{ with $workshopShare }}{{ . | jsonify | safeJS }}{{ else }}['a-simple-starting-strategy', 'when-you-get-stuck', 'try-a-move-check', 'move-check-1', 'move-check-2']{{ end }}) {

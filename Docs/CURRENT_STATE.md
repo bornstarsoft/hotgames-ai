@@ -1,16 +1,13 @@
 # HotGames Current State
 
-ACTIVE_WRITER = NONE
+ACTIVE_WRITER = CODEX (HOTGAMES-WORKSHOP-EXERCISE-INDEX; grouped index, QA and deployment; main; 2026-11-18)
 
-- Phase: release verification. Implementation, QA, GitHub push and Cloudflare Pages production deployment DONE. Ordinary-domain acceptance incomplete.
-- Work ID / AI: HOTGAMES-WORKSHOP-RESUME / CODEX (2026-11-18).
-- Start: clean main a5299f2 matching origin/main after fetch; no other writer or WIP. Refetched before release: no divergence.
-- Preflight (23:02-23:03 KST): ordinary directory and Workshop returned HTTP 200/HIT without the prior shortcuts or advanced exercises.
-- Scope: Workshop-only last-exercise shortcut. Save only a known exercise ID in this browser after an intentional hint/answer opening; offer clear and no-JS fallback. No change to homepage, directory, guide return storage, cache or game repos.
-- QA PASS: strict Hugo build (129 pages, 7 aliases), Node syntax and Git hygiene. Only Workshop HTML differs from the baseline.
-- Browser QA PASS: Chrome and WebKit each passed 315 assertions / 76 layouts (new resume 45/8, Workshop regression 270/68). Covered all nine anchors, reload, cross-tab, clearing and keyboard focus, invalid/denied storage, no-JS and unrelated data isolation. Inspected 320px light and 1440px dark.
-- Browser storage contains only one exercise ID, not an answer, score or progress claim. No cache changes or bypass, new dependencies, tracking, generated files or game repo edits. Physical devices and measured return rate NOT_RUN.
-- DONE / HEAD: source c8129199ce15bd833f6f9159ff4167c0d8993870 pushed normally to owner-approved GitHub main. This documentation-only follow-up records release evidence.
-- Deployment PASS: Cloudflare Pages check 134859339264; https://449e2a65.hotgames-ai.pages.dev/. Chrome on the deployment URL and WebKit on the production Pages URL each passed 315/76.
-- Ordinary-domain acceptance NOT PASS (23:08-23:09 KST): both engines returned HTTP 200/HIT at /games/ and /games/practice/, without directory shortcuts, advanced exercises or the resume markup. No cache changes or bypass.
-- NEXT_SINGLE_TASK: confirm ordinary hotgames.ai serves the current Workshop and restores a last exercise after opening a hint.
+- Phase: release preparation. Owner approved implementation, QA and normal GitHub main to Cloudflare Pages deployment.
+- Work ID / AI: HOTGAMES-WORKSHOP-EXERCISE-INDEX / CODEX (2026-11-18).
+- Start: clean main be773b1 matching origin/main after fetch; no other writer or WIP. Refetched with no divergence.
+- Preflight (23:10 KST): ordinary directory and Workshop returned HTTP 200/HIT without the previous shortcuts, advanced exercises or last-exercise feature.
+- Scope: one collapsed, game-grouped index replaces the generic Workshop contents and the introductory jump-link sentence. Keep all exercise anchors, existing Puzzle Workshop resume behavior, homepage and cache unchanged.
+- QA PASS: strict Hugo build (129 pages, 7 aliases), Node syntax and Git hygiene. Build rejects missing/duplicate exercise targets. Only Workshop HTML differs from baseline; no new routes.
+- Browser QA PASS: Chrome and WebKit each passed 330 assertions / 84 layouts (Workshop 285/76, resume 45/8). Covered nine links grouped by game, native mobile/keyboard/no-JS navigation, canonical share links and last-exercise persistence, clearing and focus. Inspected 320px light and 1440px dark.
+- No new storage behavior, cache changes or bypass, tracking, dependencies, generated files or game repo changes. Physical devices and repeat-visit measurements NOT_RUN.
+- NEXT_SINGLE_TASK: push and confirm actual Pages and ordinary-domain responses.

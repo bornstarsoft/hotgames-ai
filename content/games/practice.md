@@ -4,21 +4,25 @@ description: "Practice Blockzzle, Ringzzle, and DaySudoku with illustrated board
 date: 2026-11-18T21:49:00+09:00
 url: "/games/practice/"
 practiceBoards: true
-workshopShareSections:
-  - blockzzle-crossing-lines
-  - ringzzle-distant-slot
-  - daysudoku-box-to-row
-  - blockzzle-after-clear
-  - ringzzle-blue-slot
-  - daysudoku-different-rows
-  - blockzzle-plan-two-moves
-  - ringzzle-diagonal-clear
-  - daysudoku-candidate-pair
+workshopExercises:
+  - game: Blockzzle
+    exercises:
+      - {id: blockzzle-crossing-lines, label: Complete two lines}
+      - {id: blockzzle-after-clear, label: Look again after a clear}
+      - {id: blockzzle-plan-two-moves, label: Plan two moves}
+  - game: Ringzzle
+    exercises:
+      - {id: ringzzle-distant-slot, label: Free a distant slot}
+      - {id: ringzzle-blue-slot, label: Check the remaining size}
+      - {id: ringzzle-diagonal-clear, label: Clear the right line}
+  - game: DaySudoku
+    exercises:
+      - {id: daysudoku-box-to-row, label: Narrow a candidate}
+      - {id: daysudoku-different-rows, label: Check both rows}
+      - {id: daysudoku-candidate-pair, label: Use a candidate pair}
 ---
 
-Three practice situations for your next puzzle break: complete two lines with one block, free a distant ring slot, and rule out a Sudoku candidate. These are invented examples, not positions from your current game.
-
-Already tried the examples? [Try a variation](#try-a-variation), [plan two Blockzzle moves](#blockzzle-plan-two-moves), [find a Ringzzle diagonal](#ringzzle-diagonal-clear), or [use a DaySudoku pair](#daysudoku-candidate-pair).
+Short practice puzzles for Blockzzle, Ringzzle, and DaySudoku. These are invented examples, not positions from your current game.
 
 ## Blockzzle: Complete two lines {#blockzzle-crossing-lines}
 

@@ -104,7 +104,32 @@ async page => {
       && [candidates[0], candidates[2]].every(row => row.slice(0, 3).every(cell => cell === 'No')), 'DaySudoku diagram matches the row and both box candidates');
     check(await page.locator('main [data-save-game], main .guide-play, main [data-retry-practice]').count() === 0, 'workshop is editorial, not a new game');
     const contents = page.locator('.guide-contents');
-    await contents.locator('summary').click();
+    const index = contents.getByRole('navigation', { name: 'Workshop exercises' });
+    check(await index.isHidden() && await contents.locator('summary').textContent() === 'Browse exercises', 'compact exercise index starts closed');
+    await contents.locator('summary').press('Enter');
+    check(await index.isVisible() && await index.getByRole('group').count() === 3, 'keyboard opens three named exercise groups');
+    const advanced = [twoMove, diagonal, candidatePair];
+    for (const [i, [, name, anchor]] of examples.entries()) {
+      const group = index.getByRole('group', { name, exact: true });
+      const hrefs = await group.getByRole('link').evaluateAll(links => links.map(link => link.getAttribute('href')));
+      check(hrefs.join() === [anchor, variations[i][0], advanced[i]].map(id => '#' + id).join(), name + ' index orders the basic problem, variation and follow-up');
+    }
+    for (const width of [320, 390, 768, 1440]) {
+      await page.setViewportSize({ width, height: 844 });
+      for (const theme of ['light', 'dark']) {
+        await page.evaluate(theme => document.documentElement.dataset.theme = theme, theme);
+        check(await index.evaluate(el => {
+          const bounds = items => Array.from(items, item => item.getBoundingClientRect());
+          const groups = bounds(el.children);
+          const links = bounds(el.querySelectorAll('a'));
+          const fits = r => r.left >= 0 && r.right <= innerWidth && r.width >= 44 && r.height >= 44;
+          return links.length === 9 && links.every(fits) && groups.every((r, i) =>
+            i === 0 || (innerWidth <= 680 ? r.top >= groups[i - 1].bottom : r.left >= groups[i - 1].right))
+            && document.documentElement.scrollWidth <= innerWidth;
+        }), 'topic index fits at ' + width + '/' + theme);
+        layouts++;
+      }
+    }
     for (const [i, [id, name, anchor, answer]] of examples.entries()) {
       const hint = page.locator('.move-hint').nth(i);
       const details = page.locator('.move-check').nth(i);
@@ -153,8 +178,7 @@ async page => {
       check(new URL(page.url()).hash === '#' + anchor, name + ' Back returns to the original question');
       await details.locator('summary').click();
     }
-    await page.getByRole('link', { name: 'Try a variation', exact: true }).last().press('Enter');
-    check(new URL(page.url()).hash === '#try-a-variation', 'repeat visitors have a direct variation jump');
+    check(await page.locator('#try-a-variation').count() === 1, 'existing variation-section bookmarks survive');
     for (const [index, [anchor, boardAnchor, answer]] of variations.entries()) {
       const position = examples.length + index;
       const hint = page.locator('.move-hint').nth(position);
@@ -182,7 +206,7 @@ async page => {
       await details.locator('summary').press('Space');
       await hint.locator('summary').press('Space');
     }
-    const twoMoveLink = page.getByRole('link', { name: 'plan two Blockzzle moves' });
+    const twoMoveLink = index.getByRole('link', { name: 'Plan two moves' });
     check(await twoMoveLink.getAttribute('href') === '#' + twoMove, 'repeat visitors can jump to the two-move exercise');
     await twoMoveLink.press('Enter');
     check(new URL(page.url()).hash === '#' + twoMove && await page.locator('#' + twoMove).isVisible(), 'keyboard reaches the two-move exercise');
@@ -218,7 +242,7 @@ async page => {
     await newAnswer.locator('summary').press('Space');
     await newHint.locator('summary').press('Space');
 
-    const diagonalLink = page.getByRole('link', { name: 'find a Ringzzle diagonal' });
+    const diagonalLink = index.getByRole('link', { name: 'Clear the right line' });
     check(await diagonalLink.getAttribute('href') === '#' + diagonal, 'repeat visitors can jump to the diagonal exercise');
     await diagonalLink.press('Enter');
     check(new URL(page.url()).hash === '#' + diagonal && await page.locator('#' + diagonal).isVisible(), 'keyboard reaches the diagonal exercise');
@@ -254,7 +278,7 @@ async page => {
     await lineAnswer.locator('summary').press('Space');
     await lineHint.locator('summary').press('Space');
 
-    const pairLink = page.getByRole('link', { name: 'use a DaySudoku pair' });
+    const pairLink = index.getByRole('link', { name: 'Use a candidate pair' });
     check(await pairLink.getAttribute('href') === '#' + candidatePair, 'repeat visitors can jump to the candidate pair');
     await pairLink.press('Enter');
     check(new URL(page.url()).hash === '#' + candidatePair && await page.locator('#' + candidatePair).isVisible(), 'keyboard reaches the candidate pair');
@@ -359,7 +383,11 @@ async page => {
       await answer.locator('summary').click();
     }
     await noJS.goto(root + '/games/practice/');
-    await noJS.getByRole('link', { name: 'plan two Blockzzle moves' }).click();
+    const plainIndex = noJS.getByRole('navigation', { name: 'Workshop exercises' });
+    check(await plainIndex.isHidden(), 'native exercise index is closed without scripts');
+    await noJS.locator('.guide-contents summary').click();
+    check(await plainIndex.isVisible() && await plainIndex.getByRole('link').count() === 9, 'all native index links work without scripts');
+    await plainIndex.getByRole('link', { name: 'Plan two moves' }).click();
     check(new URL(noJS.url()).hash === '#' + twoMove && await noJS.locator('.practice-board').nth(3).isVisible(), 'native link and two-move board work without scripts');
     const plainAnswer = noJS.locator('.move-check').nth(twoMoveIndex);
     check(await plainAnswer.locator('strong').isHidden(), 'two-move answer stays hidden without scripts');

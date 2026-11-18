@@ -8,7 +8,7 @@
       <a class="back-link" href="/games/" data-guide-back><i class="fa-solid fa-arrow-left" aria-hidden="true"></i> <span data-guide-back-label>Puzzle guides</span></a>
       <h1>{{ .Title }}</h1>
       {{ with $game.puzzle_type }}<p>{{ . }} &middot; Free browser play &middot; No sign-up</p>{{ end }}
-      {{ with .Params.workshopShareSections }}
+      {{ with .Params.workshopExercises }}
       <div class="workshop-resume" id="workshopResume" hidden>
         <p class="guide-lead">Last exercise: <a class="guide-detail" id="workshopResumeLink"></a></p>
         <button class="guide-save" id="workshopResumeClear" type="button" aria-label="Forget last exercise" title="Forget last exercise"><i class="fa-solid fa-xmark" aria-hidden="true"></i></button>
@@ -24,8 +24,25 @@
     </header>
     {{ if .Fragments.Identifiers }}
     <details class="guide-contents">
+      {{ with .Params.workshopExercises }}
+      <summary>Browse exercises</summary>
+      <nav class="comparison-grid workshop-index" aria-label="Workshop exercises">
+        {{ range . }}
+        {{ $labelID := printf "workshop-group-%s" (.game | urlize) }}
+        <div class="comparison-column" role="group" aria-labelledby="{{ $labelID }}">
+          <p id="{{ $labelID }}"><strong>{{ .game }}</strong></p>
+          <ul>
+            {{ range .exercises }}
+            <li><a href="#{{ .id }}">{{ .label }}</a></li>
+            {{ end }}
+          </ul>
+        </div>
+        {{ end }}
+      </nav>
+      {{ else }}
       <summary>In this guide</summary>
       {{ .TableOfContents }}
+      {{ end }}
     </details>
     {{ end }}
     {{ with $game.image }}
