@@ -32,16 +32,28 @@ async (page) => {
       await link.click();
       await page.waitForLoadState('load');
       const exercises = page.locator('.move-check');
+      const hints = page.locator('.move-hint');
       check(new URL(page.url()).hash === '#try-a-move-check', id + ' native fragment target');
       check(await page.locator('#try-a-move-check').count() === 1 && await exercises.count() === 2, id + ' stable anchor and two exercises');
+      check(await hints.count() === 2, id + ' one hint per question');
       for (const [index, answer] of expected.entries()) {
         const exercise = exercises.nth(index);
         const summary = exercise.locator('summary');
         const next = exercise.locator('[data-next-practice]');
+        const hint = hints.nth(index);
+        const hintSummary = hint.getByText('Hint for question ' + (index + 1), { exact: true });
         const label = id + ' exercise ' + (index + 1);
         check(await page.getByText('Check answer ' + (index + 1), { exact: true }).count() === 1, label + ' unique answer label');
         check(await exercise.evaluate(el => !el.open), label + ' answer initially closed');
         check(await exercise.locator('p').first().isHidden(), label + ' answer actually hidden');
+        check(await hint.locator('p').isHidden(), label + ' hint initially hidden');
+        check(await hint.evaluate(el => el.nextElementSibling.matches('.move-check')), label + ' hint precedes its answer');
+        await hintSummary.press('Enter');
+        check(await hint.locator('p').isVisible() && (await hint.locator('p').textContent()).trim().length > 0, label + ' keyboard opens hint');
+        check(await page.locator('.move-check[open]').count() === 0, label + ' hint does not open an answer');
+        check(await hints.nth(1 - index).evaluate(el => !el.open), label + ' other hint stays closed');
+        await hintSummary.press('Space');
+        check(await hint.locator('p').isHidden(), label + ' keyboard can hide hint');
         check(await next.isHidden(), label + ' no extra link until answer opens');
         check(await next.getAttribute('href') === (index === 0
           ? '#move-check-2' : '/games/' + nextGame[id] + '/#move-check-1'), label + ' exact next practice target');
@@ -65,6 +77,10 @@ async (page) => {
               const r = el.getBoundingClientRect();
               return r.height >= 44 && r.left >= 0 && r.right <= innerWidth && document.documentElement.scrollWidth <= innerWidth;
             }), label + '/' + width + '/' + theme + ' summary fits');
+            check(await hintSummary.evaluate(el => {
+              const r = el.getBoundingClientRect();
+              return r.height >= 44 && r.width >= 44 && r.left >= 0 && r.right <= innerWidth;
+            }), label + '/' + width + '/' + theme + ' hint target fits');
             check(await exercise.locator('p').evaluateAll(items => items.every(el => {
               const r = el.getBoundingClientRect();
               return r.left >= 0 && r.right <= innerWidth && el.scrollWidth <= el.clientWidth;
@@ -105,7 +121,11 @@ async (page) => {
       await plain.goto(root + '/games/' + id + '/#try-a-move-check');
       for (const [index, answer] of expected.entries()) {
         const details = plain.locator('.move-check').nth(index);
+        const hint = plain.locator('.move-hint').nth(index);
         check(await details.evaluate(el => !el.open), id + '/' + index + ' no-JS starts closed');
+        check(await hint.locator('p').isHidden(), id + '/' + index + ' no-JS hint starts hidden');
+        await hint.locator('summary').click();
+        check(await hint.locator('p').isVisible() && await details.evaluate(el => !el.open), id + '/' + index + ' no-JS hint works without spoilers');
         await details.locator('summary').click();
         check(await details.evaluate(el => el.open) && await details.locator('strong').first().textContent() === answer, id + '/' + index + ' no-JS answer works');
         await details.locator('[data-next-practice]').click();
@@ -113,7 +133,7 @@ async (page) => {
       }
     }
     await page.goto(root + '/');
-    check(await page.locator('.move-check, a[href$="#try-a-move-check"]').count() === 0, 'main unchanged');
+    check(await page.locator('.move-check, .move-hint, a[href$="#try-a-move-check"]').count() === 0, 'main unchanged');
     check(await page.locator('.source-section .game-card').count() === 24, 'catalog unchanged');
     check(errors.length === 0, 'no application runtime errors');
     return { engine: context.browser().browserType().name(), passed: checks.length, layouts, checks };

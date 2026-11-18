@@ -1,3 +1,10 @@
+{{ $hintLabel := .Get "hintLabel" | default "Show hint" }}
+{{ with .Get "hint" }}
+<details class="move-hint">
+  <summary class="guide-detail">{{ $hintLabel }} <i class="fa-solid fa-chevron-down" aria-hidden="true"></i></summary>
+  <p>{{ . }}</p>
+</details>
+{{ end }}
 <details class="move-check">
   <summary class="guide-detail">{{ .Get "label" | default "Check your answer" }} <i class="fa-solid fa-chevron-down" aria-hidden="true"></i></summary>
   {{ .Inner | markdownify }}

@@ -44,7 +44,7 @@ Before committing to a placement that clears a row or column, consider the space
 
 Imagine a horizontal piece that covers two neighboring squares. Gap A has two empty squares separated by an occupied square. Gap B has two empty squares next to each other. Which gap can hold that piece in its current orientation?
 
-{{< move-check label="Check answer 1" next="#move-check-2" >}}
+{{< move-check label="Check answer 1" next="#move-check-2" hintLabel="Hint for question 1" hint="Trace the piece from left to right. Look for a gap that follows the same path without crossing an occupied square." >}}
 **Gap B.** The piece needs two connected squares in a horizontal line. Gap A has the same number of empty squares, but they are not arranged to fit it.
 
 This is a hypothetical placement check, not a current game board. Before your next placement, compare the shape of the usable space with the piece, rather than just counting empty squares. Fitting a piece does not by itself make that placement the strongest choice.
@@ -54,7 +54,7 @@ This is a hypothetical placement check, not a current game board. Before your ne
 
 Imagine you have a single-square piece and a two-by-two square piece. There is only one empty two-by-two area, plus a separate single-square gap. Placing the single-square piece would not clear a line in this example. Where can it go without blocking the larger piece?
 
-{{< move-check label="Check answer 2" next="/games/ringzzle/#move-check-1" nextLabel="Try a Ringzzle move check" >}}
+{{< move-check label="Check answer 2" next="/games/ringzzle/#move-check-1" nextLabel="Try a Ringzzle move check" hintLabel="Hint for question 2" hint="Mark the four squares the larger piece needs. For each possible first move, ask whether all four would still be empty." >}}
 **In the separate single-square gap.** This leaves the only two-by-two area intact. Filling any square inside that area would stop the larger piece from fitting there.
 
 This is a hypothetical space-planning exercise, not a prediction of your next pieces. If a placement clears a line, check the board again: the available space has changed. The useful habit is to compare room for both pieces before committing to the first one.
