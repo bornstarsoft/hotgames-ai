@@ -10,6 +10,7 @@ workshopExercises:
       - {id: blockzzle-crossing-lines, label: Complete two lines}
       - {id: blockzzle-after-clear, label: Look again after a clear}
       - {id: blockzzle-plan-two-moves, label: Plan two moves}
+      - {id: blockzzle-compare-clears, label: Compare two clears}
   - game: Ringzzle
     exercises:
       - {id: ringzzle-distant-slot, label: Free a distant slot}
@@ -184,4 +185,26 @@ No cell starts with just one candidate. Which placement follows from this column
 
 {{< move-check label="Check the pair answer" hintLabel="Pair hint" hint="Try swapping 2 and 6 between rows 1 and 2. In either order, can either digit go anywhere else in this column?" playGame="daysudoku" next="/games/daysudoku/#move-check-2" nextLabel="More Sudoku practice" >}}
 **Row 4 must be 4.** Rows 1 and 2 must use 2 and 6 in some order. Neither digit can appear again in column 5, so row 4 can only take 4. The pair still does not tell you which of rows 1 and 2 holds the 2.
+{{< /move-check >}}
+
+## Blockzzle: Compare two clears {#blockzzle-compare-clears}
+
+You have a one-square block and a 2x2 square. The square does not fit yet. Compare two places for the one-square block: A1 completes row 1, and D4 completes column D.
+
+{{< practice-board caption="Blockzzle board before either line clear" >}}
+{
+  "columns": ["A", "B", "C", "D"],
+  "rows": [
+    {"label": "1", "cells": ["Empty", "Filled", "Filled", "Filled"]},
+    {"label": "2", "cells": ["Filled", "Empty", "Empty", "Filled"]},
+    {"label": "3", "cells": ["Empty", "Empty", "Filled", "Filled"]},
+    {"label": "4", "cells": ["Filled", "Empty", "Empty", "Empty"]}
+  ]
+}
+{{< /practice-board >}}
+
+Each move clears one line. Which one leaves space for the 2x2 square?
+
+{{< move-check label="Check the clear answer" hintLabel="Space hint" hint="Picture each cleared line as empty. Look for two neighboring empty squares that line up with two more in the next row." next="/games/blockzzle/#move-check-2" nextLabel="More shape practice" >}}
+**Place the block at A1.** Clearing row 1 opens B1 and C1, directly above the empty B2 and C2. Those four squares fit the next piece. Clearing column D leaves the same number of empty squares, but no 2x2 gap.
 {{< /move-check >}}

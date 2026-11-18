@@ -8,7 +8,8 @@ async launcher => {
   const exercises = [
     'blockzzle-crossing-lines', 'ringzzle-distant-slot', 'daysudoku-box-to-row',
     'blockzzle-after-clear', 'ringzzle-blue-slot', 'daysudoku-different-rows',
-    'blockzzle-plan-two-moves', 'ringzzle-diagonal-clear', 'daysudoku-candidate-pair'
+    'blockzzle-plan-two-moves', 'ringzzle-diagonal-clear', 'daysudoku-candidate-pair',
+    'blockzzle-compare-clears'
   ];
   const context = await browser.newContext({ viewport: { width: 390, height: 844 } });
   const suppress = route => route.abort('blockedbyclient');
@@ -57,6 +58,9 @@ async launcher => {
       check(await link.textContent() === await page.locator('#' + id).textContent(), id + ' displays its own title');
       await hint(page, i).press('Enter');
     }
+    await directory.waitForFunction(href => document.getElementById('workshopDirectoryResumeLink').getAttribute('href') === href,
+      directoryHref('blockzzle-compare-clears'));
+    check(await directoryLink(directory).textContent() === 'Blockzzle: Compare two clears', 'new comparison is available in directory resume');
     await answer(page, 0).press('Enter');
     check(await stored() === exercises[0], 'opening an answer also remembers its exercise');
     await page.locator('.move-hint').nth(3).evaluate(el => { el.open = true; el.open = false; });
@@ -82,8 +86,8 @@ async launcher => {
 
     const peer = await context.newPage();
     await peer.goto(url);
-    const last = exercises.at(-1);
-    await hint(peer, exercises.length - 1).click();
+    const last = 'daysudoku-candidate-pair';
+    await hint(peer, exercises.indexOf(last)).click();
     await page.waitForFunction(id => document.getElementById('workshopResumeLink').getAttribute('href') === '#' + id, last);
     check(await stored() === last, 'opening in another tab updates the shortcut');
     await directory.waitForFunction(href => document.getElementById('workshopDirectoryResumeLink').getAttribute('href') === href, directoryHref(last));

@@ -19,6 +19,10 @@ async page => {
   const twoMove = 'blockzzle-plan-two-moves';
   const diagonal = 'ringzzle-diagonal-clear';
   const candidatePair = 'daysudoku-candidate-pair';
+  const compareClears = 'blockzzle-compare-clears';
+  const compareAnswerText = 'Place the block at A1.';
+  const advanced = [twoMove, diagonal, candidatePair];
+  const shareAnchors = [...examples.map(([, , anchor]) => anchor), ...variations.map(([anchor]) => anchor), ...advanced, compareClears];
   const playURLs = ['https://blockzzle.com/play/', 'https://ringzzle.com/play/', 'https://daysudoku.com/'];
   const pairAnswerText = 'Row 4 must be 4.';
   let passed = 0;
@@ -87,9 +91,11 @@ async page => {
     const twoMoveIndex = examples.length + variations.length;
     const diagonalIndex = twoMoveIndex + 1;
     const pairIndex = diagonalIndex + 1;
-    check(await page.locator('.move-hint').count() === pairIndex + 1 && await page.locator('.move-check').count() === pairIndex + 1, 'original examples, variations and advanced exercises');
+    const compareIndex = pairIndex + 1;
+    check(await page.locator('.move-hint').count() === shareAnchors.length
+      && await page.locator('.move-check').count() === shareAnchors.length, 'original examples, variations and advanced exercises');
     const boards = page.locator('.practice-board');
-    check(await boards.count() === 6, 'only the original and advanced exercises need boards');
+    check(await boards.count() === 7, 'only the original and advanced exercises need boards');
     const boardStyle = page.locator('link[rel="stylesheet"][href*="/css/practice-boards.min."]');
     check(await boardStyle.count() === 1 && await boardStyle.evaluate(el => !!el.sheet?.cssRules.length), 'scoped board stylesheet loaded');
     const grid = index => boards.nth(index).locator('tbody tr').evaluateAll(rows => rows.map(row => Array.from(row.cells).slice(1).map(cell => cell.textContent)));
@@ -111,25 +117,26 @@ async page => {
     check(await index.isHidden() && await contents.locator('summary').textContent() === 'Browse exercises', 'compact exercise index starts closed');
     await contents.locator('summary').press('Enter');
     check(await index.isVisible() && await index.getByRole('group').count() === 3, 'keyboard opens three named exercise groups');
-    const advanced = [twoMove, diagonal, candidatePair];
     for (const [i, [, name, anchor]] of examples.entries()) {
       const group = index.getByRole('group', { name, exact: true });
       const hrefs = await group.getByRole('link').evaluateAll(links => links.map(link => link.getAttribute('href')));
-      check(hrefs.join() === [anchor, variations[i][0], advanced[i]].map(id => '#' + id).join(), name + ' index orders the basic problem, variation and follow-up');
+      const expected = [anchor, variations[i][0], advanced[i]];
+      if (i === 0) expected.push(compareClears);
+      check(hrefs.join() === expected.map(id => '#' + id).join(), name + ' index orders the basic problem, variation and follow-ups');
     }
     for (const width of [320, 390, 768, 1440]) {
       await page.setViewportSize({ width, height: 844 });
       for (const theme of ['light', 'dark']) {
         await page.evaluate(theme => document.documentElement.dataset.theme = theme, theme);
-        check(await index.evaluate(el => {
+        check(await index.evaluate((el, count) => {
           const bounds = items => Array.from(items, item => item.getBoundingClientRect());
           const groups = bounds(el.children);
           const links = bounds(el.querySelectorAll('a'));
           const fits = r => r.left >= 0 && r.right <= innerWidth && r.width >= 44 && r.height >= 44;
-          return links.length === 9 && links.every(fits) && groups.every((r, i) =>
+          return links.length === count && links.every(fits) && groups.every((r, i) =>
             i === 0 || (innerWidth <= 680 ? r.top >= groups[i - 1].bottom : r.left >= groups[i - 1].right))
             && document.documentElement.scrollWidth <= innerWidth;
-        }), 'topic index fits at ' + width + '/' + theme);
+        }, shareAnchors.length), 'topic index fits at ' + width + '/' + theme);
         layouts++;
       }
     }
@@ -236,17 +243,17 @@ async page => {
     const gaps = board => board.flatMap((row, r) => row.flatMap((cell, c) =>
       r < 3 && c < 3 && !cell && !row[c + 1] && !board[r + 1][c] && !board[r + 1][c + 1]
         ? ['ABCD'[c] + (r + 1)] : []));
-    const place = col => {
-      const board = start.map(row => row.slice());
-      check(!board[0][col] && !board[0][col + 1], 'two-square move is legal at column ' + col);
-      board[0][col] = board[0][col + 1] = true;
+    const place = (cells, rowIndex, cols) => {
+      const board = cells.map(row => row.slice());
+      check(cols.every(c => !board[rowIndex][c]), 'placement uses empty cells at row ' + rowIndex + ', columns ' + cols);
+      cols.forEach(c => { board[rowIndex][c] = true; });
       const rows = board.map(row => row.every(Boolean));
       const columns = board[0].map((_, c) => board.every(row => row[c]));
       return { rows, columns, after: board.map((row, r) => row.map((cell, c) => cell && !rows[r] && !columns[c])) };
     };
     check(gaps(start).join() === 'A1', 'only A1 through B2 can take the starting square');
-    const moveA = place(0);
-    const moveB = place(1);
+    const moveA = place(start, 0, [0, 1]);
+    const moveB = place(start, 0, [1, 2]);
     check(!moveA.rows.some(Boolean) && !moveA.columns.some(Boolean) && gaps(moveA.after).length === 0, 'move A clears nothing and leaves no square');
     check(!moveB.rows.some(Boolean) && moveB.columns.join() === 'false,false,true,false' && gaps(moveB.after).join() === 'B2', 'move B clears only C and makes the new B2 through C3 gap');
     const newHint = page.locator('.move-hint').nth(twoMoveIndex);
@@ -325,7 +332,35 @@ async page => {
     await checkBoardLayout(pairBoard, pairHint.locator('summary').or(pairAnswer.locator('summary')).or(moreDeduction), 'candidate pair');
     await pairAnswer.locator('summary').press('Space');
     await pairHint.locator('summary').press('Space');
-    const shareAnchors = [...examples.map(([, , anchor]) => anchor), ...variations.map(([anchor]) => anchor), twoMove, diagonal, candidatePair];
+
+    const compareLink = index.getByRole('group', { name: 'Blockzzle' }).getByRole('link', { name: 'Compare two clears' });
+    await compareLink.press('Enter');
+    check(new URL(page.url()).hash === '#' + compareClears && await page.locator('#' + compareClears).isVisible(), 'keyboard opens the new Blockzzle comparison');
+    const compareBoard = boards.nth(6);
+    check(await compareBoard.locator('caption').textContent() === 'Blockzzle board before either line clear', 'comparison board has a descriptive caption');
+    const before = (await grid(6)).map(row => row.map(cell => cell === 'Filled'));
+    check(gaps(before).length === 0, 'square does not fit on the original board');
+    const clearRow = place(before, 0, [0]);
+    const clearColumn = place(before, 3, [3]);
+    check(clearRow.rows.join() === 'true,false,false,false' && !clearRow.columns.some(Boolean)
+      && gaps(clearRow.after).join() === 'B1', 'A1 clears row 1 only and opens exactly one square gap at B1');
+    check(clearColumn.columns.join() === 'false,false,false,true' && !clearColumn.rows.some(Boolean)
+      && gaps(clearColumn.after).length === 0, 'D4 clears column D only and opens no square gap');
+    const emptyCount = cells => cells.flat().filter(cell => !cell).length;
+    check(emptyCount(clearRow.after) === emptyCount(clearColumn.after), 'both clears leave the same number of empty cells');
+    const compareHint = page.locator('.move-hint').nth(compareIndex);
+    const compareAnswer = page.locator('.move-check').nth(compareIndex);
+    check(await compareHint.locator('p').isHidden() && await compareAnswer.locator('strong').isHidden(), 'comparison hint and answer start closed');
+    await compareHint.locator('summary').press('Enter');
+    check(await compareHint.locator('p').isVisible() && await compareAnswer.locator('strong').isHidden(), 'comparison hint keeps answer closed');
+    await compareAnswer.locator('summary').press('Enter');
+    check(await compareAnswer.locator('strong').isVisible() && await compareAnswer.locator('strong').textContent() === compareAnswerText, 'comparison answer agrees with the simulated result');
+    const relatedShapePractice = compareAnswer.locator('[data-next-practice]');
+    check(await relatedShapePractice.getAttribute('href') === '/games/blockzzle/#move-check-2', 'comparison leads to related shape practice');
+    await checkBoardLayout(compareBoard, compareHint.locator('summary').or(compareAnswer.locator('summary')).or(relatedShapePractice), 'clear comparison');
+    await compareAnswer.locator('summary').press('Space');
+    await compareHint.locator('summary').press('Space');
+
     check(await page.locator('[data-workshop-retry]').count() === shareAnchors.length, 'each exercise has one retry control');
     const otherHint = page.locator('.move-hint').last();
     const otherAnswer = page.locator('.move-check').last();
@@ -525,7 +560,7 @@ async page => {
     const plainIndex = noJS.getByRole('navigation', { name: 'Workshop exercises' });
     check(await plainIndex.isHidden(), 'native exercise index is closed without scripts');
     await noJS.locator('.guide-contents summary').click();
-    check(await plainIndex.isVisible() && await plainIndex.getByRole('link').count() === 9, 'all native index links work without scripts');
+    check(await plainIndex.isVisible() && await plainIndex.getByRole('link').count() === shareAnchors.length, 'all native index links work without scripts');
     await plainIndex.getByRole('link', { name: 'Plan two moves' }).click();
     check(new URL(noJS.url()).hash === '#' + twoMove && await noJS.locator('.practice-board').nth(3).isVisible(), 'native link and two-move board work without scripts');
     const plainAnswer = noJS.locator('.move-check').nth(twoMoveIndex);
@@ -561,7 +596,14 @@ async page => {
     check(await plainIndex.isHidden(), 'index starts closed without scripts');
     await plainNextSteps.getByRole('link', { name: 'Choose another exercise' }).click();
     await noJS.waitForURL(root + workshopPath + '#workshop-exercises');
-    check(await plainIndex.isVisible() && await plainIndex.getByRole('link').count() === 9, 'native return opens the complete index without scripts');
+    check(await plainIndex.isVisible() && await plainIndex.getByRole('link').count() === shareAnchors.length, 'native return opens the complete index without scripts');
+    await plainIndex.getByRole('link', { name: 'Compare two clears' }).click();
+    await noJS.waitForURL(root + workshopPath + '#' + compareClears);
+    const plainComparison = noJS.locator('.move-check').nth(compareIndex);
+    check(await noJS.locator('.practice-board').nth(6).isVisible()
+      && await plainComparison.locator('strong').isHidden(), 'native index reaches the comparison board without spoilers');
+    await plainComparison.locator('summary').click();
+    check(await plainComparison.locator('strong').isVisible() && await plainComparison.locator('strong').textContent() === compareAnswerText, 'comparison answer works without scripts');
     await plainNextSteps.getByRole('link', { name: 'Browse puzzle games' }).click();
     await noJS.waitForURL(root + '/games/#puzzles');
     check(await noJS.getByRole('heading', { name: 'Choose a puzzle' }).isVisible(), 'native directory link reaches the puzzle choices');
