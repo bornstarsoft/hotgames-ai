@@ -21,8 +21,10 @@ async page => {
   const candidatePair = 'daysudoku-candidate-pair';
   const compareClears = 'blockzzle-compare-clears';
   const compareAnswerText = 'Place the block at A1.';
+  const trayPuzzle = 'ringzzle-open-medium-slot';
+  const trayAnswerText = 'Place the blue ring at C2, then the yellow ring at B2.';
   const advanced = [twoMove, diagonal, candidatePair];
-  const shareAnchors = [...examples.map(([, , anchor]) => anchor), ...variations.map(([anchor]) => anchor), ...advanced, compareClears];
+  const shareAnchors = [...examples.map(([, , anchor]) => anchor), ...variations.map(([anchor]) => anchor), ...advanced, compareClears, trayPuzzle];
   const playURLs = ['https://blockzzle.com/play/', 'https://ringzzle.com/play/', 'https://daysudoku.com/'];
   const pairAnswerText = 'Row 4 must be 4.';
   let passed = 0;
@@ -92,10 +94,11 @@ async page => {
     const diagonalIndex = twoMoveIndex + 1;
     const pairIndex = diagonalIndex + 1;
     const compareIndex = pairIndex + 1;
+    const trayIndex = compareIndex + 1;
     check(await page.locator('.move-hint').count() === shareAnchors.length
       && await page.locator('.move-check').count() === shareAnchors.length, 'original examples, variations and advanced exercises');
     const boards = page.locator('.practice-board');
-    check(await boards.count() === 7, 'only the original and advanced exercises need boards');
+    check(await boards.count() === 8, 'only the original and advanced exercises need boards');
     const boardStyle = page.locator('link[rel="stylesheet"][href*="/css/practice-boards.min."]');
     check(await boardStyle.count() === 1 && await boardStyle.evaluate(el => !!el.sheet?.cssRules.length), 'scoped board stylesheet loaded');
     const grid = index => boards.nth(index).locator('tbody tr').evaluateAll(rows => rows.map(row => Array.from(row.cells).slice(1).map(cell => cell.textContent)));
@@ -122,6 +125,7 @@ async page => {
       const hrefs = await group.getByRole('link').evaluateAll(links => links.map(link => link.getAttribute('href')));
       const expected = [anchor, variations[i][0], advanced[i]];
       if (i === 0) expected.push(compareClears);
+      if (i === 1) expected.push(trayPuzzle);
       check(hrefs.join() === expected.map(id => '#' + id).join(), name + ' index orders the basic problem, variation and follow-ups');
     }
     for (const width of [320, 390, 768, 1440]) {
@@ -284,10 +288,10 @@ async page => {
       indices.map(i => [i, i]),
       indices.map(i => [i, 2 - i])
     ];
-    const clearedByBlue = row => lineCells.filter(line =>
-      line.every(([r, c]) => (r === row && c === 2) || ringGrid[r][c].includes('Blue')));
-    const rowTwo = clearedByBlue(1);
-    const diagonalClear = clearedByBlue(2);
+    const clearedByBlue = (cells, row, col) => lineCells.filter(line =>
+      line.every(([r, c]) => (r === row && c === col) || cells[r][c].includes('Blue')));
+    const rowTwo = clearedByBlue(ringGrid, 1, 2);
+    const diagonalClear = clearedByBlue(ringGrid, 2, 2);
     check(rowTwo.length === 1 && rowTwo[0].every(([r]) => r === 1), 'C2 clears only row 2, leaving A1 untouched');
     check(diagonalClear.length === 1 && diagonalClear[0].every(([r, c]) => r === c), 'C3 clears only the diagonal through A1');
     const lineHint = page.locator('.move-hint').nth(diagonalIndex);
@@ -360,6 +364,41 @@ async page => {
     await checkBoardLayout(compareBoard, compareHint.locator('summary').or(compareAnswer.locator('summary')).or(relatedShapePractice), 'clear comparison');
     await compareAnswer.locator('summary').press('Space');
     await compareHint.locator('summary').press('Space');
+
+    const trayLink = index.getByRole('group', { name: 'Ringzzle' }).getByRole('link', { name: 'Make room for the next ring' });
+    await trayLink.press('Enter');
+    check(new URL(page.url()).hash === '#' + trayPuzzle && await page.locator('#' + trayPuzzle).isVisible(), 'keyboard opens the new Ringzzle tray problem');
+    const trayBoard = boards.nth(7);
+    check(await trayBoard.locator('caption').textContent() === 'Ringzzle tray setup: M = medium, L = large', 'tray board labels size abbreviations');
+    const trayGrid = await grid(7);
+    const slots = (row, col) => trayGrid[row][col].split(' + ');
+    check(indices.every(r => indices.every(c => slots(r, c).some(ring => ring.endsWith(' M')))), 'the yellow medium ring cannot fit anywhere initially');
+    const newMediumSlots = (row, col) => {
+      check(!slots(row, col).some(ring => ring.endsWith(' S')), 'small blue ring fits at row ' + row + ', column ' + col);
+      const lines = clearedByBlue(trayGrid, row, col);
+      return {
+        lines,
+        freed: indices.flatMap(r => indices.flatMap(c => slots(r, c).includes('Blue M')
+          && lines.some(line => line.some(([lineRow, lineCol]) => lineRow === r && lineCol === c))
+          ? ['ABC'[c] + (r + 1)] : []))
+      };
+    };
+    const clearA = newMediumSlots(2, 0);
+    const clearTwo = newMediumSlots(1, 2);
+    check(clearA.lines.length === 1 && clearA.lines[0].every(([, c]) => c === 0) && clearA.freed.length === 0, 'A3 clears only column A and leaves medium slots full');
+    check(clearTwo.lines.length === 1 && clearTwo.lines[0].every(([r]) => r === 1) && clearTwo.freed.join() === 'B2', 'C2 clears only row 2 and frees exactly the B2 medium slot');
+    const trayHint = page.locator('.move-hint').nth(trayIndex);
+    const trayAnswer = page.locator('.move-check').nth(trayIndex);
+    check(await trayHint.locator('p').isHidden() && await trayAnswer.locator('strong').isHidden(), 'tray question starts without spoilers');
+    await trayHint.locator('summary').press('Enter');
+    check(await trayHint.locator('p').isVisible() && await trayAnswer.locator('strong').isHidden(), 'tray hint keeps answer closed');
+    await trayAnswer.locator('summary').press('Enter');
+    check(await trayAnswer.locator('strong').isVisible() && await trayAnswer.locator('strong').textContent() === trayAnswerText, 'tray answer agrees with the board');
+    const moreTrayPractice = trayAnswer.locator('[data-next-practice]');
+    check(await moreTrayPractice.getAttribute('href') === '/games/ringzzle/#move-check-2', 'tray answer leads to related Ringzzle practice');
+    await checkBoardLayout(trayBoard, trayHint.locator('summary').or(trayAnswer.locator('summary')).or(moreTrayPractice), 'tray choices');
+    await trayAnswer.locator('summary').press('Space');
+    await trayHint.locator('summary').press('Space');
 
     check(await page.locator('[data-workshop-retry]').count() === shareAnchors.length, 'each exercise has one retry control');
     const otherHint = page.locator('.move-hint').last();
@@ -604,6 +643,12 @@ async page => {
       && await plainComparison.locator('strong').isHidden(), 'native index reaches the comparison board without spoilers');
     await plainComparison.locator('summary').click();
     check(await plainComparison.locator('strong').isVisible() && await plainComparison.locator('strong').textContent() === compareAnswerText, 'comparison answer works without scripts');
+    await plainIndex.getByRole('link', { name: 'Make room for the next ring' }).click();
+    await noJS.waitForURL(root + workshopPath + '#' + trayPuzzle);
+    const plainTray = noJS.locator('.move-check').nth(trayIndex);
+    check(await noJS.locator('.practice-board').nth(7).isVisible() && await plainTray.locator('strong').isHidden(), 'native index reaches the tray board without spoilers');
+    await plainTray.locator('summary').click();
+    check(await plainTray.locator('strong').isVisible() && await plainTray.locator('strong').textContent() === trayAnswerText, 'tray answer works without scripts');
     await plainNextSteps.getByRole('link', { name: 'Browse puzzle games' }).click();
     await noJS.waitForURL(root + '/games/#puzzles');
     check(await noJS.getByRole('heading', { name: 'Choose a puzzle' }).isVisible(), 'native directory link reaches the puzzle choices');

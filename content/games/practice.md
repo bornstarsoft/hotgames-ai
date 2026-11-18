@@ -16,6 +16,7 @@ workshopExercises:
       - {id: ringzzle-distant-slot, label: Free a distant slot}
       - {id: ringzzle-blue-slot, label: Check the remaining size}
       - {id: ringzzle-diagonal-clear, label: Clear the right line}
+      - {id: ringzzle-open-medium-slot, label: Make room for the next ring}
   - game: DaySudoku
     exercises:
       - {id: daysudoku-box-to-row, label: Narrow a candidate}
@@ -207,4 +208,25 @@ Each move clears one line. Which one leaves space for the 2x2 square?
 
 {{< move-check label="Check the clear answer" hintLabel="Space hint" hint="Picture each cleared line as empty. Look for two neighboring empty squares that line up with two more in the next row." next="/games/blockzzle/#move-check-2" nextLabel="More shape practice" >}}
 **Place the block at A1.** Clearing row 1 opens B1 and C1, directly above the empty B2 and C2. Those four squares fit the next piece. Clearing column D leaves the same number of empty squares, but no 2x2 gap.
+{{< /move-check >}}
+
+## Ringzzle: Make room for the next ring {#ringzzle-open-medium-slot}
+
+Two pieces remain in your tray: a small blue ring and a medium yellow ring. Every medium slot is occupied, so the yellow ring cannot go anywhere yet.
+
+{{< practice-board caption="Ringzzle tray setup: M = medium, L = large" >}}
+{
+  "columns": ["A", "B", "C"],
+  "rows": [
+    {"label": "1", "cells": ["Red M + Blue L", "Yellow M", "Red M"]},
+    {"label": "2", "cells": ["Green M + Blue L", "Blue M", "Yellow M"]},
+    {"label": "3", "cells": ["Red M", "Green M", "Yellow M"]}
+  ]
+}
+{{< /practice-board >}}
+
+Place the small blue ring at A3 to clear column A, or at C2 to clear row 2. Which move lets you place the medium yellow ring next, and where?
+
+{{< move-check label="Check the tray answer" hintLabel="Tray hint" hint="Both lines clear blue rings. Find the blue ring that takes up a medium slot, and check which line removes it." next="/games/ringzzle/#move-check-2" nextLabel="More ring line practice" >}}
+**Place the blue ring at C2, then the yellow ring at B2.** Row 2 clears the medium blue ring at B2. That is the only medium slot that opens. Column A clears blue rings too, but none of those blue rings are medium, so the yellow ring would still be blocked.
 {{< /move-check >}}
