@@ -53,7 +53,7 @@
         (dict "anchor" "ringzzle-distant-slot" "name" "Ringzzle")
         (dict "anchor" "daysudoku-box-to-row" "name" "DaySudoku") }}
       <nav class="guide-jumps" aria-label="Puzzle Workshop shortcuts">
-        <a href="{{ $workshop.RelPermalink }}">Puzzle Workshop</a>
+        <a href="{{ $workshop.RelPermalink }}" id="workshopIndexLink">Puzzle Workshop</a>
         {{ range $exercises }}
           {{ if not (in $workshop.Fragments.Identifiers .anchor) }}
             {{ errorf "Workshop shortcut target missing: %s#%s" $workshop.RelPermalink .anchor }}
@@ -61,6 +61,11 @@
           <a href="{{ $workshop.RelPermalink }}#{{ .anchor }}" aria-label="{{ .name }} practice">{{ .name }}</a>
         {{ end }}
       </nav>
+      {{ with $workshop.Params.workshopExercises }}
+      <p class="guide-lead" id="workshopDirectoryResume" hidden>
+        Continue Workshop: <a class="guide-detail" id="workshopDirectoryResumeLink"></a>
+      </p>
+      {{ end }}
       {{ end }}
       <div class="comparison-grid">
         {{ range .RegularPages }}

@@ -294,8 +294,9 @@
         });
       }
 
+      {{ $workshopKey := "hotgamesLastWorkshopExercise" }}
       {{ if $workshopShare }}
-      const workshopKey = 'hotgamesLastWorkshopExercise';
+      const workshopKey = '{{ $workshopKey }}';
       const workshopResume = document.getElementById('workshopResume');
       const workshopLink = document.getElementById('workshopResumeLink');
       const workshopClear = document.getElementById('workshopResumeClear');
@@ -432,6 +433,47 @@
       });
       window.addEventListener('pageshow', syncRecentPuzzle);
       syncRecentPuzzle();
+
+      {{ with .GetPage "practice" }}
+      {{ $workshop := . }}
+      {{ with .Params.workshopExercises }}
+      {{ $workshopEntries := dict }}
+      {{ range . }}
+        {{ $game := .game }}
+        {{ range .exercises }}
+          {{ $workshopEntries = merge $workshopEntries (dict .id (dict
+            "title" (printf "%s: %s" $game .label)
+            "href" (printf "%s#%s" $workshop.RelPermalink .id))) }}
+        {{ end }}
+      {{ end }}
+      const workshopKey = '{{ $workshopKey }}';
+      const workshopEntries = new Map(Object.entries({{ $workshopEntries | jsonify | safeJS }}));
+      const directoryResume = document.getElementById('workshopDirectoryResume');
+      const directoryResumeLink = document.getElementById('workshopDirectoryResumeLink');
+      function syncDirectoryResume() {
+        let exercise;
+        try { exercise = workshopEntries.get(localStorage.getItem(workshopKey)); } catch (_) {}
+        if (exercise) {
+          directoryResumeLink.href = exercise.href;
+          directoryResumeLink.textContent = exercise.title;
+        } else {
+          if (document.activeElement === directoryResumeLink) {
+            document.getElementById('workshopIndexLink').focus({ preventScroll: true });
+          }
+          directoryResumeLink.removeAttribute('href');
+          directoryResumeLink.textContent = '';
+        }
+        directoryResume.hidden = !exercise;
+      }
+      window.addEventListener('storage', event => {
+        if (event.key !== null && event.key !== workshopKey) return;
+        try { if (event.storageArea !== localStorage) return; } catch (_) {}
+        syncDirectoryResume();
+      });
+      window.addEventListener('pageshow', syncDirectoryResume);
+      syncDirectoryResume();
+      {{ end }}
+      {{ end }}
       {{ end }}
 
       // Keep guide launches in the same browser-local history as homepage launches.
