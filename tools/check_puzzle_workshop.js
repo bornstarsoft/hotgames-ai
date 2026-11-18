@@ -15,12 +15,28 @@ async page => {
     ['daysudoku-different-rows', 'daysudoku-box-to-row', 'No, the two positions are in different rows.']
   ];
   const twoMove = 'blockzzle-plan-two-moves';
+  const diagonal = 'ringzzle-diagonal-clear';
   let passed = 0;
   let layouts = 0;
   let plain;
   const errors = [];
   const onError = error => errors.push(error.message);
   const check = (ok, name) => { if (!ok) throw new Error(name); passed++; };
+  const checkBoardLayout = async (board, targets, name) => {
+    for (const width of [320, 390, 768, 1440]) {
+      await page.setViewportSize({ width, height: 844 });
+      for (const theme of ['light', 'dark']) {
+        await page.evaluate(theme => document.documentElement.dataset.theme = theme, theme);
+        check(await board.evaluate(el => el.getBoundingClientRect().right <= innerWidth)
+          && await targets.evaluateAll(els => els.length === 3 && els.every(el => {
+            const r = el.getBoundingClientRect();
+            return r.left >= 0 && r.right <= innerWidth && r.width >= 44 && r.height >= 44;
+          }))
+          && await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth), name + ' board and controls fit at ' + width + '/' + theme);
+        layouts++;
+      }
+    }
+  };
   page.on('pageerror', onError);
   await context.route(pattern, suppress);
   try {
@@ -37,9 +53,10 @@ async page => {
     check(await page.getByRole('heading', { level: 1, name: 'Puzzle Workshop' }).count() === 1, 'workshop title');
     check(await page.locator('link[rel=canonical]').getAttribute('href') === 'https://hotgames.ai/games/practice/', 'canonical workshop URL');
     const twoMoveIndex = examples.length + variations.length;
-    check(await page.locator('.move-hint').count() === twoMoveIndex + 1 && await page.locator('.move-check').count() === twoMoveIndex + 1, 'original examples, variations and the two-move exercise');
+    const diagonalIndex = twoMoveIndex + 1;
+    check(await page.locator('.move-hint').count() === diagonalIndex + 1 && await page.locator('.move-check').count() === diagonalIndex + 1, 'original examples, variations and advanced exercises');
     const boards = page.locator('.practice-board');
-    check(await boards.count() === 4, 'only the three originals and two-move exercise need boards');
+    check(await boards.count() === 5, 'only the original and advanced exercises need boards');
     const boardStyle = page.locator('link[rel="stylesheet"][href*="/css/practice-boards.min."]');
     check(await boardStyle.count() === 1 && await boardStyle.evaluate(el => !!el.sheet?.cssRules.length), 'scoped board stylesheet loaded');
     const grid = index => boards.nth(index).locator('tbody tr').evaluateAll(rows => rows.map(row => Array.from(row.cells).slice(1).map(cell => cell.textContent)));
@@ -137,7 +154,7 @@ async page => {
     check(await twoMoveLink.getAttribute('href') === '#' + twoMove, 'repeat visitors can jump to the two-move exercise');
     await twoMoveLink.press('Enter');
     check(new URL(page.url()).hash === '#' + twoMove && await page.locator('#' + twoMove).isVisible(), 'keyboard reaches the two-move exercise');
-    const newBoard = boards.last();
+    const newBoard = boards.nth(3);
     check(await newBoard.locator('caption').textContent() === 'Blockzzle board before the first move', 'two-move board has a caption');
     const start = (await grid(3)).map(row => row.map(cell => cell === 'Filled'));
     const gaps = board => board.flatMap((row, r) => row.flatMap((cell, c) =>
@@ -165,23 +182,46 @@ async page => {
     check(await newAnswer.locator('strong').textContent() === 'Move B.' && await newAnswer.locator('strong').isVisible(), 'two-move answer matches the board');
     const morePlacement = newAnswer.locator('[data-next-practice]');
     check(await morePlacement.getAttribute('href') === '/games/blockzzle/#move-check-2', 'answer leads to related Blockzzle practice');
-    for (const width of [320, 390, 768, 1440]) {
-      await page.setViewportSize({ width, height: 844 });
-      for (const theme of ['light', 'dark']) {
-        await page.evaluate(theme => document.documentElement.dataset.theme = theme, theme);
-        const targets = page.locator('summary').filter({ hasText: /Two-move hint|Check the two-move answer/ }).or(morePlacement);
-        check(await newBoard.evaluate(el => el.getBoundingClientRect().right <= innerWidth)
-          && await targets.evaluateAll(els => els.length === 3 && els.every(el => {
-            const r = el.getBoundingClientRect();
-            return r.left >= 0 && r.right <= innerWidth && r.width >= 44 && r.height >= 44;
-          }))
-          && await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth), 'new board and controls fit at ' + width + '/' + theme);
-        layouts++;
-      }
-    }
+    await checkBoardLayout(newBoard, newHint.locator('summary').or(newAnswer.locator('summary')).or(morePlacement), 'two-move');
     await newAnswer.locator('summary').press('Space');
     await newHint.locator('summary').press('Space');
-    const shareAnchors = [...examples.map(([, , anchor]) => anchor), ...variations.map(([anchor]) => anchor), twoMove];
+
+    const diagonalLink = page.getByRole('link', { name: 'find a Ringzzle diagonal' });
+    check(await diagonalLink.getAttribute('href') === '#' + diagonal, 'repeat visitors can jump to the diagonal exercise');
+    await diagonalLink.press('Enter');
+    check(new URL(page.url()).hash === '#' + diagonal && await page.locator('#' + diagonal).isVisible(), 'keyboard reaches the diagonal exercise');
+    const diagonalBoard = boards.nth(4);
+    check(await diagonalBoard.locator('caption').textContent() === 'Ringzzle before the blue move: S = small, L = large', 'diagonal board explains the size labels');
+    const ringGrid = await grid(4);
+    check(ringGrid[0][0] === 'Blue S + Red L' && ringGrid[1][2] === 'Empty' && ringGrid[2][2] === 'Empty', 'target rings and both allowed placements match the prompt');
+    const indices = [0, 1, 2];
+    const lineCells = [
+      ...indices.map(r => indices.map(c => [r, c])),
+      ...indices.map(c => indices.map(r => [r, c])),
+      indices.map(i => [i, i]),
+      indices.map(i => [i, 2 - i])
+    ];
+    const clearedByBlue = row => lineCells.filter(line =>
+      line.every(([r, c]) => (r === row && c === 2) || ringGrid[r][c].includes('Blue')));
+    const rowTwo = clearedByBlue(1);
+    const diagonalClear = clearedByBlue(2);
+    check(rowTwo.length === 1 && rowTwo[0].every(([r]) => r === 1), 'C2 clears only row 2, leaving A1 untouched');
+    check(diagonalClear.length === 1 && diagonalClear[0].every(([r, c]) => r === c), 'C3 clears only the diagonal through A1');
+    const lineHint = page.locator('.move-hint').nth(diagonalIndex);
+    const lineAnswer = page.locator('.move-check').nth(diagonalIndex);
+    check(await lineHint.locator('p').isHidden() && await lineAnswer.locator('strong').isHidden(), 'diagonal hint and answer start closed');
+    await lineHint.locator('summary').press('Enter');
+    check(await lineHint.locator('p').isVisible() && await lineAnswer.locator('strong').isHidden(), 'diagonal hint keeps answer closed');
+    await lineAnswer.locator('summary').press('Enter');
+    check(await lineAnswer.locator('strong').isVisible()
+      && await lineAnswer.locator('strong').textContent() === 'Place the medium blue ring at C3.'
+      && (await lineAnswer.textContent()).includes('the large red ring stays'), 'diagonal answer matches the board and leaves the red ring');
+    const moreLinePractice = lineAnswer.locator('[data-next-practice]');
+    check(await moreLinePractice.getAttribute('href') === '/games/ringzzle/#move-check-2', 'answer leads to related Ringzzle practice');
+    await checkBoardLayout(diagonalBoard, lineHint.locator('summary').or(lineAnswer.locator('summary')).or(moreLinePractice), 'diagonal');
+    await lineAnswer.locator('summary').press('Space');
+    await lineHint.locator('summary').press('Space');
+    const shareAnchors = [...examples.map(([, , anchor]) => anchor), ...variations.map(([anchor]) => anchor), twoMove, diagonal];
     check(await page.locator('[data-copy-tip]').count() === shareAnchors.length, 'only exercise headings get share controls');
     await page.setViewportSize({ width: 320, height: 844 });
     await page.evaluate(() => {
@@ -258,7 +298,7 @@ async page => {
     }
     await noJS.goto(root + '/games/practice/');
     await noJS.getByRole('link', { name: 'plan two Blockzzle moves' }).click();
-    check(new URL(noJS.url()).hash === '#' + twoMove && await noJS.locator('.practice-board').last().isVisible(), 'native link and new board work without scripts');
+    check(new URL(noJS.url()).hash === '#' + twoMove && await noJS.locator('.practice-board').nth(3).isVisible(), 'native link and two-move board work without scripts');
     const plainAnswer = noJS.locator('.move-check').nth(twoMoveIndex);
     check(await plainAnswer.locator('strong').isHidden(), 'two-move answer stays hidden without scripts');
     await plainAnswer.locator('summary').click();
@@ -266,6 +306,15 @@ async page => {
     await plainAnswer.locator('[data-next-practice]').click();
     await noJS.waitForURL(root + '/games/blockzzle/#move-check-2');
     check(await noJS.locator('#move-check-2').isVisible(), 'native guide link reaches the exact exercise');
+    await noJS.goto(root + '/games/practice/#' + diagonal);
+    check(await noJS.locator('#' + diagonal).isVisible() && await noJS.locator('.practice-board').nth(4).isVisible(), 'diagonal bookmark and board work without scripts');
+    const plainLineAnswer = noJS.locator('.move-check').nth(diagonalIndex);
+    check(await plainLineAnswer.locator('strong').isHidden(), 'diagonal answer stays hidden without scripts');
+    await plainLineAnswer.locator('summary').click();
+    check(await plainLineAnswer.locator('strong').isVisible() && await plainLineAnswer.locator('strong').textContent() === 'Place the medium blue ring at C3.', 'diagonal answer works without scripts');
+    await plainLineAnswer.locator('[data-next-practice]').click();
+    await noJS.waitForURL(root + '/games/ringzzle/#move-check-2');
+    check(await noJS.locator('#move-check-2').isVisible(), 'native guide link reaches the Ringzzle line exercise');
     await page.goto(root + '/');
     check(await page.locator('a[href="/games/practice/"]').count() === 0, 'homepage unchanged');
     check(errors.length === 0, 'no application runtime errors');

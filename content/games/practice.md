@@ -1,6 +1,6 @@
 ---
 title: "Puzzle Workshop"
-description: "Practice Blockzzle, Ringzzle, and DaySudoku with illustrated boards, follow-up variations, and a two-move block puzzle."
+description: "Practice Blockzzle, Ringzzle, and DaySudoku with illustrated boards, follow-up variations, and hints for each puzzle."
 date: 2026-11-18T21:49:00+09:00
 url: "/games/practice/"
 practiceBoards: true
@@ -12,11 +12,12 @@ workshopShareSections:
   - ringzzle-blue-slot
   - daysudoku-different-rows
   - blockzzle-plan-two-moves
+  - ringzzle-diagonal-clear
 ---
 
 Three practice situations for your next puzzle break: complete two lines with one block, free a distant ring slot, and rule out a Sudoku candidate. These are invented examples, not positions from your current game.
 
-Already tried the examples? [Try a variation](#try-a-variation) or [plan two Blockzzle moves](#blockzzle-plan-two-moves).
+Already tried the examples? [Try a variation](#try-a-variation), [plan two Blockzzle moves](#blockzzle-plan-two-moves), or [find a Ringzzle diagonal](#ringzzle-diagonal-clear).
 
 ## Blockzzle: Complete two lines {#blockzzle-crossing-lines}
 
@@ -133,4 +134,26 @@ Both moves use part of the original gap. After any full lines clear, which move 
 
 {{< move-check label="Check the two-move answer" hintLabel="Two-move hint" hint="Check the column below C1. If it clears, look for two consecutive empty squares in a column next to it." next="/games/blockzzle/#move-check-2" nextLabel="Practice another Blockzzle placement" >}}
 **Move B.** It fills the last gap in column C, so the whole column clears. B2 and B3 were already empty. With C2 and C3 now open, those four squares form a new 2x2 gap. Move A clears nothing and blocks the original gap.
+{{< /move-check >}}
+
+## Ringzzle: Clear the right line {#ringzzle-diagonal-clear}
+
+You have a medium blue ring and want to follow it with a small green ring in A1. The small slot in A1 is occupied by blue, and its large slot holds red.
+
+{{< practice-board caption="Ringzzle before the blue move: S = small, L = large" >}}
+{
+  "columns": ["A", "B", "C"],
+  "emphasis": ["Blue S + Red L"],
+  "rows": [
+    {"label": "1", "cells": ["Blue S + Red L", "Empty", "Empty"]},
+    {"label": "2", "cells": ["Blue L", "Blue L", "Empty"]},
+    {"label": "3", "cells": ["Empty", "Empty", "Empty"]}
+  ]
+}
+{{< /practice-board >}}
+
+You can place the medium blue ring at C2 or C3. Both placements clear a blue line. Which one opens the small slot in A1?
+
+{{< move-check label="Check the line answer" hintLabel="Line-clear hint" hint="Start at A1 and trace the blue rings. Does A1 belong to the line completed by each move?" next="/games/ringzzle/#move-check-2" nextLabel="Practice another Ringzzle line clear" >}}
+**Place the medium blue ring at C3.** The diagonal through A1, B2 and C3 clears. The small blue ring in A1 disappears, but the large red ring stays, so the small green ring fits. C2 completes row 2 instead and leaves both rings in A1 untouched.
 {{< /move-check >}}

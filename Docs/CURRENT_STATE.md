@@ -1,16 +1,13 @@
 # HotGames Current State
 
-ACTIVE_WRITER = NONE
+ACTIVE_WRITER = CODEX (HOTGAMES-WORKSHOP-RING-DIAGONAL; Ringzzle exercise, QA and deployment; main; 2026-11-18)
 
-- Phase: release verification. Implementation, QA, GitHub push and Cloudflare Pages production deployment DONE. Ordinary-domain acceptance incomplete.
-- Work ID / AI: HOTGAMES-WORKSHOP-TWO-MOVE / CODEX (2026-11-18).
-- Start: clean main e2ea550 matching origin/main after fetch; no other writer or WIP. Refetched before release: no divergence.
-- Preflight (22:35 KST): ordinary Workshop returned HTTP 200/HIT with no practice boards, share controls or answer-to-variation links for the previous release.
-- Scope: add one illustrated two-move Blockzzle exercise to Puzzle Workshop and an exact, shareable heading. Keep homepage, other guides and cache settings unchanged.
-- QA PASS: strict Hugo build (129 pages, 7 aliases), Node syntax and Git hygiene. Only Workshop HTML differs from the previous build.
-- Browser QA PASS: Chrome and WebKit each passed Workshop 206 assertions / 44 layouts. Tested both placements against the rendered board, hint and answer disclosure, exact canonical share link, direct entry, keyboard, no-JS and related guide link. Inspected 320px light and 1440px dark captures.
-- No cache changes or bypass, force push, new dependencies, tracking, generated files or changes to game repositories. Physical-device and repeat-visit measurement NOT_RUN.
-- DONE / HEAD: source 3ecdaf2ff8b17494f0b54f82dc20cb6d1d48fd5a pushed to owner-approved GitHub main. This documentation-only follow-up records release evidence.
-- Deployment PASS: Cloudflare Pages check 134842209098; https://ca7a60b4.hotgames-ai.pages.dev/. Chrome on the deployment URL and WebKit on the production Pages URL each passed Workshop 206/44.
-- Ordinary-domain acceptance NOT PASS (22:40 KST): normal Workshop returned HTTP 200/HIT in both browsers without the new heading or the previous release's boards and links. No cache change or bypass.
-- NEXT_SINGLE_TASK: confirm the two-move exercise, four boards, three variation links and seven copy controls on ordinary hotgames.ai without changing cache.
+- Phase: release preparation. Owner approved implementation, QA and normal GitHub main to Cloudflare Pages deployment.
+- Work ID / AI: HOTGAMES-WORKSHOP-RING-DIAGONAL / CODEX (2026-11-18).
+- Start: clean main e3792bd matching origin/main after fetch; no other writer or WIP. Refetched: no divergence.
+- Preflight (22:42 KST): ordinary Workshop returned HTTP 200/HIT and omitted the two-move Blockzzle exercise, prior boards, variations and copy controls.
+- Scope: one illustrated Ringzzle diagonal exercise with a direct, shareable heading and existing practice link. Homepage, other guides and cache unchanged.
+- QA PASS: strict Hugo build (129 pages, 7 aliases), Node syntax and Git hygiene. Workshop HTML alone differs from previous output.
+- Browser QA PASS: Chrome and WebKit each passed Workshop 231 assertions / 52 layouts. Verified both possible blue clears from the rendered grid, closed answers, canonical share links, keyboard, no-JS and exact guide links. Inspected 320px light and 1440px dark captures.
+- No cache changes or bypass, new dependencies, tracking, storage, generated files or changes to game repos. Physical-device and repeat-visit measurements NOT_RUN.
+- NEXT_SINGLE_TASK: push and verify both Pages and ordinary hotgames.ai.
